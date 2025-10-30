@@ -1,0 +1,8 @@
+{
+  "phase": 2,
+  "name": "Flow Focus",
+  "description": "Midtempo synthwave and lo-fi beats for focused energy and momentum. Steady rhythms and analog pulse.",
+  "target_bpm_range": [80, 90],
+  "mood_tags": ["focus", "steady", "analog", "productive", "rhythmic"],
+  "songs": []
+}

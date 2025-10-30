@@ -19,14 +19,14 @@ This layer communicates with the shell utilities in `/scripts/` and manages the 
 
 ## 1️⃣ `orchestrator.py`
 
-**Location:** `agent/orchestrator.py`  
-**Depends on:** Bash scripts in `/scripts/`, `analyze_audio.py`, `os`, `subprocess`, `json`, `time`, `logging`
+**Location:** `agent/orchestrator.py`
+**Depends on:** Bash scripts in `/scripts/`, `analyze_audio.py`, `watchdog`, `os`, `subprocess`, `json`, `time`, `logging`
 
 ---
 
 ### 🧠 Purpose
 
-The orchestrator is the **central automation brain**.  
+The orchestrator is the **central automation brain**.
 It detects new Suno-generated audio files, waits for downloads to complete, then executes all stages of the production pipeline in sequence.
 
 It is responsible for:
@@ -36,65 +36,72 @@ It is responsible for:
 - Handling logging, error catching, and pipeline recovery
 - Writing merged metadata JSONs in `/metadata/`
 - Triggering the final FFmpeg mix build
+- Tracking build history automatically
 
 ---
 
-### ⚙️ Typical Execution Flow
+### ⚙️ Three Operating Modes
 
-```mermaid
-graph TD
-  A[Detect new Suno files in /Arc_Library/] --> B[rename_by_mod_time.sh]
-  B --> C[prepend_tracks.sh]
-  C --> D[analyze_audio.py]
-  D --> E[track_length_report.sh]
-  E --> F[build_mix.sh]
-  F --> G[verify final duration and log results]
-```
-
----
-
-### 🧾 Responsibilities by Phase
-
-| Phase              | Description                                                                 | Trigger Type      |
-| ------------------ | --------------------------------------------------------------------------- | ----------------- |
-| 1. Detection       | Watches `/Arc_Library/` for new .mp3 files using watchdog or timed polling. | Automatic         |
-| 2. Preparation     | Executes renaming and prefixing scripts in order.                           | Sequential        |
-| 3. Analysis        | Runs `analyze_audio.py` to collect musical data.                            | Python subprocess |
-| 4. Validation      | Calls `track_length_report.sh` to verify cumulative duration.               | Sequential        |
-| 5. Rendering       | Calls `build_mix.sh` to produce final 3-hour mix.                           | Sequential        |
-| 6. Logging & Merge | Updates `/metadata/song_index.json` and pipeline logs.                      | Internal          |
-
----
-
-### 🧩 Example Invocation
-
+**1. Watch Mode (`--watch`)**
 ```bash
-python3 agent/orchestrator.py
+./venv/bin/python3 agent/orchestrator.py --watch
 ```
+- Continuously monitors `/Arc_Library/` for new MP3 files
+- Uses 60-second cooldown after last file detection
+- Automatically triggers full pipeline when ready
+- Ideal for hands-off operation during Suno batch downloads
 
-This will:
+**2. Run Once (`--run-once`)**
+```bash
+./venv/bin/python3 agent/orchestrator.py --run-once
+./venv/bin/python3 agent/orchestrator.py --run-once --track-num 5
+```
+- Executes full pipeline immediately
+- Optional `--track-num` argument for build_mix.sh
+- Returns exit code 0 on success, non-zero on failure
+- Suitable for manual or scheduled execution
 
-1. Wait for new Suno files in `/Arc_Library/`
-2. Execute all required shell scripts in order
-3. Call `analyze_audio.py`
-4. Produce updated metadata + rendered mix in `/Rendered/`
+**3. Analyze Only (`--analyze-only`)**
+```bash
+./venv/bin/python3 agent/orchestrator.py --analyze-only
+```
+- Runs only the audio analysis step
+- Skips rename, prepend, verification, and rendering
+- Useful for updating metadata without full build
+
+---
+
+### 🧾 Pipeline Execution Order
+
+| Step | Script/Module | Must Succeed | Description |
+|------|---------------|--------------|-------------|
+| 1 | `rename_by_mod_time.sh` | ✅ Yes | Sort and rename tracks by modification time (per phase folder) |
+| 2 | `prepend_tracks.sh` | ✅ Yes | Add phase prefixes (A*/B*) |
+| 3 | `analyze_audio.py` | ⚠️ Can fail | Extract audio metadata (continues on fail) |
+| 4 | `track_length_report.sh` | ✅ Yes | Verify ~3 hour runtime |
+| 5 | `build_mix.sh` | ✅ Yes | Render final mix with FFmpeg |
+
+**Critical Rule:** Steps 1, 2, 4, 5 must succeed (exit code 0) or pipeline halts. Only step 3 (analysis) can continue on failure.
 
 ---
 
 ### 📤 Outputs
 
-- `logs/orchestrator.log` — execution trace
-- Updated metadata under `/metadata/`
-- `Rendered/Final_Mix.mp3` — finished 3-hour audio file
+- `logs/orchestrator.log` — execution trace with timestamps
+- Updated metadata under `/metadata/Phase_X.json` and `song_index.json`
+- `metadata/build_history.json` — chronological build records
+- `Rendered/<track_num>/output_<timestamp>/output.mp4` — finished mix
 
 ---
 
-### 🪢 Agent Integration Notes
+### 🪢 Key Features
 
-- Return code 0 = success; any other = failure.
-- The orchestrator must halt on failed shell scripts, except for non-critical analysis steps.
-- It should skip redundant runs if no new tracks are detected.
-- On success, it appends a summary JSON entry to `metadata/build_history.json`.
+- **Comprehensive logging**: File and console handlers with different log levels
+- **Script timeout**: 10-minute max per script execution
+- **Duration validation**: Checks total duration against 3-hour target (±60s tolerance)
+- **Build history tracking**: Automatically records timestamp, file count, duration, runtime
+- **Error recovery**: Continues with analysis failures, halts on critical failures
+- **File watching**: Intelligent cooldown to batch multiple file additions
 
 ---
 

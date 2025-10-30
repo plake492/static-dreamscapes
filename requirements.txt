@@ -1,0 +1,12 @@
+# Static Dreamscapes - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Audio analysis
+librosa>=0.10.0
+numpy>=1.24.0
+
+# FFmpeg integration (optional - for programmatic FFmpeg control)
+ffmpeg-python>=0.2.0
+
+# File system monitoring
+watchdog>=3.0.0
