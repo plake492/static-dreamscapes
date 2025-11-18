@@ -120,7 +120,7 @@ static-dreamwaves/
 
 **Use Case:** Hands-off automation for batch processing Suno downloads
 
-1. **Add MP3 files** to `/Arc_Library/Phase_X_*/` folders
+1. **Add MP3 files** to `/arc_library/phase_X_*/` folders
 2. **Run watch mode:**
    ```bash
    source venv/bin/activate
@@ -171,10 +171,10 @@ source venv/bin/activate
 2. **Organize by phase:**
    ```bash
    # Move files to appropriate phase folders
-   mv *calm*.mp3 Arc_Library/Phase_1_Calm_Intro/Ambient_Warmth/
-   mv *focus*.mp3 Arc_Library/Phase_2_Flow_Focus/Midtempo_Groove/
-   mv *bright*.mp3 Arc_Library/Phase_3_Uplift_Clarity/Bright_Pads/
-   mv *fade*.mp3 Arc_Library/Phase_4_Reflective_Fade/Vapor_Trails/
+   mv *calm*.mp3 arc_library/phase_1_calm_intro/ambient_warmth/
+   mv *focus*.mp3 arc_library/phase_2_flow_focus/midtempo_groove/
+   mv *bright*.mp3 arc_library/phase_3_uplift_clarity/bright_pads/
+   mv *fade*.mp3 arc_library/phase_4_reflective_fade/vapor_trails/
    ```
 
 3. **Run orchestrator:**
@@ -189,7 +189,7 @@ source venv/bin/activate
    tail -50 logs/orchestrator.log
 
    # Check rendered mix
-   ls -lh Rendered/9/output_*/output.mp4
+   ls -lh rendered/9/output_*/output.mp4
 
    # Review metadata
    cat metadata/build_history.json | tail -20
@@ -203,10 +203,10 @@ source venv/bin/activate
 
 ```bash
 # Preview changes (dry run)
-bash scripts/rename_by_mod_time.sh Arc_Library/Phase_1_Calm_Intro --dry-run
+bash scripts/rename_by_mod_time.sh arc_library/phase_1_calm_intro --dry-run
 
 # Actually rename
-bash scripts/rename_by_mod_time.sh Arc_Library/Phase_1_Calm_Intro
+bash scripts/rename_by_mod_time.sh arc_library/phase_1_calm_intro
 ```
 
 ### Add Phase Prefixes
@@ -218,7 +218,7 @@ bash scripts/prepend_tracks.sh
 ### Analyze Audio
 
 ```bash
-python3 agent/analyze_audio.py --input ./Arc_Library --output ./metadata
+python3 agent/analyze_audio.py --input ./arc_library --output ./metadata
 ```
 
 ### Verify Total Length
@@ -296,7 +296,7 @@ ffmpeg -version
 tail -100 logs/orchestrator.log
 
 # Run script manually to see full error
-bash scripts/rename_by_mod_time.sh Arc_Library/Phase_1_Calm_Intro
+bash scripts/rename_by_mod_time.sh arc_library/phase_1_calm_intro
 ```
 
 ---
@@ -305,10 +305,10 @@ bash scripts/rename_by_mod_time.sh Arc_Library/Phase_1_Calm_Intro
 
 ### Learn the System
 
-1. Read [README.md](README.md) for project overview
-2. Review [CLAUDE.md](CLAUDE.md) for architecture details
-3. Explore [agent/docs/](agent/docs/) for deep technical documentation
-4. Check [scripts/README_SCRIPTS.md](scripts/README_SCRIPTS.md) for script reference
+1. Read [README.md](../README.md) for project overview
+2. Review [CLAUDE.md](../CLAUDE.md) for architecture details
+3. Explore [agent/docs/](../agent/docs/) for deep technical documentation
+4. Check [scripts/README_SCRIPTS.md](../scripts/README_SCRIPTS.md) for script reference
 
 ### Customize
 
@@ -329,9 +329,9 @@ bash scripts/rename_by_mod_time.sh Arc_Library/Phase_1_Calm_Intro
 ## Support
 
 For issues, questions, or contributions:
-- Review [agent/docs/04_AI_AGENT_WORKFLOW.md](agent/docs/04_AI_AGENT_WORKFLOW.md)
-- Check [metadata/README_METADATA.md](metadata/README_METADATA.md)
-- Consult [agent/README_AGENT.md](agent/README_AGENT.md)
+- Review [agent/docs/04_AI_AGENT_WORKFLOW.md](../agent/docs/04_AI_AGENT_WORKFLOW.md)
+- Check [metadata/README_METADATA.md](../metadata/README_METADATA.md)
+- Consult [agent/README_AGENT.md](../agent/README_AGENT.md)
 
 ---
 

@@ -76,13 +76,13 @@ The AI agent’s responsibilities fall into two major domains:
 ```
 /Dev/personal/ffmpeg-lofi
 │
-├── Arc_Library/          # Curated reusable tracks per phase
-├── Mixes/                # Individual releases
+├── arc_library/          # Curated reusable tracks per phase
+├── mixes/                # Individual releases
 ├── backup_songs/         # Legacy stems
 ├── scripts/              # Helper shell utilities
 ├── agent/                # AI logic and config
 ├── metadata/             # Centralized track metadata JSONs
-└── Rendered/             # Final exported mixes
+└── rendered/             # Final exported mixes
 ```
 
-The AI agent references all components under `/Arc_Library/` and `/metadata/` to plan each release cycle.
+The AI agent references all components under `/arc_library/` and `/metadata/` to plan each release cycle.

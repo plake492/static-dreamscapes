@@ -2,7 +2,7 @@
 """
 Static Dreamscapes - Metadata Validation Script
 ------------------------------------------------
-Validates metadata files against actual audio files in Arc_Library.
+Validates metadata files against actual audio files in arc_library.
 Checks for:
 - Orphaned entries (in metadata but file doesn't exist)
 - Missing entries (file exists but not in metadata)
@@ -21,23 +21,23 @@ from typing import Dict, List, Set, Tuple
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent
-ARC_LIBRARY = PROJECT_ROOT / "Arc_Library"
+ARC_LIBRARY = PROJECT_ROOT / "arc_library"
 METADATA_DIR = PROJECT_ROOT / "metadata"
 
 def load_phase_metadata() -> Dict[str, dict]:
     """Load all phase JSON files."""
     phase_data = {}
-    for phase_file in METADATA_DIR.glob("Phase_*.json"):
+    for phase_file in METADATA_DIR.glob("phase_*.json"):
         try:
             data = json.loads(phase_file.read_text())
-            phase_name = phase_file.stem  # e.g., "Phase_1_Calm_Intro"
+            phase_name = phase_file.stem  # e.g., "phase_1_calm_intro"
             phase_data[phase_name] = data
         except Exception as e:
             print(f"⚠️  Error loading {phase_file.name}: {e}")
     return phase_data
 
 def get_actual_mp3_files() -> Dict[str, Path]:
-    """Get all MP3 files currently in Arc_Library."""
+    """Get all MP3 files currently in arc_library."""
     mp3_files = {}
     for mp3_path in ARC_LIBRARY.rglob("*.mp3"):
         mp3_files[mp3_path.name] = mp3_path
@@ -125,7 +125,7 @@ def validate_metadata(fix_orphans: bool = False):
             # Determine actual phase from file path
             phase_folder = None
             for part in file_path.parts:
-                if part.startswith("Phase_"):
+                if part.startswith("phase_"):
                     phase_folder = part
                     break
 
@@ -157,7 +157,7 @@ def validate_metadata(fix_orphans: bool = False):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Validate metadata files against Arc_Library audio files"
+        description="Validate metadata files against arc_library audio files"
     )
     parser.add_argument(
         '--fix-orphans',

@@ -6,38 +6,38 @@ Root: `~/Dev/personal/ffmpeg-lofi`
 
 ```
 ffmpeg-lofi/
-├── Arc_Library/             # Master track bank (sorted by arc phase)
-│   ├── Phase_1_Calm_Intro/
-│   │   ├── Ambient_Warmth/
-│   │   ├── Early_Dawn/
-│   │   └── Nostalgic_Haze/
-│   ├── Phase_2_Flow_Focus/
-│   │   ├── Midtempo_Groove/
-│   │   ├── Analog_Pulse/
-│   │   └── Deep_Work/
-│   ├── Phase_3_Uplift_Clarity/
-│   │   ├── Bright_Pads/
-│   │   ├── Optimistic_Melodies/
-│   │   └── Creative_Energy/
-│   └── Phase_4_Reflective_Fade/
-│       ├── Tape_Hiss/
-│       ├── Vapor_Trails/
-│       └── Closing_Ambience/
+├── arc_library/             # Master track bank (sorted by arc phase)
+│   ├── phase_1_calm_intro/
+│   │   ├── ambient_warmth/
+│   │   ├── early_dawn/
+│   │   └── nostalgic_haze/
+│   ├── phase_2_flow_focus/
+│   │   ├── midtempo_groove/
+│   │   ├── analog_pulse/
+│   │   └── deep_work/
+│   ├── phase_3_uplift_clarity/
+│   │   ├── bright_pads/
+│   │   ├── optimistic_melodies/
+│   │   └── creative_energy/
+│   └── phase_4_reflective_fade/
+│       ├── tape_hiss/
+│       ├── vapor_trails/
+│       └── closing_ambience/
 │
-├── Mixes/                   # All released or WIP track folders
-│   ├── 09_Neon_Arcade_Memories/
-│   │   ├── Image/
-│   │   ├── Songs/
-│   │   └── Video/
-│   ├── 10_Dawn_Drive/
-│   ├── 11_Winter_Nights/
-│   └── 12_City_Signals/
+├── mixes/                   # All released or WIP track folders
+│   ├── 09_neon_arcade_memories/
+│   │   ├── image/
+│   │   ├── songs/
+│   │   └── video/
+│   ├── 10_dawn_drive/
+│   ├── 11_winter_nights/
+│   └── 12_city_signals/
 │
 ├── metadata/                # JSON metadata for each song
-│   ├── Phase_1_Calm_Intro.json
-│   ├── Phase_2_Flow_Focus.json
-│   ├── Phase_3_Uplift_Clarity.json
-│   ├── Phase_4_Reflective_Fade.json
+│   ├── phase_1_calm_intro.json
+│   ├── phase_2_flow_focus.json
+│   ├── phase_3_uplift_clarity.json
+│   ├── phase_4_reflective_fade.json
 │   └── song_index.json
 │
 ├── scripts/                 # Shell utilities
@@ -47,9 +47,9 @@ ffmpeg-lofi/
 │   ├── build_mix.sh         # Calls FFmpeg + crossfade logic
 │   └── verify_length.sh
 │
-├── Rendered/                # Final exported audio/video
-│   ├── Track_09_NeonArcade.mp3
-│   ├── Track_10_DawnDrive.mp3
+├── rendered/                # Final exported audio/video
+│   ├── track_09_neon_arcade.mp3
+│   ├── track_10_dawn_drive.mp3
 │   └── ...
 │
 └── backup_songs/            # Original generated stems
@@ -96,7 +96,7 @@ Example:
 
 - Shell scripts handle sequencing and crossfade consistency.
 - FFmpeg pulls from track order validated by prefixes (`A_` then `B_`).
-- The AI agent monitors `/Arc_Library/` for new files and updates corresponding metadata.
+- The AI agent monitors `/arc_library/` for new files and updates corresponding metadata.
 - Song JSON entries are indexed by filename hash to prevent duplicates.
 
 ---
@@ -133,7 +133,7 @@ file 'A_03_01-NightDrive.mp3'
 
 ## Agent Interaction Points
 
-- **Observe:** `/Arc_Library/` for new files.
+- **Observe:** `/arc_library/` for new files.
 - **Tag:** Write metadata JSON entries.
 - **Assist:** Build `input.txt` lists for FFmpeg.
 - **Verify:** Compare summed durations to 3-hour target.

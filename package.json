@@ -1,0 +1,72 @@
+{
+  "name": "static-dreamwaves",
+  "version": "1.0.0",
+  "description": "Automated pipeline for generating 3-hour Synthwave/Lo-Fi/Vaporwave mixes",
+  "author": "Patrick Lake",
+  "license": "MIT",
+  "scripts": {
+    "setup": "python3 -m venv venv && ./venv/bin/pip install --upgrade pip && ./venv/bin/pip install -r requirements.txt && chmod +x scripts/*.sh && chmod +x agent/*.py",
+    "setup:deps": "./venv/bin/pip install -r requirements.txt",
+    "setup:permissions": "chmod +x scripts/*.sh && chmod +x agent/*.py",
+
+    "orchestrator:watch": "./venv/bin/python3 agent/orchestrator.py --watch",
+    "orchestrator:run": "./venv/bin/python3 agent/orchestrator.py --run-once",
+    "orchestrator:analyze": "./venv/bin/python3 agent/orchestrator.py --analyze-only",
+
+    "watch": "yarn orchestrator:watch",
+    "run": "yarn orchestrator:run",
+    "analyze": "yarn orchestrator:analyze",
+
+    "analyze:manual": "./venv/bin/python3 agent/analyze_audio.py --input ./arc_library --output ./metadata",
+
+    "sort:unsorted": "./venv/bin/python3 agent/auto_sort.py --input ./unsorted_tracks",
+    "sort:unsorted:dry": "./venv/bin/python3 agent/auto_sort.py --input ./unsorted_tracks --dry-run",
+    "sort:downloads": "./venv/bin/python3 agent/auto_sort.py --scan-downloads",
+    "sort:downloads:dry": "./venv/bin/python3 agent/auto_sort.py --scan-downloads --dry-run",
+
+    "rename:phase1": "bash scripts/rename_by_mod_time.sh arc_library/phase_1_calm_intro",
+    "rename:phase2": "bash scripts/rename_by_mod_time.sh arc_library/phase_2_flow_focus",
+    "rename:phase3": "bash scripts/rename_by_mod_time.sh arc_library/phase_3_uplift_clarity",
+    "rename:phase4": "bash scripts/rename_by_mod_time.sh arc_library/phase_4_reflective_fade",
+    "rename:all": "yarn rename:phase1 && yarn rename:phase2 && yarn rename:phase3 && yarn rename:phase4",
+
+    "rename:phase1:dry": "bash scripts/rename_by_mod_time.sh arc_library/phase_1_calm_intro --dry-run",
+    "rename:phase2:dry": "bash scripts/rename_by_mod_time.sh arc_library/phase_2_flow_focus --dry-run",
+    "rename:phase3:dry": "bash scripts/rename_by_mod_time.sh arc_library/phase_3_uplift_clarity --dry-run",
+    "rename:phase4:dry": "bash scripts/rename_by_mod_time.sh arc_library/phase_4_reflective_fade --dry-run",
+    "rename:all:dry": "yarn rename:phase1:dry && yarn rename:phase2:dry && yarn rename:phase3:dry && yarn rename:phase4:dry",
+
+    "prepend": "bash scripts/prepend_tracks.sh",
+
+    "verify:length": "bash scripts/track_length_report.sh",
+    "verify:metadata": "./venv/bin/python3 agent/validate_metadata.py",
+    "verify:metadata:fix": "./venv/bin/python3 agent/validate_metadata.py --fix-orphans",
+
+    "build:test": "bash scripts/build_mix.sh 1 test",
+    "build:1h": "bash scripts/build_mix.sh 1 1",
+    "build:2h": "bash scripts/build_mix.sh 1 2",
+    "build:3h": "bash scripts/build_mix.sh 1 3",
+
+    "logs": "tail -f logs/orchestrator.log",
+    "logs:last": "tail -50 logs/orchestrator.log",
+    "logs:errors": "grep -i error logs/orchestrator.log",
+
+    "status": "echo '=== MP3 Files ===' && find arc_library -name '*.mp3' | wc -l && echo '=== Metadata Entries ===' && ./venv/bin/python3 -c 'import json; data = json.load(open(\"metadata/song_index.json\")); print(len(data.get(\"tracks\", {})))' && echo '=== Build History ===' && ./venv/bin/python3 -c 'import json; data = json.load(open(\"metadata/build_history.json\")); print(len(data.get(\"builds\", [])), \"builds\")'",
+
+    "clean:metadata": "rm -f metadata/phase_*.json metadata/song_index.json metadata/build_history.json && ./venv/bin/python3 -c 'import json; open(\"metadata/song_index.json\", \"w\").write(json.dumps({\"_comment\": \"Global index\", \"tracks\": {}}, indent=2)); open(\"metadata/build_history.json\", \"w\").write(json.dumps({\"builds\": []}, indent=2))'",
+    "clean:logs": "rm -f logs/*.log",
+    "clean:rendered": "rm -rf rendered/*",
+    "clean:all": "yarn clean:metadata && yarn clean:logs && yarn clean:rendered",
+
+    "help": "echo '\n📜 Static Dreamscapes - Available Commands\n' && echo '🚀 Main Pipeline:' && echo '  yarn watch                - Watch for new files (auto-trigger)' && echo '  yarn run                  - Run pipeline once' && echo '  yarn analyze              - Analyze audio only' && echo '' && echo '🎯 Auto-Sort Tracks:' && echo '  yarn sort:downloads:dry   - Preview sorting from ~/Downloads' && echo '  yarn sort:downloads       - Auto-sort from ~/Downloads' && echo '  yarn sort:unsorted:dry    - Preview sorting from ./unsorted_tracks' && echo '  yarn sort:unsorted        - Auto-sort from ./unsorted_tracks' && echo '' && echo '🔧 Manual Steps:' && echo '  yarn rename:all           - Rename all tracks by date' && echo '  yarn rename:all:dry       - Preview renaming (dry run)' && echo '  yarn prepend              - Add phase prefixes' && echo '  yarn analyze:manual       - Run audio analysis' && echo '  yarn verify:length        - Check total duration' && echo '  yarn verify:metadata      - Validate metadata' && echo '' && echo '🎬 Build Mix:' && echo '  yarn build:test           - 5 min test mix' && echo '  yarn build:1h             - 1 hour mix' && echo '  yarn build:3h             - 3 hour mix' && echo '' && echo '📊 Monitoring:' && echo '  yarn status               - Show file/metadata counts' && echo '  yarn logs                 - Follow logs (live)' && echo '  yarn logs:last            - Show last 50 log lines' && echo '' && echo '🧹 Cleanup:' && echo '  yarn clean:metadata       - Reset metadata files' && echo '  yarn clean:logs           - Clear log files' && echo '  yarn clean:all            - Clean everything' && echo ''"
+  },
+  "keywords": [
+    "lofi",
+    "synthwave",
+    "vaporwave",
+    "audio",
+    "automation",
+    "ffmpeg",
+    "music"
+  ]
+}

@@ -7,10 +7,10 @@ if [ $# -eq 0 ]; then
     echo "  $0 5           # 1 hour video (default)"
     echo "  $0 5 0.5       # 30 minutes (0.5 hours)"
     echo "  $0 5 1         # 1 hour"
-    echo "  $0 5 2         # 2 hours" 
+    echo "  $0 5 2         # 2 hours"
     echo "  $0 5 test      # 5 minutes for testing"
     echo ""
-    echo "This will process Tracks/5/Video/5.mp4 and Tracks/5/Songs/"
+    echo "This will process tracks/5/video/5.mp4 and tracks/5/songs/"
     exit 1
 fi
 
@@ -26,12 +26,12 @@ fi
 
 # Create timestamped output folder
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-OUTPUT_DIR="Rendered/${TRACK_NUM}/output_${TIMESTAMP}"
+OUTPUT_DIR="rendered/${TRACK_NUM}/output_${TIMESTAMP}"
 mkdir -p "$OUTPUT_DIR"
 
 # Input values (using the provided track number)
-BG_VIDEO="Tracks/${TRACK_NUM}/Video/${TRACK_NUM}.mp4"
-SONG_DIR="Tracks/${TRACK_NUM}/Songs"
+BG_VIDEO="tracks/${TRACK_NUM}/video/${TRACK_NUM}.mp4"
+SONG_DIR="tracks/${TRACK_NUM}/songs"
 OUTPUT="${OUTPUT_DIR}/output.mp4"
 
 # Check if required files exist

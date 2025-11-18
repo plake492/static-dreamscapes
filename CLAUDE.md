@@ -28,12 +28,52 @@ chmod +x scripts/*.sh
 
 ## Core Commands
 
+### Quick Reference (Yarn Scripts)
+
+For convenience, all commands are available as yarn/npm scripts:
+
+```bash
+# Setup
+yarn setup                    # Complete setup (venv + deps + permissions)
+
+# Main Pipeline
+yarn watch                    # Watch for new files (auto-trigger)
+yarn run                      # Run pipeline once
+yarn analyze                  # Analyze audio only
+
+# Auto-Sort (NEW)
+yarn sort:downloads:dry       # Preview auto-sort from ~/Downloads
+yarn sort:downloads           # Auto-sort from ~/Downloads
+yarn sort:unsorted:dry        # Preview from ./unsorted_tracks
+yarn sort:unsorted            # Auto-sort from ./unsorted_tracks
+
+# Manual Steps
+yarn rename:all               # Rename all tracks by date
+yarn rename:all:dry           # Preview renaming (dry run)
+yarn prepend                  # Add phase prefixes
+yarn verify:length            # Check total duration
+yarn verify:metadata          # Validate metadata
+
+# Build
+yarn build:test               # 5 min test mix
+yarn build:3h                 # 3 hour full mix
+
+# Monitoring
+yarn status                   # Show file/metadata counts
+yarn logs                     # Follow logs (live)
+
+# Help
+yarn run help                 # Show all available commands
+```
+
+See [documentation/YARN_COMMANDS.md](documentation/YARN_COMMANDS.md) for complete reference with examples.
+
 ### Orchestrator (Automated Pipeline)
 ```bash
 # Activate virtual environment first
 source venv/bin/activate
 
-# Watch mode - continuously monitor Arc_Library for new files
+# Watch mode - continuously monitor arc_library for new files
 ./venv/bin/python3 agent/orchestrator.py --watch
 
 # Run pipeline once immediately
@@ -49,7 +89,7 @@ source venv/bin/activate
 ### Audio Analysis (Manual)
 ```bash
 # Analyze all tracks and generate metadata
-./venv/bin/python3 agent/analyze_audio.py --input ./Arc_Library --output ./metadata
+./venv/bin/python3 agent/analyze_audio.py --input ./arc_library --output ./metadata
 ```
 
 ### Track Management
@@ -87,7 +127,7 @@ The system follows a strict 4-phase structure for each 3-hour mix:
 3. **Phase 3 - Uplift/Clarity**: Bright, optimistic, creative momentum (90-100 BPM)
 4. **Phase 4 - Reflective Fade**: Slow, analog-warm closing (60-75 BPM)
 
-Each phase maps to `/Arc_Library/Phase_X_*/` directories and has corresponding metadata in `/metadata/Phase_X.json`.
+Each phase maps to `/arc_library/phase_X_*/` directories and has corresponding metadata in `/metadata/phase_X.json`.
 
 ### Two-Layer Design
 
@@ -108,7 +148,7 @@ Each phase maps to `/Arc_Library/Phase_X_*/` directories and has corresponding m
 ### Metadata System
 
 **Structure:**
-- `/metadata/Phase_X.json`: Per-phase song collections
+- `/metadata/phase_X.json`: Per-phase song collections
 - `/metadata/song_index.json`: Global lookup table linking track IDs to locations
 - `/metadata/build_history.json`: Historical record of rendered mixes
 
@@ -143,13 +183,13 @@ Each phase maps to `/Arc_Library/Phase_X_*/` directories and has corresponding m
 ### File Organization
 
 ```
-Arc_Library/
-  Phase_1_Calm_Intro/
-  Phase_2_Flow_Focus/
-  Phase_3_Uplift_Clarity/
-  Phase_4_Reflective_Fade/
+arc_library/
+  phase_1_calm_intro/
+  phase_2_flow_focus/
+  phase_3_uplift_clarity/
+  phase_4_reflective_fade/
 
-Rendered/
+rendered/
   <track_num>/
     output_<timestamp>/
       output.mp4
@@ -157,7 +197,7 @@ Rendered/
       filter_complex.txt
 
 metadata/
-  Phase_1.json, Phase_2.json, etc.
+  phase_1.json, phase_2.json, etc.
   song_index.json
   build_history.json
 ```
@@ -175,7 +215,7 @@ metadata/
 
 ## Important Context
 
-- Do not manually modify `/Rendered/` - it's rebuilt on every run
+- Do not manually modify `/rendered/` - it's rebuilt on every run
 - Script names must remain consistent with documentation or orchestrator won't detect them
 - Always use the virtual environment (`venv/`) when running Python scripts
 - Logs are written to `logs/orchestrator.log` with timestamps

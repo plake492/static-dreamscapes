@@ -7,9 +7,9 @@
 if [ $# -lt 2 ]; then
     echo "Usage: $0 <folder_path> <prefix> [--dry-run]"
     echo "Examples:"
-    echo "  $0 Tracks/5/Songs 'LoFi_'               # Prepend 'LoFi_' to all files"
+    echo "  $0 tracks/5/songs 'LoFi_'               # Prepend 'LoFi_' to all files"
     echo "  $0 songs/Analog-1 'Chill-' --dry-run    # Preview changes without renaming"
-    echo "  $0 Tracks/3/Songs 'Mix_01_'             # Prepend 'Mix_01_' to all files"
+    echo "  $0 tracks/3/songs 'Mix_01_'             # Prepend 'Mix_01_' to all files"
     echo "  $0 . 'Test_'                           # Prepend to files in current directory"
     echo ""
     echo "Folder path should be relative to project root"

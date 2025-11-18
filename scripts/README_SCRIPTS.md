@@ -39,7 +39,7 @@ bash scripts/rename_by_mod_time.sh
 
 ### 📥 Inputs
 
-- `/Arc_Library/Phase_X/` — folders containing .mp3 tracks
+- `/arc_library/phase_X/` — folders containing .mp3 tracks
 - File modification timestamps — used for sorting
 
 ### 📤 Outputs
@@ -77,7 +77,7 @@ bash scripts/prepend_tracks.sh
 
 ### 📥 Inputs
 
-- `/Arc_Library/Phase_X/` — renamed .mp3 files
+- `/arc_library/phase_X/` — renamed .mp3 files
 - Arc mapping rules — e.g. first half = A*, second half = B*
 
 ### 📤 Outputs
@@ -115,7 +115,7 @@ bash scripts/track_length_report.sh
 
 ### 📥 Inputs
 
-- `/Arc_Library/Phase_X/` — finalized .mp3 files
+- `/arc_library/phase_X/` — finalized .mp3 files
 
 ### 📤 Outputs
 
@@ -153,14 +153,14 @@ bash scripts/build_mix.sh
 
 ### 📥 Inputs
 
-- `/Arc_Library/Phase_X/` — ordered .mp3 files
+- `/arc_library/phase_X/` — ordered .mp3 files
 - `/metadata/song_index.json` — reference for song tagging
 - Crossfade duration (default 2–3 s)
 
 ### 📤 Outputs
 
-- `Rendered/Final_Mix.mp3` — complete audio mix
-- `Rendered/final_mix.log` — FFmpeg operation log
+- `rendered/final_mix.mp3` — complete audio mix
+- `rendered/final_mix.log` — FFmpeg operation log
 
 ### 🪢 Dependencies
 

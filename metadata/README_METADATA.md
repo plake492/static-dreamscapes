@@ -8,15 +8,15 @@ This directory stores all structured metadata for the Static Dreamscapes automat
 
 ```
 metadata/
-├── Phase_1_Calm_Intro.json          # Phase 1 song catalog
-├── Phase_2_Flow_Focus.json          # Phase 2 song catalog
-├── Phase_3_Uplift_Clarity.json      # Phase 3 song catalog
-├── Phase_4_Reflective_Fade.json     # Phase 4 song catalog
+├── phase_1_calm_intro.json          # Phase 1 song catalog
+├── phase_2_flow_focus.json          # Phase 2 song catalog
+├── phase_3_uplift_clarity.json      # Phase 3 song catalog
+├── phase_4_reflective_fade.json     # Phase 4 song catalog
 ├── song_index.json                  # Global lookup table
 ├── build_history.json               # Historical record of all renders
 ├── mixes/                           # Per-mix metadata
-│   ├── Track_09_Neon_Arcade.json
-│   ├── Track_10_Dawn_Drive.json
+│   ├── track_09_neon_arcade.json
+│   ├── track_10_dawn_drive.json
 │   └── ...
 └── logs/                            # Analysis and processing logs
     ├── audio_analysis.log
@@ -46,8 +46,8 @@ Each phase file contains an array of all songs belonging to that emotional arc s
       "brightness": 1847.32,
       "zcr": 0.08234,
       "key_guess": "A",
-      "phase_name": "Phase_1_Calm_Intro",
-      "file_path": "Arc_Library/Phase_1_Calm_Intro/Ambient_Warmth/A_01_01-RainyAfterHours.mp3",
+      "phase_name": "phase_1_calm_intro",
+      "file_path": "arc_library/phase_1_calm_intro/ambient_warmth/A_01_01-RainyAfterHours.mp3",
       "analyzed_at": "2025-10-29T18:45:00Z"
     }
   ]
@@ -76,12 +76,12 @@ Maps every track filename to its phase and metadata location for fast lookup.
 ```json
 {
   "A_01_01-RainyAfterHours.mp3": {
-    "phase": "Phase_1_Calm_Intro",
-    "path": "metadata/Phase_1_Calm_Intro.json"
+    "phase": "phase_1_calm_intro",
+    "path": "metadata/phase_1_calm_intro.json"
   },
   "A_02_05-CityDreams.mp3": {
-    "phase": "Phase_2_Flow_Focus",
-    "path": "metadata/Phase_2_Flow_Focus.json"
+    "phase": "phase_2_flow_focus",
+    "path": "metadata/phase_2_flow_focus.json"
   }
 }
 ```
@@ -120,7 +120,7 @@ Chronological record of all pipeline executions and rendered mixes.
 
 ---
 
-### Mix Metadata (`mixes/Track_X_*.json`)
+### Mix Metadata (`mixes/track_X_*.json`)
 
 Individual metadata files for each finished 3-hour mix.
 
@@ -149,7 +149,7 @@ Individual metadata files for each finished 3-hour mix.
     }
   ],
   "themes": ["Retro Nostalgia", "City Night", "Arcade Glow"],
-  "rendered_output": "Rendered/Track_09_NeonArcadeMemories.mp3",
+  "rendered_output": "rendered/track_09_neon_arcade_memories.mp3",
   "render_date": "2025-10-29T10:00:00Z",
   "ai_notes": {
     "mix_balance": "Good warm/cool ratio, smooth pacing",
@@ -180,7 +180,7 @@ tar -czf metadata_backup_$(date +%Y%m%d).tar.gz metadata/
 ```
 
 ### Validation
-Check for orphaned entries (files in metadata but not in Arc_Library):
+Check for orphaned entries (files in metadata but not in arc_library):
 ```bash
 # (Script to be implemented)
 python3 agent/validate_metadata.py
@@ -189,7 +189,7 @@ python3 agent/validate_metadata.py
 ### Reset
 To start fresh (caution: deletes all metadata):
 ```bash
-rm -f metadata/Phase_*.json metadata/song_index.json metadata/build_history.json
+rm -f metadata/phase_*.json metadata/song_index.json metadata/build_history.json
 ```
 
 ---

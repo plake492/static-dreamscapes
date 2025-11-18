@@ -46,7 +46,7 @@ It is responsible for:
 ```bash
 ./venv/bin/python3 agent/orchestrator.py --watch
 ```
-- Continuously monitors `/Arc_Library/` for new MP3 files
+- Continuously monitors `/arc_library/` for new MP3 files
 - Uses 60-second cooldown after last file detection
 - Automatically triggers full pipeline when ready
 - Ideal for hands-off operation during Suno batch downloads
@@ -88,9 +88,9 @@ It is responsible for:
 ### 📤 Outputs
 
 - `logs/orchestrator.log` — execution trace with timestamps
-- Updated metadata under `/metadata/Phase_X.json` and `song_index.json`
+- Updated metadata under `/metadata/phase_X.json` and `song_index.json`
 - `metadata/build_history.json` — chronological build records
-- `Rendered/<track_num>/output_<timestamp>/output.mp4` — finished mix
+- `rendered/<track_num>/output_<timestamp>/output.mp4` — finished mix
 
 ---
 
@@ -133,10 +133,10 @@ Outputs detailed JSON files per phase and an aggregated index used for later cur
 
 ### 📥 Inputs
 
-- `/Arc_Library/Phase_1_Calm_Intro/`
-- `/Arc_Library/Phase_2_Flow_Focus/`
-- `/Arc_Library/Phase_3_Uplift_Clarity/`
-- `/Arc_Library/Phase_4_Reflective_Fade/`
+- `/arc_library/phase_1_calm_intro/`
+- `/arc_library/phase_2_flow_focus/`
+- `/arc_library/phase_3_uplift_clarity/`
+- `/arc_library/phase_4_reflective_fade/`
 
 ---
 
@@ -144,7 +144,7 @@ Outputs detailed JSON files per phase and an aggregated index used for later cur
 
 | File                        | Description                          |
 | --------------------------- | ------------------------------------ |
-| `/metadata/Phase_X.json`    | Structured metadata for each phase   |
+| `/metadata/phase_X.json`    | Structured metadata for each phase   |
 | `/metadata/song_index.json` | Master index for all analyzed tracks |
 | `logs/orchestrator.log`     | Log entries appended                 |
 
@@ -184,14 +184,14 @@ analyze_audio_batch("/Arc_Library/", "/metadata/")
 
 ```mermaid
 graph TD
-  A[/Arc_Library/ new Suno tracks] --> B[orchestrator.py]
+  A[/arc_library/ new Suno tracks] --> B[orchestrator.py]
   B --> C[rename_by_mod_time.sh]
   C --> D[prepend_tracks.sh]
   D --> E[analyze_audio.py]
   E --> F[/metadata/ JSON updates]
   F --> G[track_length_report.sh]
   G --> H[build_mix.sh]
-  H --> I[/Rendered/ Final Mix]
+  H --> I[/rendered/ Final Mix]
 ```
 
 ---

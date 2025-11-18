@@ -380,3 +380,6 @@ temp/
 *.tar.gz
 *.rar
 *.7z
+
+examples 
+/unsorted_tracks

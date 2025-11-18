@@ -7,9 +7,9 @@
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <folder_path> [--dry-run]"
     echo "Examples:"
-    echo "  $0 Tracks/5/Songs"
+    echo "  $0 tracks/5/songs"
     echo "  $0 songs/Analog-1 --dry-run  (to preview changes without renaming)"
-    echo "  $0 Tracks/3/Songs"
+    echo "  $0 tracks/3/songs"
     echo "  $0 . --dry-run               (current directory, preview mode)"
     echo ""
     echo "Folder path should be relative to project root"

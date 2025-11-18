@@ -29,9 +29,9 @@ from watchdog.events import FileSystemEventHandler, FileCreatedEvent
 # ============================================================================
 
 PROJECT_ROOT = Path(__file__).parent.parent
-ARC_LIBRARY = PROJECT_ROOT / "Arc_Library"
+ARC_LIBRARY = PROJECT_ROOT / "arc_library"
 METADATA_DIR = PROJECT_ROOT / "metadata"
-RENDERED_DIR = PROJECT_ROOT / "Rendered"
+RENDERED_DIR = PROJECT_ROOT / "rendered"
 SCRIPTS_DIR = PROJECT_ROOT / "scripts"
 LOGS_DIR = PROJECT_ROOT / "logs"
 
@@ -149,7 +149,7 @@ def run_script(script_path: Path, args: List[str] = None, can_fail: bool = False
         return False, str(e)
 
 def count_mp3_files() -> int:
-    """Count total MP3 files in Arc_Library."""
+    """Count total MP3 files in arc_library."""
     return len(list(ARC_LIBRARY.rglob("*.mp3")))
 
 def get_total_duration() -> Optional[float]:
@@ -239,10 +239,10 @@ class PipelineOrchestrator:
         logger.info("\n[STEP 1/5] Renaming tracks by modification time...")
 
         # Find all phase folders
-        phase_folders = sorted([d for d in ARC_LIBRARY.iterdir() if d.is_dir() and d.name.startswith("Phase_")])
+        phase_folders = sorted([d for d in ARC_LIBRARY.iterdir() if d.is_dir() and d.name.startswith("phase_")])
 
         if not phase_folders:
-            logger.error("No phase folders found in Arc_Library")
+            logger.error("No phase folders found in arc_library")
             return False
 
         # Run rename script for each phase folder
@@ -365,7 +365,7 @@ def main():
     parser.add_argument(
         '--watch',
         action='store_true',
-        help='Watch Arc_Library for new files and auto-trigger pipeline'
+        help='Watch arc_library for new files and auto-trigger pipeline'
     )
     parser.add_argument(
         '--run-once',

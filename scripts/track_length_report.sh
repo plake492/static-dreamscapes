@@ -6,9 +6,9 @@
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <folder_path>"
     echo "Examples:"
-    echo "  $0 Tracks/5/Songs"
+    echo "  $0 tracks/5/songs"
     echo "  $0 songs/Analog-1"
-    echo "  $0 Tracks/3/Songs"
+    echo "  $0 tracks/3/songs"
     echo "  $0 .                    # Current directory"
     echo ""
     echo "Folder path should be relative to project root"

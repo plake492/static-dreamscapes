@@ -2,12 +2,12 @@
 """
 Static Dreamscapes - Audio Analysis Script
 ------------------------------------------
-Scans all MP3 files inside Arc_Library, extracts detailed audio metadata
+Scans all MP3 files inside arc_library, extracts detailed audio metadata
 (duration, BPM, key, loudness, brightness, etc.) using librosa, and writes
-JSON metadata into /metadata/Phase_X.json + /metadata/song_index.json.
+JSON metadata into /metadata/phase_X.json + /metadata/song_index.json.
 
 Run manually or via Bash pipeline:
-    python3 agent/analyze_audio.py --input ./Arc_Library --output ./metadata
+    python3 agent/analyze_audio.py --input ./arc_library --output ./metadata
 """
 
 import os, json, argparse, librosa, numpy as np
@@ -71,7 +71,7 @@ def update_metadata(output_dir: Path, file_info: dict, phase: str):
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze audio files for metadata extraction.")
-    parser.add_argument("--input", required=True, help="Input folder (Arc_Library root)")
+    parser.add_argument("--input", required=True, help="Input folder (arc_library root)")
     parser.add_argument("--output", required=True, help="Output folder (metadata root)")
     args = parser.parse_args()
 
@@ -79,9 +79,9 @@ def main():
     output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Iterate through all MP3s in Arc_Library
+    # Iterate through all MP3s in arc_library
     for mp3 in input_dir.rglob("*.mp3"):
-        phase = mp3.parent.parent.name  # assumes Phase_X_... structure
+        phase = mp3.parent.parent.name  # assumes phase_X_... structure
         print(f"Analyzing {mp3.name} → {phase}")
         try:
             features = analyze_audio(mp3)
