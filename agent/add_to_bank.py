@@ -4,9 +4,21 @@ Add to Bank
 -----------
 Adds new (non-banked) songs from a track to the song bank with proper naming.
 
+Handles songs with A_/B_ prefixes automatically (strips them for deduplication).
+Cleans songs with special characters (removes them automatically).
+
 Usage:
     python3 agent/add_to_bank.py --track 16 --flow-id 04
     python3 agent/add_to_bank.py --track 16 --flow-id 04 --analyze
+
+Examples:
+    # Songs with A_/B_ prefixes are handled automatically
+    A_001_song.mp3 -> normalized to 001_song.mp3 for deduplication
+    B_song.mp3 -> normalized to song.mp3 for deduplication
+
+    # Songs with special characters are cleaned
+    1_1_16_a!.mp3 -> cleaned to 1_1_16_a.mp3
+    song_name!@#.mp3 -> cleaned to song_name.mp3
 """
 
 import argparse
@@ -52,12 +64,60 @@ def save_prompt_index(index):
     with open(PROMPT_INDEX_FILE, 'w') as f:
         json.dump(index, f, indent=2)
 
+def normalize_filename(filename):
+    """
+    Normalize filename by removing A_/B_ prefixes if present.
+
+    Examples:
+        A_001_song.mp3 -> 001_song.mp3
+        B_song.mp3 -> song.mp3
+        song.mp3 -> song.mp3
+    """
+    # Remove A_ or B_ prefix if present at the start
+    if filename.startswith("A_") or filename.startswith("B_"):
+        return filename[2:]
+    return filename
+
+def clean_filename(filename):
+    """
+    Clean filename by removing special characters.
+
+    Examples:
+        1_1_16_a!.mp3 -> 1_1_16_a.mp3
+        song_name!@#.mp3 -> song_name.mp3
+        track_b@.mp3 -> track_b.mp3
+
+    Returns:
+        Cleaned filename with extension
+    """
+    # Split extension
+    parts = filename.rsplit('.', 1)
+    if len(parts) == 2:
+        name, ext = parts
+    else:
+        name = filename
+        ext = ""
+
+    # Remove special characters (keep alphanumeric, underscore, hyphen)
+    cleaned_name = ''.join(c for c in name if c.isalnum() or c in ['_', '-'])
+
+    # Reconstruct filename
+    if ext:
+        return f"{cleaned_name}.{ext}"
+    return cleaned_name
+
 def is_song_in_bank(filename, catalog):
     """Check if a song (by original filename) is already in the bank."""
+    # Clean and normalize the filename to compare
+    cleaned = clean_filename(filename)
+    normalized_filename = normalize_filename(cleaned)
+
     for track_id, track_data in catalog.get("tracks", {}).items():
         original_name = track_data.get("original_filename")
-        if original_name and original_name == filename:
-            return True
+        if original_name:
+            normalized_original = normalize_filename(original_name)
+            if normalized_original == normalized_filename:
+                return True
     return False
 
 def get_new_songs_from_track(track_number):
@@ -65,26 +125,43 @@ def get_new_songs_from_track(track_number):
     Identify new (non-banked) songs from a track's half_1/ and half_2/ folders.
 
     Returns:
-        List of tuples: [(path, half), ...]
+        List of tuples: [(path, half, cleaned_name), ...]
     """
     catalog = load_catalog()
     track_folder = TRACKS_DIR / str(track_number)
 
     new_songs = []
+    cleaned_songs = []
 
     # Check half_1
     half_1_folder = track_folder / "half_1"
     if half_1_folder.exists():
         for song_path in half_1_folder.glob("*.mp3"):
+            # Clean filename if needed
+            cleaned_name = clean_filename(song_path.name)
+            if cleaned_name != song_path.name:
+                cleaned_songs.append((song_path.name, cleaned_name))
+
             if not is_song_in_bank(song_path.name, catalog):
-                new_songs.append((song_path, "A"))
+                new_songs.append((song_path, "A", cleaned_name))
 
     # Check half_2
     half_2_folder = track_folder / "half_2"
     if half_2_folder.exists():
         for song_path in half_2_folder.glob("*.mp3"):
+            # Clean filename if needed
+            cleaned_name = clean_filename(song_path.name)
+            if cleaned_name != song_path.name:
+                cleaned_songs.append((song_path.name, cleaned_name))
+
             if not is_song_in_bank(song_path.name, catalog):
-                new_songs.append((song_path, "B"))
+                new_songs.append((song_path, "B", cleaned_name))
+
+    # Report cleaned songs
+    if cleaned_songs:
+        print(f"\n🧹 Cleaned {len(cleaned_songs)} filenames (removed special characters):")
+        for original, cleaned in cleaned_songs:
+            print(f"   - {original} → {cleaned}")
 
     return new_songs
 
@@ -224,11 +301,16 @@ def add_song_to_bank(song_path, metadata, track_number, flow_id, catalog, prompt
     # Generate track ID
     track_id = f"{metadata['half']}_{metadata['phase']}_{metadata['song_num']}_{track_number:03d}{metadata['order']}"
 
+    # Store normalized filename (without A_/B_ prefix, with special chars cleaned) for deduplication
+    cleaned = clean_filename(song_path.name)
+    normalized_original = normalize_filename(cleaned)
+
     # Update catalog
     catalog.setdefault("tracks", {})[track_id] = {
         "filename": bank_filename,
         "path": str(dest_path),
-        "original_filename": song_path.name,
+        "original_filename": normalized_original,
+        "original_filename_raw": song_path.name,  # Keep raw name for reference
         "source_track": track_number,
         "flow_id": flow_id,
         "naming_breakdown": {
@@ -295,8 +377,9 @@ def main():
         return
 
     print(f"\n📋 Found {len(new_songs)} new songs:")
-    for song_path, half in new_songs:
-        print(f"   - {song_path.name} (half_{1 if half == 'A' else 2})")
+    for song_path, half, cleaned_name in new_songs:
+        display_name = cleaned_name if cleaned_name != song_path.name else song_path.name
+        print(f"   - {display_name} (half_{1 if half == 'A' else 2})")
 
     print(f"\n🎯 Adding songs to bank...")
     print(f"   Flow ID: {args.flow_id}")
@@ -307,7 +390,7 @@ def main():
 
     added_count = 0
 
-    for song_path, suggested_half in new_songs:
+    for song_path, suggested_half, cleaned_name in new_songs:
         if args.auto:
             # Auto mode: use defaults for testing
             metadata = {

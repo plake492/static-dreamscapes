@@ -40,12 +40,15 @@ static-dreamwaves/
 │       ├── video/                 # Background video (<number>.mp4)
 │       ├── image/                 # Cover art (<number>.jpg)
 │       ├── metadata.json          # Track metadata
+│       ├── track_<number>_flow.md # Track flow document (auto-generated)
 │       └── bank_selection.json    # Selected songs (auto-generated)
 │
 ├── song_bank/                  # Centralized song repository
 │   ├── tracks/                    # Songs organized by source track
 │   │   └── <number>/              # Named: A_2_5_016a.mp3
 │   ├── track_flows/               # Flow documents (prompts/themes)
+│   │   ├── README.md              # Track flow documentation
+│   │   └── 04_neon_rain_calm.md   # Example flow
 │   └── metadata/
 │       ├── song_catalog.json      # Master song index
 │       └── prompt_index.json      # Prompt references
@@ -83,6 +86,7 @@ Generate a new track project folder:
 - `tracks/<number>/video/` - Background video
 - `tracks/<number>/image/` - Cover art
 - `tracks/<number>/metadata.json` - Track metadata
+- `tracks/<number>/track_<number>_flow.md` - Track flow template (auto-generated)
 
 ---
 
@@ -170,6 +174,11 @@ After a successful render, add new songs to the bank:
 
 **Output:** Songs copied to `song_bank/tracks/16/` with proper naming (e.g., `A_2_5_016a.mp3`)
 
+**Smart Handling:**
+- Songs with `A_` or `B_` prefixes are automatically normalized for deduplication
+- Songs with invalid characters (e.g., `song!.mp3`, `1_1_16_a!.mp3`) are skipped
+- Prevents duplicate songs from being added to the bank
+
 ---
 
 ## 🎯 Song Naming Convention
@@ -245,6 +254,38 @@ Each track can follow a four-phase structure:
 | **4: Reflective Fade** | Slow, analog-warm closing | 60-75 |
 
 This structure is optional and tracked via the `phase` metadata when adding songs to the bank.
+
+---
+
+## 📋 Track Flows
+
+**Track flows** are markdown documents that define themes, prompts, and emotional arcs for specific mix styles.
+
+**Purpose:**
+- Document Suno prompts for consistent theme generation
+- Maintain consistency across multiple tracks
+- Track emotional progression and BPM ranges
+- Reference past successful themes
+
+**Example:** `song_bank/track_flows/04_neon_rain_calm.md`
+- Contains Suno prompts for each phase
+- Documents theme, mood, and technical notes
+- Links to example songs from the bank
+- Provides generation tips and avoid-list
+
+**Usage:**
+```bash
+# View available flows
+ls song_bank/track_flows/
+
+# Read a flow document
+cat song_bank/track_flows/04_neon_rain_calm.md
+
+# Select songs by flow ID
+./venv/bin/python3 agent/select_bank_songs.py --track 16 --count 10 --flow-id 04
+```
+
+See [`song_bank/track_flows/README.md`](song_bank/track_flows/README.md) for complete documentation.
 
 ---
 

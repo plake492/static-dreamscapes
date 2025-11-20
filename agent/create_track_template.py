@@ -170,23 +170,57 @@ Add your notes here about theme, mood, track flow references, etc.
         f.write(readme_content)
     print(f"   ✓ Created README.md - Workflow instructions")
 
+    # Create track flow document placeholder
+    track_flow_content = f"""# Track {track_number} - Production Flow
+
+**Created**: {datetime.now().strftime("%Y-%m-%d %H:%M")}
+**Track Number**: {track_number}
+
+---
+
+## 📋 Instructions
+
+Paste your complete track flow document here.
+
+This should include:
+- Track overview (title, filename, duration, mood arc)
+- SEO & discovery (hashtags, tags, title formula)
+- Description (hook, use cases, vibe, CTA)
+- Visual design (prompts, animation instructions)
+- Music arc structure (phases, anchor phrase, song descriptions)
+- Post-upload checklist
+- Brand notes
+
+---
+
+**Add your content below:**
+
+"""
+
+    track_flow_file = track_folder / f"track_{track_number:03d}_flow.md"
+    with open(track_flow_file, 'w') as f:
+        f.write(track_flow_content)
+    print(f"   ✓ Created track_{track_number:03d}_flow.md - Track flow template")
+
     print(f"\n✅ Track {track_number} template created successfully!")
     print(f"\n📋 Folder structure:")
     print(f"   {track_folder}/")
-    print(f"   ├── half_1/          (empty - add first half songs here)")
-    print(f"   ├── half_2/          (empty - add second half songs here)")
-    print(f"   ├── video/           (empty - add {track_number}.mp4)")
-    print(f"   ├── image/           (empty - add {track_number}.jpg)")
-    print(f"   ├── metadata.json    (track metadata template)")
-    print(f"   └── README.md        (workflow instructions)")
+    print(f"   ├── half_1/                    (empty - add first half songs here)")
+    print(f"   ├── half_2/                    (empty - add second half songs here)")
+    print(f"   ├── video/                     (empty - add {track_number}.mp4)")
+    print(f"   ├── image/                     (empty - add {track_number}.jpg)")
+    print(f"   ├── metadata.json              (track metadata template)")
+    print(f"   ├── track_{track_number:03d}_flow.md    (track flow template - FILL THIS OUT!)")
+    print(f"   └── README.md                  (workflow instructions)")
 
     print(f"\n🎯 Next steps:")
-    print(f"   1. Select songs from bank:")
+    print(f"   1. Fill out track flow: nano {track_folder}/track_{track_number:03d}_flow.md")
+    print(f"   2. Select songs from bank:")
     print(f"      ./venv/bin/python3 agent/select_bank_songs.py --track {track_number} --count 5 --flow-id 04")
-    print(f"   2. Add new songs to half_1/ and half_2/")
-    print(f"   3. Add video: cp background.mp4 {track_folder}/video/{track_number}.mp4")
-    print(f"   4. Add image: cp cover.jpg {track_folder}/image/{track_number}.jpg")
-    print(f"   5. Build track: ./venv/bin/python3 agent/build_track.py --track {track_number}")
+    print(f"   3. Add new songs to half_1/ and half_2/")
+    print(f"   4. Add video: cp background.mp4 {track_folder}/video/{track_number}.mp4")
+    print(f"   5. Add image: cp cover.jpg {track_folder}/image/{track_number}.jpg")
+    print(f"   6. Build track: ./venv/bin/python3 agent/build_track.py --track {track_number}")
 
     return track_folder
 
