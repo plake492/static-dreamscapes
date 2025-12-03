@@ -4,7 +4,7 @@
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <track_number> [duration]"
     echo "Examples:"
-    echo "  $0 5           # 1 hour video (default)"
+    echo "  $0 5           # Use total duration of all songs (default)"
     echo "  $0 5 0.5       # 30 minutes (0.5 hours)"
     echo "  $0 5 1         # 1 hour"
     echo "  $0 5 2         # 2 hours"
@@ -15,7 +15,7 @@ if [ $# -eq 0 ]; then
 fi
 
 TRACK_NUM="$1"
-DURATION_ARG="${2:-1}"  # Default to 1 hour if not provided
+DURATION_ARG="${2:-auto}"  # Default to auto (use total song duration)
 
 # Validate that the track number is numeric
 if ! [[ "$TRACK_NUM" =~ ^[0-9]+$ ]]; then
@@ -49,28 +49,7 @@ echo "Processing Track $TRACK_NUM"
 echo "Background video: $BG_VIDEO"
 echo "Songs directory: $SONG_DIR"
 echo "Output directory: $OUTPUT_DIR"
-
-# Calculate duration in seconds based on the argument
-if [ "$DURATION_ARG" = "test" ]; then
-    DURATION=300      # 5 minutes for testing
-    echo "Duration: 5 minutes (test mode)"
-elif [[ "$DURATION_ARG" =~ ^[0-9]*\.?[0-9]+$ ]]; then
-    # Convert hours to seconds (multiply by 3600)
-    DURATION=$(echo "$DURATION_ARG * 3600" | bc)
-    DURATION=${DURATION%.*}  # Remove decimal part if any
-    hours_display=$(echo "scale=1; $DURATION_ARG" | bc)
-    echo "Duration: ${hours_display} hours (${DURATION} seconds)"
-else
-    echo "Error: Duration must be a number (in hours) or 'test'"
-    echo "Examples: 0.5 (30 min), 1 (1 hour), 2 (2 hours), test (5 min)"
-    exit 1
-fi
 echo ""
-FADEOUT_START=410   # fade out starts 10 seconds before end
-FADEOUT_DUR=10      # fade-out duration
-XFADE_DUR=3         # crossfade overlap duration (seconds)
-SONG_FADEOUT_START=5 # start fading out this many seconds before song ends (should be >= XFADE_DUR)
-VOLUME_BOOST=1.75    # Volume multiplier (1.0 = no change, 2.0 = double volume)
 
 # Find all mp3 files in the song directory, sorted alphabetically
 # The null delimiter is used to handle filenames with spaces or special characters
@@ -93,12 +72,46 @@ done < "$temp_songs"
 # Clean up temporary file
 rm -f "$temp_songs"
 
-
 # Check if songs were found
 if [ ${#SONGS[@]} -eq 0 ]; then
     echo "No mp3 files found in $SONG_DIR"
     exit 1
 fi
+
+# Calculate total duration of all songs
+TOTAL_SONGS_DURATION=0
+for i in "${!SONGS[@]}"; do
+    song_dur=${SONG_DURATIONS[$i]}
+    TOTAL_SONGS_DURATION=$((TOTAL_SONGS_DURATION + song_dur))
+done
+
+# Calculate duration in seconds based on the argument
+if [ "$DURATION_ARG" = "test" ]; then
+    DURATION=300      # 5 minutes for testing
+    echo "Duration: 5 minutes (test mode)"
+elif [ "$DURATION_ARG" = "auto" ]; then
+    DURATION=$TOTAL_SONGS_DURATION
+    hours=$((DURATION / 3600))
+    minutes=$(( (DURATION % 3600) / 60 ))
+    seconds=$((DURATION % 60))
+    echo "Duration: ${hours}h ${minutes}m ${seconds}s (total songs duration: ${DURATION} seconds)"
+elif [[ "$DURATION_ARG" =~ ^[0-9]*\.?[0-9]+$ ]]; then
+    # Convert hours to seconds (multiply by 3600)
+    DURATION=$(echo "$DURATION_ARG * 3600" | bc)
+    DURATION=${DURATION%.*}  # Remove decimal part if any
+    hours_display=$(echo "scale=1; $DURATION_ARG" | bc)
+    echo "Duration: ${hours_display} hours (${DURATION} seconds)"
+else
+    echo "Error: Duration must be a number (in hours) or 'test'"
+    echo "Examples: 0.5 (30 min), 1 (1 hour), 2 (2 hours), test (5 min)"
+    exit 1
+fi
+echo ""
+FADEOUT_START=410   # fade out starts 10 seconds before end
+FADEOUT_DUR=10      # fade-out duration
+XFADE_DUR=3         # crossfade overlap duration (seconds)
+SONG_FADEOUT_START=5 # start fading out this many seconds before song ends (should be >= XFADE_DUR)
+VOLUME_BOOST=1.75    # Volume multiplier (1.0 = no change, 2.0 = double volume)
 
 # --- Build the ffmpeg command ---
 

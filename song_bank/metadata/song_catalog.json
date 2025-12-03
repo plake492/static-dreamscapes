@@ -1,0 +1,6622 @@
+{
+  "catalog_version": "1.0",
+  "last_updated": "2025-11-20T11:51:29.782229",
+  "total_tracks": 245,
+  "tracks": {
+    "A_3_8_010a": {
+      "filename": "A_3_8_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_3_8_010a.mp3",
+      "original_filename": "3_8_10a.mp3",
+      "original_filename_raw": "A_3_8_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.544409",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_9_010d": {
+      "filename": "A_3_9_010d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_3_9_010d.mp3",
+      "original_filename": "3_9_10d.mp3",
+      "original_filename_raw": "A_3_9_10d.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 10,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.548036",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_8_010c": {
+      "filename": "A_3_8_010c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_3_8_010c.mp3",
+      "original_filename": "3_8_10c.mp3",
+      "original_filename_raw": "A_3_8_10c.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 10,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.551778",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_9_010a": {
+      "filename": "A_3_9_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_3_9_010a.mp3",
+      "original_filename": "3_9_10a.mp3",
+      "original_filename_raw": "A_3_9_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.555523",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_5_010c": {
+      "filename": "A_2_5_010c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_2_5_010c.mp3",
+      "original_filename": "2_5_10c.mp3",
+      "original_filename_raw": "A_2_5_10c.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 10,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.561485",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_1_010b": {
+      "filename": "A_1_1_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_1_1_010b.mp3",
+      "original_filename": "1_1_10b.mp3",
+      "original_filename_raw": "A_1_1_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.566027",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_13_010a": {
+      "filename": "A_4_13_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_4_13_010a.mp3",
+      "original_filename": "4_13_10a.mp3",
+      "original_filename_raw": "A_4_13_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.571439",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_12_010d": {
+      "filename": "A_4_12_010d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_4_12_010d.mp3",
+      "original_filename": "4_12_10d.mp3",
+      "original_filename_raw": "A_4_12_10d.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 10,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.575526",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_4_010d": {
+      "filename": "A_2_4_010d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_2_4_010d.mp3",
+      "original_filename": "2_4_10d.mp3",
+      "original_filename_raw": "A_2_4_10d.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 10,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.578950",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_5_010a": {
+      "filename": "A_2_5_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_2_5_010a.mp3",
+      "original_filename": "2_5_10a.mp3",
+      "original_filename_raw": "A_2_5_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.581560",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_10_010c": {
+      "filename": "A_3_10_010c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_3_10_010c.mp3",
+      "original_filename": "3_10_10c.mp3",
+      "original_filename_raw": "A_3_10_10c.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 10,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.588606",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_13_010d": {
+      "filename": "A_4_13_010d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_4_13_010d.mp3",
+      "original_filename": "4_13_10d.mp3",
+      "original_filename_raw": "A_4_13_10d.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 10,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.595980",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_12_010a": {
+      "filename": "A_4_12_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_4_12_010a.mp3",
+      "original_filename": "4_12_10a.mp3",
+      "original_filename_raw": "A_4_12_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.599830",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_4_010a": {
+      "filename": "A_2_4_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_2_4_010a.mp3",
+      "original_filename": "2_4_10a.mp3",
+      "original_filename_raw": "A_2_4_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.614599",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_10_010a": {
+      "filename": "A_3_10_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_3_10_010a.mp3",
+      "original_filename": "3_10_10a.mp3",
+      "original_filename_raw": "A_3_10_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.622820",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_2_010a": {
+      "filename": "A_1_2_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_1_2_010a.mp3",
+      "original_filename": "1_2_10a.mp3",
+      "original_filename_raw": "A_1_2_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.643286",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_6_010a": {
+      "filename": "A_2_6_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_2_6_010a.mp3",
+      "original_filename": "2_6_10a.mp3",
+      "original_filename_raw": "A_2_6_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.647112",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_6_010c": {
+      "filename": "A_2_6_010c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_2_6_010c.mp3",
+      "original_filename": "2_6_10c.mp3",
+      "original_filename_raw": "A_2_6_10c.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 10,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.651260",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_7_010c": {
+      "filename": "A_2_7_010c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_2_7_010c.mp3",
+      "original_filename": "2_7_10c.mp3",
+      "original_filename_raw": "A_2_7_10c.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 10,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.659544",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_7_010b": {
+      "filename": "A_2_7_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_2_7_010b.mp3",
+      "original_filename": "2_7_10b.mp3",
+      "original_filename_raw": "A_2_7_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.668412",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_11_010a": {
+      "filename": "A_4_11_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_4_11_010a.mp3",
+      "original_filename": "4_11_10a.mp3",
+      "original_filename_raw": "A_4_11_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.673600",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_3_010a": {
+      "filename": "A_1_3_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_1_3_010a.mp3",
+      "original_filename": "1_3_10a.mp3",
+      "original_filename_raw": "A_1_3_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.678733",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_2_010d": {
+      "filename": "A_1_2_010d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/A_1_2_010d.mp3",
+      "original_filename": "1_2_10d.mp3",
+      "original_filename_raw": "A_1_2_10d.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 10,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.685362",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_11_010b": {
+      "filename": "B_4_11_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_4_11_010b.mp3",
+      "original_filename": "4_11_10b.mp3",
+      "original_filename_raw": "B_4_11_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:07.692924",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_1_010a": {
+      "filename": "B_1_1_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_1_1_010a.mp3",
+      "original_filename": "1_1_10.mp3",
+      "original_filename_raw": "B_1_1_10.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.426150",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_10_010d": {
+      "filename": "B_3_10_010d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_3_10_010d.mp3",
+      "original_filename": "3_10_10d.mp3",
+      "original_filename_raw": "B_3_10_10d.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 10,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.458104",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_13_010c": {
+      "filename": "B_4_13_010c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_4_13_010c.mp3",
+      "original_filename": "4_13_10c.mp3",
+      "original_filename_raw": "B_4_13_10c.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 10,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.462496",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_13_010b": {
+      "filename": "B_4_13_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_4_13_010b.mp3",
+      "original_filename": "4_13_10b.mp3",
+      "original_filename_raw": "B_4_13_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.467055",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_8_010d": {
+      "filename": "B_3_8_010d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_3_8_010d.mp3",
+      "original_filename": "3_8_10d.mp3",
+      "original_filename_raw": "B_3_8_10d.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 10,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.471402",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_9_010c": {
+      "filename": "B_3_9_010c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_3_9_010c.mp3",
+      "original_filename": "3_9_10c.mp3",
+      "original_filename_raw": "B_3_9_10c.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 10,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.477835",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_9_010b": {
+      "filename": "B_3_9_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_3_9_010b.mp3",
+      "original_filename": "3_9_10b.mp3",
+      "original_filename_raw": "B_3_9_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.484931",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_10_010b": {
+      "filename": "B_3_10_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_3_10_010b.mp3",
+      "original_filename": "3_10_10b.mp3",
+      "original_filename_raw": "B_3_10_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.489047",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_8_010b": {
+      "filename": "B_3_8_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_3_8_010b.mp3",
+      "original_filename": "3_8_10b.mp3",
+      "original_filename_raw": "B_3_8_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.494246",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_12_010c": {
+      "filename": "B_4_12_010c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_4_12_010c.mp3",
+      "original_filename": "4_12_10c.mp3",
+      "original_filename_raw": "B_4_12_10c.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 10,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.498901",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_12_010b": {
+      "filename": "B_4_12_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_4_12_010b.mp3",
+      "original_filename": "4_12_10b.mp3",
+      "original_filename_raw": "B_4_12_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.502004",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_6_010d": {
+      "filename": "B_2_6_010d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_2_6_010d.mp3",
+      "original_filename": "2_6_10d.mp3",
+      "original_filename_raw": "B_2_6_10d.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 10,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.504316",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_7_010a": {
+      "filename": "B_2_7_010a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_2_7_010a.mp3",
+      "original_filename": "2_7_10a.mp3",
+      "original_filename_raw": "B_2_7_10a.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 10,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.509291",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_3_010b": {
+      "filename": "B_1_3_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_1_3_010b.mp3",
+      "original_filename": "1_3_10b.mp3",
+      "original_filename_raw": "B_1_3_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.513701",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_6_010b": {
+      "filename": "B_2_6_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_2_6_010b.mp3",
+      "original_filename": "2_6_10b.mp3",
+      "original_filename_raw": "B_2_6_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.520890",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_2_010b": {
+      "filename": "B_1_2_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_1_2_010b.mp3",
+      "original_filename": "1_2_10b.mp3",
+      "original_filename_raw": "B_1_2_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.526004",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_2_010c": {
+      "filename": "B_1_2_010c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_1_2_010c.mp3",
+      "original_filename": "1_2_10c.mp3",
+      "original_filename_raw": "B_1_2_10c.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 10,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.535153",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_7_010d": {
+      "filename": "B_2_7_010d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_2_7_010d.mp3",
+      "original_filename": "2_7_10d.mp3",
+      "original_filename_raw": "B_2_7_10d.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 10,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.539319",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_4_010b": {
+      "filename": "B_2_4_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_2_4_010b.mp3",
+      "original_filename": "2_4_10b.mp3",
+      "original_filename_raw": "B_2_4_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.543648",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_4_010c": {
+      "filename": "B_2_4_010c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_2_4_010c.mp3",
+      "original_filename": "2_4_10c.mp3",
+      "original_filename_raw": "B_2_4_10c.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 10,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.547260",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_5_010d": {
+      "filename": "B_2_5_010d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_2_5_010d.mp3",
+      "original_filename": "2_5_10d.mp3",
+      "original_filename_raw": "B_2_5_10d.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 10,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.552074",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_5_010b": {
+      "filename": "B_2_5_010b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/10/B_2_5_010b.mp3",
+      "original_filename": "2_5_10b.mp3",
+      "original_filename_raw": "B_2_5_10b.mp3",
+      "source_track": 10,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 10,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.556859",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_6_012a": {
+      "filename": "A_2_6_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_2_6_012a.mp3",
+      "original_filename": "2_6_12a.mp3",
+      "original_filename_raw": "A_2_6_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.625397",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_2_012a": {
+      "filename": "A_1_2_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_1_2_012a.mp3",
+      "original_filename": "1_2_12a.mp3",
+      "original_filename_raw": "A_1_2_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.628023",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_10_012a": {
+      "filename": "A_4_10_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_4_10_012a.mp3",
+      "original_filename": "4_10_12a.mp3",
+      "original_filename_raw": "A_4_10_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 10,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.633506",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_6_012b": {
+      "filename": "A_2_6_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_2_6_012b.mp3",
+      "original_filename": "2_6_12b.mp3",
+      "original_filename_raw": "A_2_6_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.637390",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_2_012c": {
+      "filename": "A_1_2_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_1_2_012c.mp3",
+      "original_filename": "1_2_12c.mp3",
+      "original_filename_raw": "A_1_2_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.641712",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_10_012b": {
+      "filename": "A_4_10_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_4_10_012b.mp3",
+      "original_filename": "4_10_12b.mp3",
+      "original_filename_raw": "A_4_10_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 10,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.644758",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_3_012b": {
+      "filename": "A_1_3_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_1_3_012b.mp3",
+      "original_filename": "1_3_12b.mp3",
+      "original_filename_raw": "A_1_3_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.649597",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_11_012b": {
+      "filename": "A_4_11_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_4_11_012b.mp3",
+      "original_filename": "4_11_12b.mp3",
+      "original_filename_raw": "A_4_11_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.653215",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_3_012a": {
+      "filename": "A_1_3_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_1_3_012a.mp3",
+      "original_filename": "1_3_12a.mp3",
+      "original_filename_raw": "A_1_3_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.656027",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_6_012e": {
+      "filename": "A_2_6_012e.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_2_6_012e.mp3",
+      "original_filename": "2_6_12e.mp3",
+      "original_filename_raw": "A_2_6_12e.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 12,
+        "order": "e"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.659005",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_11_012a": {
+      "filename": "A_4_11_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_4_11_012a.mp3",
+      "original_filename": "4_11_12a.mp3",
+      "original_filename_raw": "A_4_11_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.664512",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_1_012b": {
+      "filename": "A_1_1_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_1_1_012b.mp3",
+      "original_filename": "1_1_12b.mp3",
+      "original_filename_raw": "A_1_1_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.666890",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_5_012b": {
+      "filename": "A_2_5_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_2_5_012b.mp3",
+      "original_filename": "2_5_12b.mp3",
+      "original_filename_raw": "A_2_5_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.669452",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_1_012a": {
+      "filename": "A_1_1_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_1_1_012a.mp3",
+      "original_filename": "1_1_12a.mp3",
+      "original_filename_raw": "A_1_1_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.671883",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_5_012a": {
+      "filename": "A_2_5_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_2_5_012a.mp3",
+      "original_filename": "2_5_12a.mp3",
+      "original_filename_raw": "A_2_5_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.676590",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_7_012b": {
+      "filename": "A_3_7_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_3_7_012b.mp3",
+      "original_filename": "3_7_12b.mp3",
+      "original_filename_raw": "A_3_7_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 7,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.679756",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_4_012a": {
+      "filename": "A_2_4_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_2_4_012a.mp3",
+      "original_filename": "2_4_12a.mp3",
+      "original_filename_raw": "A_2_4_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.683740",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_12_012a": {
+      "filename": "A_4_12_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_4_12_012a.mp3",
+      "original_filename": "4_12_12a.mp3",
+      "original_filename_raw": "A_4_12_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.690449",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_7_012a": {
+      "filename": "A_3_7_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_3_7_012a.mp3",
+      "original_filename": "3_7_12a.mp3",
+      "original_filename_raw": "A_3_7_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 7,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.695481",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_4_012b": {
+      "filename": "A_2_4_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_2_4_012b.mp3",
+      "original_filename": "2_4_12b.mp3",
+      "original_filename_raw": "A_2_4_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.700206",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_12_012b": {
+      "filename": "A_4_12_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_4_12_012b.mp3",
+      "original_filename": "4_12_12b.mp3",
+      "original_filename_raw": "A_4_12_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.705046",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_8_012a": {
+      "filename": "A_3_8_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_3_8_012a.mp3",
+      "original_filename": "3_8_12a.mp3",
+      "original_filename_raw": "A_3_8_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.712327",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_8_012b": {
+      "filename": "A_3_8_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_3_8_012b.mp3",
+      "original_filename": "3_8_12b.mp3",
+      "original_filename_raw": "A_3_8_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.716457",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_9_012b": {
+      "filename": "A_3_9_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_3_9_012b.mp3",
+      "original_filename": "3_9_12b.mp3",
+      "original_filename_raw": "A_3_9_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.720125",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_9_012a": {
+      "filename": "A_3_9_012a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/A_3_9_012a.mp3",
+      "original_filename": "3_9_12a.mp3",
+      "original_filename_raw": "A_3_9_12a.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 12,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.723135",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_4_012c": {
+      "filename": "B_2_4_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_2_4_012c.mp3",
+      "original_filename": "2_4_12c.mp3",
+      "original_filename_raw": "B_2_4_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.725215",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_7_012c": {
+      "filename": "B_3_7_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_3_7_012c.mp3",
+      "original_filename": "3_7_12c.mp3",
+      "original_filename_raw": "B_3_7_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 7,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.730571",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_5_012d": {
+      "filename": "B_2_5_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_2_5_012d.mp3",
+      "original_filename": "2_5_12d.mp3",
+      "original_filename_raw": "B_2_5_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.735201",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_1_012d": {
+      "filename": "B_1_1_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_1_1_012d.mp3",
+      "original_filename": "1_1_12d.mp3",
+      "original_filename_raw": "B_1_1_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.737334",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_4_012d": {
+      "filename": "B_2_4_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_2_4_012d.mp3",
+      "original_filename": "2_4_12d.mp3",
+      "original_filename_raw": "B_2_4_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.740489",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_1_012c": {
+      "filename": "B_1_1_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_1_1_012c.mp3",
+      "original_filename": "1_1_12c.mp3",
+      "original_filename_raw": "B_1_1_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.743309",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_5_012c": {
+      "filename": "B_2_5_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_2_5_012c.mp3",
+      "original_filename": "2_5_12c.mp3",
+      "original_filename_raw": "B_2_5_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.747208",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_7_012d": {
+      "filename": "B_3_7_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_3_7_012d.mp3",
+      "original_filename": "3_7_12d.mp3",
+      "original_filename_raw": "B_3_7_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 7,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.751666",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_2_012d": {
+      "filename": "B_1_2_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_1_2_012d.mp3",
+      "original_filename": "1_2_12d.mp3",
+      "original_filename_raw": "B_1_2_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.756344",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_6_012d": {
+      "filename": "B_2_6_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_2_6_012d.mp3",
+      "original_filename": "2_6_12d.mp3",
+      "original_filename_raw": "B_2_6_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.761731",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_6_012f": {
+      "filename": "B_2_6_012f.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_2_6_012f.mp3",
+      "original_filename": "2_6_12f.mp3",
+      "original_filename_raw": "B_2_6_12f.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 12,
+        "order": "f"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.765883",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_3_012c": {
+      "filename": "B_1_3_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_1_3_012c.mp3",
+      "original_filename": "1_3_12c.mp3",
+      "original_filename_raw": "B_1_3_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.769590",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_6_012c": {
+      "filename": "B_2_6_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_2_6_012c.mp3",
+      "original_filename": "2_6_12c.mp3",
+      "original_filename_raw": "B_2_6_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.774298",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_2_012b": {
+      "filename": "B_1_2_012b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_1_2_012b.mp3",
+      "original_filename": "1_2_12b.mp3",
+      "original_filename_raw": "B_1_2_12b.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 12,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.779553",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_3_012d": {
+      "filename": "B_1_3_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_1_3_012d.mp3",
+      "original_filename": "1_3_12d.mp3",
+      "original_filename_raw": "B_1_3_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.782260",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_8_012d": {
+      "filename": "B_3_8_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_3_8_012d.mp3",
+      "original_filename": "3_8_12d.mp3",
+      "original_filename_raw": "B_3_8_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.786164",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_12_012d": {
+      "filename": "B_4_12_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_4_12_012d.mp3",
+      "original_filename": "4_12_12d.mp3",
+      "original_filename_raw": "B_4_12_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.790078",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_9_012c": {
+      "filename": "B_3_9_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_3_9_012c.mp3",
+      "original_filename": "3_9_12c.mp3",
+      "original_filename_raw": "B_3_9_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.793930",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_8_012c": {
+      "filename": "B_3_8_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_3_8_012c.mp3",
+      "original_filename": "3_8_12c.mp3",
+      "original_filename_raw": "B_3_8_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.799409",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_9_012d": {
+      "filename": "B_3_9_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_3_9_012d.mp3",
+      "original_filename": "3_9_12d.mp3",
+      "original_filename_raw": "B_3_9_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.803668",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_12_012c": {
+      "filename": "B_4_12_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_4_12_012c.mp3",
+      "original_filename": "4_12_12c.mp3",
+      "original_filename_raw": "B_4_12_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.806148",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_11_012d": {
+      "filename": "B_4_11_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_4_11_012d.mp3",
+      "original_filename": "4_11_12d.mp3",
+      "original_filename_raw": "B_4_11_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.811135",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_10_012c": {
+      "filename": "B_4_10_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_4_10_012c.mp3",
+      "original_filename": "4_10_12c.mp3",
+      "original_filename_raw": "B_4_10_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 10,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.813715",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_11_012c": {
+      "filename": "B_4_11_012c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_4_11_012c.mp3",
+      "original_filename": "4_11_12c.mp3",
+      "original_filename_raw": "B_4_11_12c.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 12,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.817539",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_10_012d": {
+      "filename": "B_4_10_012d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/12/B_4_10_012d.mp3",
+      "original_filename": "4_10_12d.mp3",
+      "original_filename_raw": "B_4_10_12d.mp3",
+      "source_track": 12,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 10,
+        "track_num": 12,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.821593",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_11_013a": {
+      "filename": "A_4_11_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_4_11_013a.mp3",
+      "original_filename": "4_11_13a.mp3",
+      "original_filename_raw": "A_4_11_13a.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.880129",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_3_013a": {
+      "filename": "A_1_3_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_1_3_013a.mp3",
+      "original_filename": "1_3_13a.mp3",
+      "original_filename_raw": "A_1_3_13a.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.882532",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_11_013b": {
+      "filename": "A_4_11_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_4_11_013b.mp3",
+      "original_filename": "4_11_13b.mp3",
+      "original_filename_raw": "A_4_11_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.884153",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_3_013b": {
+      "filename": "A_1_3_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_1_3_013b.mp3",
+      "original_filename": "1_3_13b.mp3",
+      "original_filename_raw": "A_1_3_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.886612",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_7_013b": {
+      "filename": "A_2_7_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_2_7_013b.mp3",
+      "original_filename": "2_7_13b.mp3",
+      "original_filename_raw": "A_2_7_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.889831",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_2_013b": {
+      "filename": "A_1_2_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_1_2_013b.mp3",
+      "original_filename": "1_2_13b.mp3",
+      "original_filename_raw": "A_1_2_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.896848",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_2_013a": {
+      "filename": "A_1_2_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_1_2_013a.mp3",
+      "original_filename": "1_2_13a.mp3",
+      "original_filename_raw": "A_1_2_13a.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.902936",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_6_013a": {
+      "filename": "A_2_6_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_2_6_013a.mp3",
+      "original_filename": "2_6_13a.mp3",
+      "original_filename_raw": "A_2_6_13a*.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.909600",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_7_013a": {
+      "filename": "A_2_7_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_2_7_013a.mp3",
+      "original_filename": "2_7_13a.mp3",
+      "original_filename_raw": "A_2_7_13a*.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.914760",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_12_013b": {
+      "filename": "A_4_12_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_4_12_013b.mp3",
+      "original_filename": "4_12_13b.mp3",
+      "original_filename_raw": "A_4_12_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.919528",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_4_013b": {
+      "filename": "A_2_4_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_2_4_013b.mp3",
+      "original_filename": "2_4_13b.mp3",
+      "original_filename_raw": "A_2_4_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.923184",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_12_013a": {
+      "filename": "A_4_12_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_4_12_013a.mp3",
+      "original_filename": "4_12_13a.mp3",
+      "original_filename_raw": "A_4_12_13a.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.929041",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_4_013a": {
+      "filename": "A_2_4_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_2_4_013a.mp3",
+      "original_filename": "2_4_13a.mp3",
+      "original_filename_raw": "A_2_4_13a.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.933412",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_10_013b": {
+      "filename": "A_3_10_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_3_10_013b.mp3",
+      "original_filename": "3_10_13b.mp3",
+      "original_filename_raw": "A_3_10_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.937338",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_10_013a": {
+      "filename": "A_3_10_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_3_10_013a.mp3",
+      "original_filename": "3_10_13a.mp3",
+      "original_filename_raw": "A_3_10_13a*.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.942183",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_13_013a": {
+      "filename": "A_4_13_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_4_13_013a.mp3",
+      "original_filename": "4_13_13a.mp3",
+      "original_filename_raw": "A_4_13_13a.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.944903",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_5_013a": {
+      "filename": "A_2_5_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_2_5_013a.mp3",
+      "original_filename": "2_5_13a.mp3",
+      "original_filename_raw": "A_2_5_13a.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.951903",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_1_013a": {
+      "filename": "A_1_1_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_1_1_013a.mp3",
+      "original_filename": "1_1_13a.mp3",
+      "original_filename_raw": "A_1_1_13a.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.955982",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_5_013b": {
+      "filename": "A_2_5_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_2_5_013b.mp3",
+      "original_filename": "2_5_13b.mp3",
+      "original_filename_raw": "A_2_5_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.959673",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_1_013b": {
+      "filename": "A_1_1_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_1_1_013b.mp3",
+      "original_filename": "1_1_13b.mp3",
+      "original_filename_raw": "A_1_1_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.961839",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_6_013b": {
+      "filename": "A_2_6_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_2_6_013b.mp3",
+      "original_filename": "2_6_13b.mp3",
+      "original_filename_raw": "A_2_6_13b*.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.975731",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_9_013a": {
+      "filename": "A_3_9_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_3_9_013a.mp3",
+      "original_filename": "3_9_13a.mp3",
+      "original_filename_raw": "A_3_9_13a.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.982362",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_9_013b": {
+      "filename": "A_3_9_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_3_9_013b.mp3",
+      "original_filename": "3_9_13b.mp3",
+      "original_filename_raw": "A_3_9_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.992061",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_8_013b": {
+      "filename": "A_3_8_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_3_8_013b.mp3",
+      "original_filename": "3_8_13b.mp3",
+      "original_filename_raw": "A_3_8_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:28.998777",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_8_013a": {
+      "filename": "A_3_8_013a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_3_8_013a.mp3",
+      "original_filename": "3_8_13a.mp3",
+      "original_filename_raw": "A_3_8_13a.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 13,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.010023",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_9_013e": {
+      "filename": "A_3_9_013e.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/A_3_9_013e.mp3",
+      "original_filename": "3_9_13e.mp3",
+      "original_filename_raw": "A_3_9_13e.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 13,
+        "order": "e"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.047342",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_5_013c": {
+      "filename": "B_2_5_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_2_5_013c.mp3",
+      "original_filename": "2_5_13c.mp3",
+      "original_filename_raw": "B_2_5_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.057387",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_1_013c": {
+      "filename": "B_1_1_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_1_1_013c.mp3",
+      "original_filename": "1_1_13c.mp3",
+      "original_filename_raw": "B_1_1_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.067697",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_4_013d": {
+      "filename": "B_2_4_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_2_4_013d.mp3",
+      "original_filename": "2_4_13d.mp3",
+      "original_filename_raw": "B_2_4_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.071606",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_9_013c": {
+      "filename": "B_3_9_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_3_9_013c.mp3",
+      "original_filename": "3_9_13c.mp3",
+      "original_filename_raw": "B_3_9_13c*.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.076029",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_1_013d": {
+      "filename": "B_1_1_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_1_1_013d.mp3",
+      "original_filename": "1_1_13d.mp3",
+      "original_filename_raw": "B_1_1_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.080633",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_5_013d": {
+      "filename": "B_2_5_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_2_5_013d.mp3",
+      "original_filename": "2_5_13d.mp3",
+      "original_filename_raw": "B_2_5_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.086824",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_4_013c": {
+      "filename": "B_2_4_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_2_4_013c.mp3",
+      "original_filename": "2_4_13c.mp3",
+      "original_filename_raw": "B_2_4_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.092509",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_7_013d": {
+      "filename": "B_2_7_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_2_7_013d.mp3",
+      "original_filename": "2_7_13d.mp3",
+      "original_filename_raw": "B_2_7_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.097991",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_3_013d": {
+      "filename": "B_1_3_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_1_3_013d.mp3",
+      "original_filename": "1_3_13d.mp3",
+      "original_filename_raw": "B_1_3_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.105056",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_2_013c": {
+      "filename": "B_1_2_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_1_2_013c.mp3",
+      "original_filename": "1_2_13c.mp3",
+      "original_filename_raw": "B_1_2_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.110511",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_6_013c": {
+      "filename": "B_2_6_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_2_6_013c.mp3",
+      "original_filename": "2_6_13c.mp3",
+      "original_filename_raw": "B_2_6_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.116969",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_3_013c": {
+      "filename": "B_1_3_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_1_3_013c.mp3",
+      "original_filename": "1_3_13c.mp3",
+      "original_filename_raw": "B_1_3_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.119631",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_7_013c": {
+      "filename": "B_2_7_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_2_7_013c.mp3",
+      "original_filename": "2_7_13c.mp3",
+      "original_filename_raw": "B_2_7_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.122895",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_6_013d": {
+      "filename": "B_2_6_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_2_6_013d.mp3",
+      "original_filename": "2_6_13d.mp3",
+      "original_filename_raw": "B_2_6_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.127223",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_2_013d": {
+      "filename": "B_1_2_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_1_2_013d.mp3",
+      "original_filename": "1_2_13d.mp3",
+      "original_filename_raw": "B_1_2_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.130788",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_12_013c": {
+      "filename": "B_4_12_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_4_12_013c.mp3",
+      "original_filename": "4_12_13c.mp3",
+      "original_filename_raw": "B_4_12_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.133961",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_9_013f": {
+      "filename": "B_3_9_013f.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_3_9_013f.mp3",
+      "original_filename": "3_9_13f.mp3",
+      "original_filename_raw": "B_3_9_13f.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 13,
+        "order": "f"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.138420",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_8_013c": {
+      "filename": "B_3_8_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_3_8_013c.mp3",
+      "original_filename": "3_8_13c.mp3",
+      "original_filename_raw": "B_3_8_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.140976",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_10_013c": {
+      "filename": "B_3_10_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_3_10_013c.mp3",
+      "original_filename": "3_10_13c.mp3",
+      "original_filename_raw": "B_3_10_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.144754",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_12_013d": {
+      "filename": "B_4_12_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_4_12_013d.mp3",
+      "original_filename": "4_12_13d.mp3",
+      "original_filename_raw": "B_4_12_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.150123",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_10_013d": {
+      "filename": "B_3_10_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_3_10_013d.mp3",
+      "original_filename": "3_10_13d.mp3",
+      "original_filename_raw": "B_3_10_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.153694",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_13_013b": {
+      "filename": "B_4_13_013b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_4_13_013b.mp3",
+      "original_filename": "4_13_13b.mp3",
+      "original_filename_raw": "B_4_13_13b.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 13,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.156215",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_8_013d": {
+      "filename": "B_3_8_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_3_8_013d.mp3",
+      "original_filename": "3_8_13d.mp3",
+      "original_filename_raw": "B_3_8_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.160190",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_11_013c": {
+      "filename": "B_4_11_013c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_4_11_013c.mp3",
+      "original_filename": "4_11_13c.mp3",
+      "original_filename_raw": "B_4_11_13c.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 13,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.185219",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_11_013d": {
+      "filename": "B_4_11_013d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/13/B_4_11_013d.mp3",
+      "original_filename": "4_11_13d.mp3",
+      "original_filename_raw": "B_4_11_13d.mp3",
+      "source_track": 13,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 13,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.189549",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_1_014a": {
+      "filename": "A_1_1_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_1_1_014a.mp3",
+      "original_filename": "1_1_14a.mp3",
+      "original_filename_raw": "A_1_1_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.239487",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_2_5_014a": {
+      "filename": "A_2_5_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_2_5_014a.mp3",
+      "original_filename": "2_5_14a.mp3",
+      "original_filename_raw": "A_2_5_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.245905",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_4_13_014a": {
+      "filename": "A_4_13_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_4_13_014a.mp3",
+      "original_filename": "4_13_14a.mp3",
+      "original_filename_raw": "A_4_13_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.252347",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_1_1_014b": {
+      "filename": "A_1_1_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_1_1_014b.mp3",
+      "original_filename": "1_1_14b.mp3",
+      "original_filename_raw": "A_1_1_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.258218",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_2_5_014b": {
+      "filename": "A_2_5_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_2_5_014b.mp3",
+      "original_filename": "2_5_14b.mp3",
+      "original_filename_raw": "A_2_5_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.263501",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_3_10_014a": {
+      "filename": "A_3_10_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_3_10_014a.mp3",
+      "original_filename": "3_10_14a.mp3",
+      "original_filename_raw": "A_3_10_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.267337",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_2_4_014b": {
+      "filename": "A_2_4_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_2_4_014b.mp3",
+      "original_filename": "2_4_14b.mp3",
+      "original_filename_raw": "A_2_4_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.272313",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_2_4_014a": {
+      "filename": "A_2_4_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_2_4_014a.mp3",
+      "original_filename": "2_4_14a.mp3",
+      "original_filename_raw": "A_2_4_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.277776",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_4_12_014a": {
+      "filename": "A_4_12_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_4_12_014a.mp3",
+      "original_filename": "4_12_14a.mp3",
+      "original_filename_raw": "A_4_12_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.282700",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_3_10_014c": {
+      "filename": "A_3_10_014c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_3_10_014c.mp3",
+      "original_filename": "3_10_14c.mp3",
+      "original_filename_raw": "A_3_10_14c.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 14,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.289078",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_2_6_014b": {
+      "filename": "A_2_6_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_2_6_014b.mp3",
+      "original_filename": "2_6_14b.mp3",
+      "original_filename_raw": "A_2_6_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.292992",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_1_2_014b": {
+      "filename": "A_1_2_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_1_2_014b.mp3",
+      "original_filename": "1_2_14b.mp3",
+      "original_filename_raw": "A_1_2_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.298735",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_1_2_014c": {
+      "filename": "A_1_2_014c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_1_2_014c.mp3",
+      "original_filename": "1_2_14c.mp3",
+      "original_filename_raw": "A_1_2_14c.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 14,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.303761",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_2_6_014a": {
+      "filename": "A_2_6_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_2_6_014a.mp3",
+      "original_filename": "2_6_14a.mp3",
+      "original_filename_raw": "A_2_6_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.308944",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_1_2_014a": {
+      "filename": "A_1_2_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_1_2_014a.mp3",
+      "original_filename": "1_2_14a.mp3",
+      "original_filename_raw": "A_1_2_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.318114",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_2_7_014a": {
+      "filename": "A_2_7_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_2_7_014a.mp3",
+      "original_filename": "2_7_14a.mp3",
+      "original_filename_raw": "A_2_7_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.326796",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_1_3_014a": {
+      "filename": "A_1_3_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_1_3_014a.mp3",
+      "original_filename": "1_3_14a.mp3",
+      "original_filename_raw": "A_1_3_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.333895",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_4_11_014a": {
+      "filename": "A_4_11_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_4_11_014a.mp3",
+      "original_filename": "4_11_14a.mp3",
+      "original_filename_raw": "A_4_11_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.348921",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_2_7_014b": {
+      "filename": "A_2_7_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_2_7_014b.mp3",
+      "original_filename": "2_7_14b.mp3",
+      "original_filename_raw": "A_2_7_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.363737",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_1_3_014b": {
+      "filename": "A_1_3_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_1_3_014b.mp3",
+      "original_filename": "1_3_14b.mp3",
+      "original_filename_raw": "A_1_3_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.367142",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_1_3_014c": {
+      "filename": "A_1_3_014c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_1_3_014c.mp3",
+      "original_filename": "1_3_14c.mp3",
+      "original_filename_raw": "A_1_3_14c.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 14,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.371268",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_3_8_014c": {
+      "filename": "A_3_8_014c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_3_8_014c.mp3",
+      "original_filename": "3_8_14c.mp3",
+      "original_filename_raw": "A_3_8_14c.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 14,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.373231",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_3_8_014a": {
+      "filename": "A_3_8_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_3_8_014a.mp3",
+      "original_filename": "3_8_14a.mp3",
+      "original_filename_raw": "A_3_8_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.384848",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_3_9_014a": {
+      "filename": "A_3_9_014a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/A_3_9_014a.mp3",
+      "original_filename": "3_9_14a.mp3",
+      "original_filename_raw": "A_3_9_14a.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 14,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.393075",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_2_7_014c": {
+      "filename": "B_2_7_014c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_2_7_014c.mp3",
+      "original_filename": "2_7_14c.mp3",
+      "original_filename_raw": "B_2_7_14c.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 14,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.404011",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_1_2_014f": {
+      "filename": "B_1_2_014f.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_1_2_014f.mp3",
+      "original_filename": "1_2_14f.mp3",
+      "original_filename_raw": "B_1_2_14f.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 14,
+        "order": "f"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.408113",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_1_2_014d": {
+      "filename": "B_1_2_014d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_1_2_014d.mp3",
+      "original_filename": "1_2_14d.mp3",
+      "original_filename_raw": "B_1_2_14d.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 14,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.417562",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_2_6_014d": {
+      "filename": "B_2_6_014d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_2_6_014d.mp3",
+      "original_filename": "2_6_14d.mp3",
+      "original_filename_raw": "B_2_6_14d.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 14,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.426556",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_1_3_014e": {
+      "filename": "B_1_3_014e.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_1_3_014e.mp3",
+      "original_filename": "1_3_14e.mp3",
+      "original_filename_raw": "B_1_3_14e.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 14,
+        "order": "e"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.431652",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_1_3_014d": {
+      "filename": "B_1_3_014d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_1_3_014d.mp3",
+      "original_filename": "1_3_14d.mp3",
+      "original_filename_raw": "B_1_3_14d.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 14,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.435708",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_2_7_014d": {
+      "filename": "B_2_7_014d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_2_7_014d.mp3",
+      "original_filename": "2_7_14d.mp3",
+      "original_filename_raw": "B_2_7_14d.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 14,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.441092",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_2_6_014c": {
+      "filename": "B_2_6_014c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_2_6_014c.mp3",
+      "original_filename": "2_6_14c.mp3",
+      "original_filename_raw": "B_2_6_14c.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 14,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.446332",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_1_3_014f": {
+      "filename": "B_1_3_014f.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_1_3_014f.mp3",
+      "original_filename": "1_3_14f.mp3",
+      "original_filename_raw": "B_1_3_14f.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 14,
+        "order": "f"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.449579",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_1_2_014c": {
+      "filename": "B_1_2_014c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_1_2_014c.mp3",
+      "original_filename": "1_2_14c.mp3",
+      "original_filename_raw": "B_1_2_14c.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 14,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.453013",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_2_5_014d": {
+      "filename": "B_2_5_014d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_2_5_014d.mp3",
+      "original_filename": "2_5_14d.mp3",
+      "original_filename_raw": "B_2_5_14d.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 14,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.456114",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_1_1_014d": {
+      "filename": "B_1_1_014d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_1_1_014d.mp3",
+      "original_filename": "1_1_14d.mp3",
+      "original_filename_raw": "B_1_1_14d.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 14,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.463565",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_2_4_014c": {
+      "filename": "B_2_4_014c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_2_4_014c.mp3",
+      "original_filename": "2_4_14c.mp3",
+      "original_filename_raw": "B_2_4_14c.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 14,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.469131",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_2_5_014c": {
+      "filename": "B_2_5_014c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_2_5_014c.mp3",
+      "original_filename": "2_5_14c.mp3",
+      "original_filename_raw": "B_2_5_14c.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 14,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.482097",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_2_4_014d": {
+      "filename": "B_2_4_014d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_2_4_014d.mp3",
+      "original_filename": "2_4_14d.mp3",
+      "original_filename_raw": "B_2_4_14d.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 14,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.488051",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_1_1_014c": {
+      "filename": "B_1_1_014c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_1_1_014c.mp3",
+      "original_filename": "1_1_14c.mp3",
+      "original_filename_raw": "B_1_1_14c?.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 14,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.502119",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_4_11_014b": {
+      "filename": "B_4_11_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_4_11_014b.mp3",
+      "original_filename": "4_11_14b.mp3",
+      "original_filename_raw": "B_4_11_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.509039",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_3_9_014b": {
+      "filename": "B_3_9_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_3_9_014b.mp3",
+      "original_filename": "3_9_14b.mp3",
+      "original_filename_raw": "B_3_9_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.514264",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_3_8_014d": {
+      "filename": "B_3_8_014d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_3_8_014d.mp3",
+      "original_filename": "3_8_14d.mp3",
+      "original_filename_raw": "B_3_8_14d.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 14,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.522245",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_4_13_014b": {
+      "filename": "B_4_13_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_4_13_014b.mp3",
+      "original_filename": "4_13_14b.mp3",
+      "original_filename_raw": "B_4_13_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.529012",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_3_10_014d": {
+      "filename": "B_3_10_014d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_3_10_014d.mp3",
+      "original_filename": "3_10_14d.mp3",
+      "original_filename_raw": "B_3_10_14d.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 14,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.532946",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_4_12_014b": {
+      "filename": "B_4_12_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_4_12_014b.mp3",
+      "original_filename": "4_12_14b.mp3",
+      "original_filename_raw": "B_4_12_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.540061",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_3_8_014b": {
+      "filename": "B_3_8_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_3_8_014b.mp3",
+      "original_filename": "3_8_14b.mp3",
+      "original_filename_raw": "B_3_8_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.546231",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "B_3_10_014b": {
+      "filename": "B_3_10_014b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/14/B_3_10_014b.mp3",
+      "original_filename": "3_10_14b.mp3",
+      "original_filename_raw": "B_3_10_14b.mp3",
+      "source_track": 14,
+      "flow_id": "01",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 14,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.550309",
+      "track_flow": {
+        "flow_id": "01",
+        "prompt": ""
+      }
+    },
+    "A_4_12_015a": {
+      "filename": "A_4_12_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_4_12_015a.mp3",
+      "original_filename": "4_12_15a.mp3",
+      "original_filename_raw": "A_4_12_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.597324",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_4_015a": {
+      "filename": "A_2_4_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_2_4_015a.mp3",
+      "original_filename": "2_4_15a.mp3",
+      "original_filename_raw": "A_2_4_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.600441",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_10_015b": {
+      "filename": "A_3_10_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_3_10_015b.mp3",
+      "original_filename": "3_10_15b.mp3",
+      "original_filename_raw": "A_3_10_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.603863",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_12_015b": {
+      "filename": "A_4_12_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_4_12_015b.mp3",
+      "original_filename": "4_12_15b.mp3",
+      "original_filename_raw": "A_4_12_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.607804",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_4_015b": {
+      "filename": "A_2_4_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_2_4_015b.mp3",
+      "original_filename": "2_4_15b.mp3",
+      "original_filename_raw": "A_2_4_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.610414",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_10_015a": {
+      "filename": "A_3_10_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_3_10_015a.mp3",
+      "original_filename": "3_10_15a.mp3",
+      "original_filename_raw": "A_3_10_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.614537",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_13_015b": {
+      "filename": "A_4_13_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_4_13_015b.mp3",
+      "original_filename": "4_13_15b.mp3",
+      "original_filename_raw": "A_4_13_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.617959",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_5_015b": {
+      "filename": "A_2_5_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_2_5_015b.mp3",
+      "original_filename": "2_5_15b.mp3",
+      "original_filename_raw": "A_2_5_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.621133",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_13_015a": {
+      "filename": "A_4_13_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_4_13_015a.mp3",
+      "original_filename": "4_13_15a.mp3",
+      "original_filename_raw": "A_4_13_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.624537",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_5_015a": {
+      "filename": "A_2_5_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_2_5_015a.mp3",
+      "original_filename": "2_5_15a.mp3",
+      "original_filename_raw": "A_2_5_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.626689",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_1_015a": {
+      "filename": "A_1_1_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_1_1_015a.mp3",
+      "original_filename": "1_1_15a.mp3",
+      "original_filename_raw": "A_1_1_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.630329",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_11_015b": {
+      "filename": "A_4_11_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_4_11_015b.mp3",
+      "original_filename": "4_11_15b.mp3",
+      "original_filename_raw": "A_4_11_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.634795",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_3_015b": {
+      "filename": "A_1_3_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_1_3_015b.mp3",
+      "original_filename": "1_3_15b.mp3",
+      "original_filename_raw": "A_1_3_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.637193",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_7_015b": {
+      "filename": "A_2_7_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_2_7_015b.mp3",
+      "original_filename": "2_7_15b.mp3",
+      "original_filename_raw": "A_2_7_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.640149",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_4_11_015a": {
+      "filename": "A_4_11_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_4_11_015a.mp3",
+      "original_filename": "4_11_15a.mp3",
+      "original_filename_raw": "A_4_11_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.642718",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_7_015a": {
+      "filename": "A_2_7_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_2_7_015a.mp3",
+      "original_filename": "2_7_15a.mp3",
+      "original_filename_raw": "A_2_7_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.646204",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_2_015a": {
+      "filename": "A_1_2_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_1_2_015a.mp3",
+      "original_filename": "1_2_15a.mp3",
+      "original_filename_raw": "A_1_2_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.648659",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_6_015a": {
+      "filename": "A_2_6_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_2_6_015a.mp3",
+      "original_filename": "2_6_15a.mp3",
+      "original_filename_raw": "A_2_6_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.651485",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_2_015b": {
+      "filename": "A_1_2_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_1_2_015b.mp3",
+      "original_filename": "1_2_15b.mp3",
+      "original_filename_raw": "A_1_2_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.654848",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_2_6_015b": {
+      "filename": "A_2_6_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_2_6_015b.mp3",
+      "original_filename": "2_6_15b.mp3",
+      "original_filename_raw": "A_2_6_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.657259",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_9_015b": {
+      "filename": "A_3_9_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_3_9_015b.mp3",
+      "original_filename": "3_9_15b.mp3",
+      "original_filename_raw": "A_3_9_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.660424",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_1_3_015a": {
+      "filename": "A_1_3_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_1_3_015a.mp3",
+      "original_filename": "1_3_15a.mp3",
+      "original_filename_raw": "A_1_3_15a!.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.665265",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_9_015a": {
+      "filename": "A_3_9_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_3_9_015a.mp3",
+      "original_filename": "3_9_15a.mp3",
+      "original_filename_raw": "A_3_9_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.669167",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_8_015a": {
+      "filename": "A_3_8_015a.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_3_8_015a.mp3",
+      "original_filename": "3_8_15a.mp3",
+      "original_filename_raw": "A_3_8_15a.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 15,
+        "order": "a"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.670883",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "A_3_8_015b": {
+      "filename": "A_3_8_015b.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/A_3_8_015b.mp3",
+      "original_filename": "3_8_15b.mp3",
+      "original_filename_raw": "A_3_8_15b.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "A",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 15,
+        "order": "b"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.673059",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_2_015c": {
+      "filename": "B_1_2_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_1_2_015c.mp3",
+      "original_filename": "1_2_15c.mp3",
+      "original_filename_raw": "B_1_2_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.676649",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_7_015d": {
+      "filename": "B_2_7_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_2_7_015d.mp3",
+      "original_filename": "2_7_15d.mp3",
+      "original_filename_raw": "B_2_7_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.680452",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_3_015d": {
+      "filename": "B_1_3_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_1_3_015d.mp3",
+      "original_filename": "1_3_15d.mp3",
+      "original_filename_raw": "B_1_3_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.682274",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_5_015c": {
+      "filename": "B_3_5_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_3_5_015c.mp3",
+      "original_filename": "3_5_15c.mp3",
+      "original_filename_raw": "B_3_5_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 5,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.685678",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_6_015d": {
+      "filename": "B_2_6_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_2_6_015d.mp3",
+      "original_filename": "2_6_15d.mp3",
+      "original_filename_raw": "B_2_6_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 6,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.688936",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_2_015d": {
+      "filename": "B_1_2_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_1_2_015d.mp3",
+      "original_filename": "1_2_15d.mp3",
+      "original_filename_raw": "B_1_2_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 2,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.691049",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_3_015c": {
+      "filename": "B_1_3_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_1_3_015c.mp3",
+      "original_filename": "1_3_15c.mp3",
+      "original_filename_raw": "B_1_3_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 3,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.694124",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_7_015c": {
+      "filename": "B_2_7_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_2_7_015c.mp3",
+      "original_filename": "2_7_15c.mp3",
+      "original_filename_raw": "B_2_7_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 7,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.700676",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_4_015d": {
+      "filename": "B_2_4_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_2_4_015d.mp3",
+      "original_filename": "2_4_15d.mp3",
+      "original_filename_raw": "B_2_4_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.706020",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_6_015c": {
+      "filename": "B_3_6_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_3_6_015c.mp3",
+      "original_filename": "3_6_15c.mp3",
+      "original_filename_raw": "B_3_6_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 6,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.711172",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_1_1_015c": {
+      "filename": "B_1_1_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_1_1_015c.mp3",
+      "original_filename": "1_1_15c.mp3",
+      "original_filename_raw": "B_1_1_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 1,
+        "song_num": 1,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.714757",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_4_015c": {
+      "filename": "B_2_4_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_2_4_015c.mp3",
+      "original_filename": "2_4_15c.mp3",
+      "original_filename_raw": "B_2_4_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 4,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.717882",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_2_5_015d": {
+      "filename": "B_2_5_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_2_5_015d.mp3",
+      "original_filename": "2_5_15d.mp3",
+      "original_filename_raw": "B_2_5_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 2,
+        "song_num": 5,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.721884",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_11_015c": {
+      "filename": "B_4_11_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_4_11_015c.mp3",
+      "original_filename": "4_11_15c.mp3",
+      "original_filename_raw": "B_4_11_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.728561",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_11_015d": {
+      "filename": "B_4_11_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_4_11_015d.mp3",
+      "original_filename": "4_11_15d.mp3",
+      "original_filename_raw": "B_4_11_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 11,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.733821",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_8_015c": {
+      "filename": "B_3_8_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_3_8_015c.mp3",
+      "original_filename": "3_8_15c.mp3",
+      "original_filename_raw": "B_3_8_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.737339",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_13_015d": {
+      "filename": "B_4_13_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_4_13_015d.mp3",
+      "original_filename": "4_13_15d.mp3",
+      "original_filename_raw": "B_4_13_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.742868",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_10_015c": {
+      "filename": "B_3_10_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_3_10_015c.mp3",
+      "original_filename": "3_10_15c.mp3",
+      "original_filename_raw": "B_3_10_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.746840",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_12_015c": {
+      "filename": "B_4_12_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_4_12_015c.mp3",
+      "original_filename": "4_12_15c.mp3",
+      "original_filename_raw": "B_4_12_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.751784",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_9_015d": {
+      "filename": "B_3_9_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_3_9_015d.mp3",
+      "original_filename": "3_9_15d.mp3",
+      "original_filename_raw": "B_3_9_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.755447",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_10_015d": {
+      "filename": "B_3_10_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_3_10_015d.mp3",
+      "original_filename": "3_10_15d.mp3",
+      "original_filename_raw": "B_3_10_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 10,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.759776",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_13_015c": {
+      "filename": "B_4_13_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_4_13_015c.mp3",
+      "original_filename": "4_13_15c.mp3",
+      "original_filename_raw": "B_4_13_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 13,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.767878",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_8_015d": {
+      "filename": "B_3_8_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_3_8_015d.mp3",
+      "original_filename": "3_8_15d.mp3",
+      "original_filename_raw": "B_3_8_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 8,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.772458",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_3_9_015c": {
+      "filename": "B_3_9_015c.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_3_9_015c.mp3",
+      "original_filename": "3_9_15c.mp3",
+      "original_filename_raw": "B_3_9_15c.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 3,
+        "song_num": 9,
+        "track_num": 15,
+        "order": "c"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.777367",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    },
+    "B_4_12_015d": {
+      "filename": "B_4_12_015d.mp3",
+      "path": "/Users/patricklake/Dev/personal/static-dreamwaves/song_bank/tracks/15/B_4_12_015d.mp3",
+      "original_filename": "4_12_15d.mp3",
+      "original_filename_raw": "B_4_12_15d.mp3",
+      "source_track": 15,
+      "flow_id": "02",
+      "naming_breakdown": {
+        "half": "B",
+        "phase": 4,
+        "song_num": 12,
+        "track_num": 15,
+        "order": "d"
+      },
+      "audio_analysis": {
+        "duration": 0,
+        "bpm": null,
+        "brightness": null,
+        "energy": null,
+        "key": null
+      },
+      "added_to_bank": "2025-11-20T11:51:29.782215",
+      "track_flow": {
+        "flow_id": "02",
+        "prompt": ""
+      }
+    }
+  }
+}
