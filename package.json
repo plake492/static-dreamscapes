@@ -1,54 +1,8 @@
 {
   "name": "static-dreamwaves",
-  "version": "2.0.0",
-  "description": "Track production system with song bank for creating 3-hour Synthwave/Lo-Fi/Vaporwave mixes",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/plake492/static-dreamscapes.git",
   "author": "Patrick Lake",
-  "license": "MIT",
-  "scripts": {
-    "setup": "python3 -m venv venv && ./venv/bin/pip install --upgrade pip && ./venv/bin/pip install -r requirements.txt && chmod +x scripts/*.sh && chmod +x agent/*.py",
-    "setup:deps": "./venv/bin/pip install -r requirements.txt",
-    "setup:permissions": "chmod +x scripts/*.sh && chmod +x agent/*.py",
-
-    "track:create": "./venv/bin/python3 agent/create_track_template.py",
-    "track:create:num": "./venv/bin/python3 agent/create_track_template.py --track-number",
-
-    "bank:select": "./venv/bin/python3 agent/select_bank_songs.py",
-    "bank:select:count": "./venv/bin/python3 agent/select_bank_songs.py --track",
-    "bank:select:duration": "./venv/bin/python3 agent/select_bank_songs.py --track",
-    "bank:execute": "./venv/bin/python3 agent/select_bank_songs.py --track",
-    "bank:add": "./venv/bin/python3 agent/add_to_bank.py --track",
-    "bank:status": "echo '=== Song Bank Status ===' && ./venv/bin/python3 -c 'import json; data = json.load(open(\"song_bank/metadata/song_catalog.json\")); print(f\"Total songs: {data.get(\\\"total_tracks\\\", 0)}\")' && echo '' && find song_bank/tracks -name '*.mp3' | wc -l | xargs echo 'Files on disk:'",
-
-    "build:py": "./venv/bin/python3 agent/build_track.py --track",
-    "build:sh": "bash scripts/build_mix.sh",
-    "build:test": "./venv/bin/python3 agent/build_track.py --track",
-
-    "render:test": "./venv/bin/python3 agent/build_track.py --duration test --track",
-    "render:auto": "./venv/bin/python3 agent/build_track.py --track",
-    "render:1h": "./venv/bin/python3 agent/build_track.py --duration 1 --track",
-    "render:2h": "./venv/bin/python3 agent/build_track.py --duration 2 --track",
-    "render:3h": "./venv/bin/python3 agent/build_track.py --duration 3 --track",
-
-    "status": "echo '=== Tracks ===' && find tracks -maxdepth 1 -type d | grep -E 'tracks/[0-9]+$' | wc -l | xargs echo 'Track folders:' && echo '' && echo '=== Song Bank ===' && ./venv/bin/python3 -c 'import json; data = json.load(open(\"song_bank/metadata/song_catalog.json\")); print(f\"Songs in bank: {data.get(\\\"total_tracks\\\", 0)}\")' && echo '' && echo '=== Rendered ===' && find rendered -name 'output.mp4' | wc -l | xargs echo 'Rendered mixes:'",
-    "status:bank": "yarn bank:status",
-    "status:tracks": "find tracks -maxdepth 1 -type d | grep -E 'tracks/[0-9]+$' | sort && echo '' && find tracks -name '*.mp3' | wc -l | xargs echo 'Total MP3 files in tracks:'",
-
-    "clean:track": "rm -rf tracks/",
-    "clean:rendered": "rm -rf rendered/*",
-    "clean:bank": "rm -rf song_bank/tracks/* && ./venv/bin/python3 -c 'import json; open(\"song_bank/metadata/song_catalog.json\", \"w\").write(json.dumps({\"catalog_version\": \"1.0\", \"last_updated\": null, \"total_tracks\": 0, \"tracks\": {}}, indent=2)); open(\"song_bank/metadata/prompt_index.json\", \"w\").write(json.dumps({\"prompts\": {}}, indent=2))'",
-    "clean:all": "yarn clean:rendered",
-
-    "help": "echo '\n📜 Static Dreamscapes - Track Production System\n' && echo '🏗️  Track Creation:' && echo '  yarn track:create                  - Create new track (auto-increment)' && echo '  yarn track:create:num <number>     - Create specific track number' && echo '' && echo '🏦 Song Bank:' && echo '  yarn bank:select <track> <count>   - Select N songs from bank' && echo '  yarn bank:execute <track>          - Execute bank selection (copy files)' && echo '  yarn bank:add <track> --flow-id X  - Add songs to bank' && echo '  yarn bank:status                   - Show bank statistics' && echo '' && echo '🎬 Building:' && echo '  yarn render:auto <track>           - Build with auto duration' && echo '  yarn render:test <track>           - Build 5-minute test' && echo '  yarn render:1h <track>             - Build 1-hour mix' && echo '  yarn render:3h <track>             - Build 3-hour mix' && echo '  yarn build:py <track>              - Build with Python' && echo '  yarn build:sh <track> <duration>   - Build with shell script' && echo '' && echo '📊 Status:' && echo '  yarn status                        - Show overall status' && echo '  yarn status:tracks                 - Show track folders' && echo '  yarn status:bank                   - Show bank status' && echo '' && echo '🧹 Cleanup:' && echo '  yarn clean:rendered                - Clear rendered output' && echo '  yarn clean:bank                    - Reset song bank' && echo '' && echo '📖 Examples:' && echo '  yarn track:create                        # Create track 16' && echo '  yarn bank:select 16 --count 5 --flow-id 04  # Select 5 songs' && echo '  yarn bank:execute 16                     # Copy selected songs' && echo '  yarn render:3h 16                        # Build 3-hour mix' && echo '  yarn bank:add 16 --flow-id 04            # Add to bank' && echo ''"
-  },
-  "keywords": [
-    "lofi",
-    "synthwave",
-    "vaporwave",
-    "audio",
-    "automation",
-    "ffmpeg",
-    "music",
-    "song-bank",
-    "track-production"
-  ]
+  "license": "MIT"
 }

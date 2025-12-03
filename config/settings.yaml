@@ -1,0 +1,125 @@
+# LoFi Track Manager - Configuration
+
+# Paths
+paths:
+  # Root directory for track folders
+  tracks_directory: "./Tracks"
+
+  # Database location
+  database: "./data/tracks.db"
+
+  # Embeddings cache
+  embeddings_cache: "./data/embeddings"
+
+  # Output directories
+  output_directory: "./output"
+  playlists_directory: "./output/playlists"
+  logs_directory: "./output/logs"
+
+# Notion API Configuration
+notion:
+  # Get your API token from: https://www.notion.so/my-integrations
+  api_token: "${NOTION_API_TOKEN}"  # Set via environment variable
+
+  # Cache settings
+  cache_enabled: true
+  cache_directory: "./data/cache/notion_docs"
+
+# Embedding Model Configuration
+embeddings:
+  # Model to use for semantic search
+  # Options: "sentence-transformers/all-MiniLM-L6-v2" (fast, 384 dims)
+  #          "sentence-transformers/all-mpnet-base-v2" (slower, better, 768 dims)
+  model_name: "sentence-transformers/all-MiniLM-L6-v2"
+
+  # Dimension of embeddings (auto-detected from model)
+  dimension: 384
+
+  # Batch size for generation
+  batch_size: 32
+
+  # Normalize embeddings for cosine similarity
+  normalize: true
+
+# Audio Analysis Configuration
+audio:
+  # Cache analysis results
+  cache_enabled: true
+  cache_directory: "./data/cache/audio_analysis"
+
+  # Audio file extensions to scan
+  extensions: [".mp3", ".wav", ".m4a", ".flac"]
+
+  # BPM detection settings
+  bpm_min: 30
+  bpm_max: 200
+
+# Search & Matching Configuration
+matching:
+  # Default minimum similarity score (0-1)
+  min_similarity: 0.6
+
+  # Number of candidates to fetch before filtering
+  search_top_k: 50
+
+  # BPM tolerance (±)
+  bpm_tolerance: 10.0
+
+  # Scoring weights (must sum to 1.0)
+  weights:
+    similarity: 0.50      # Embedding similarity
+    arc_bonus: 0.20       # Matching arc number
+    bpm_proximity: 0.15   # BPM closeness
+    key_compatibility: 0.10  # Key matching
+    usage_penalty: 0.05   # Prefer less-used songs
+
+  # Usage limits
+  max_times_used: 10
+
+# Track Generation Defaults
+tracks:
+  # Default target duration (minutes)
+  target_duration: 180
+
+  # Songs per arc (typically 11 for ~3 hour tracks)
+  songs_per_arc: 11
+
+  # Number of arc repetitions (typically 2)
+  arc_repetitions: 2
+
+# FFMPEG Configuration
+ffmpeg:
+  # Video codec
+  video_codec: "libx264"
+
+  # Encoding preset (ultrafast, fast, medium, slow, veryslow)
+  preset: "medium"
+
+  # Constant Rate Factor (0-51, lower = better quality)
+  crf: 23
+
+  # Audio codec
+  audio_codec: "aac"
+
+  # Audio bitrate
+  audio_bitrate: "192k"
+
+  # Video resolution (if resizing needed)
+  resolution: "1920x1080"
+
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+  # Save logs to file
+  file_enabled: true
+  file_path: "./output/logs/lofi-manager.log"
+
+# Development Settings
+development:
+  # Enable debug mode
+  debug: false
+
+  # Dry run (don't write to database)
+  dry_run: false

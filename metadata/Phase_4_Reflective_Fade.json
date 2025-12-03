@@ -1,8 +1,0 @@
-{
-  "phase": 4,
-  "name": "Reflective Fade",
-  "description": "Slow, reflective closing with tape hiss, vapor trails, and warm ambience. Gentle fadeout to introspection.",
-  "target_bpm_range": [60, 75],
-  "mood_tags": ["reflective", "slow", "warm", "introspective", "closing"],
-  "songs": []
-}
