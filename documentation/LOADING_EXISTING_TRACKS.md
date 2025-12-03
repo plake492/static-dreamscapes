@@ -9,16 +9,17 @@ Guide for bulk importing songs from previous/existing tracks into the song bank.
 New streamlined workflow for importing legacy tracks:
 
 1. **Dump all MP3s** into a single folder (`import_tracks/songs/`)
-2. **Provide track flow documents** in `import_tracks/track_flows/`
-3. **Auto-create track folders** from track flow files
-4. **Auto-organize songs** into correct tracks and halves
+2. **Auto-generate track flow templates** (auto-detects track numbers from filenames)
+3. **Paste your track flow content** into generated files
+4. **Auto-organize songs** into correct tracks and halves (auto-detects flow ID and half)
 5. **Add to bank** with interactive metadata prompts
 
-The system handles:
-- Songs with `A_`/`B_` prefixes (automatically normalized)
+The system auto-detects:
+- **Track numbers** from filenames (e.g., A_1_2_**015**a.mp3 → track 15)
+- **Flow IDs** from filenames (e.g., A_**1**_2_015a.mp3 → flow 01)
+- **Half (A/B)** from filename prefix
+- Songs with `A_`/`B_` prefixes (automatically normalized for deduplication)
 - Songs with special characters (cleaned automatically)
-- Multiple tracks at once
-- Automatic track detection from filenames
 
 ---
 
@@ -27,20 +28,35 @@ The system handles:
 ### Complete Workflow
 
 ```bash
-# 1. Place files in import folder
+# 1. Place all MP3 files in import folder
 cp ~/OldTracks/*.mp3 import_tracks/songs/
-cp ~/TrackFlows/*.md import_tracks/track_flows/
 
-# 2. Prepare track folders (auto-creates from track flow files)
+# 2. Generate track flow templates (auto-detects track numbers from filenames)
 ./venv/bin/python3 agent/import_legacy_tracks.py --prepare
 
-# 3. Import songs (auto-organizes into track folders)
+# 3. Paste your track flow content into generated files
+nano import_tracks/track_flows/track_015_flow.md
+
+# 4. Import songs (auto-detects flow ID and half, creates track folders, organizes songs)
+./venv/bin/python3 agent/import_legacy_tracks.py --import
+
+# 5. Add to bank (bulk processes all tracks, skips already-banked songs)
+./venv/bin/python3 agent/add_to_bank.py --bulk --flow-id 04
+
+# OR process single track
+./venv/bin/python3 agent/add_to_bank.py --track 15 --flow-id 04
+```
+
+**Manual Override Options:**
+```bash
+# Manually specify track numbers for prepare
+./venv/bin/python3 agent/import_legacy_tracks.py --prepare --tracks 1 2 15
+
+# Override auto-detected flow ID
 ./venv/bin/python3 agent/import_legacy_tracks.py --import --flow-id 04
 
-# 4. Add to bank (for each track)
-./venv/bin/python3 agent/add_to_bank.py --track 1 --flow-id 04
-./venv/bin/python3 agent/add_to_bank.py --track 2 --flow-id 04
-# ... etc
+# Dry run to preview changes
+./venv/bin/python3 agent/import_legacy_tracks.py --import --dry-run
 ```
 
 ---
@@ -76,100 +92,187 @@ A_2_5_016a.mp3      → normalized to: 2_5_016a.mp3
 
 ### 3. Automatic Track Detection
 
-The system detects track numbers from filenames:
+The system detects track numbers from the **third number** in filenames:
 
-**Patterns:**
+**Format:** `A_[phase]_[song]_[TRACK][order]`
+
+**Examples:**
 ```
-A_1_2_001a.mp3      → Track 1 (from bank naming)
-B_3_5_015b.mp3      → Track 15 (from bank naming)
-A_001_song.mp3      → Track 1 (from prefix)
-song_015.mp3        → Track 15 (from number)
+A_1_2_015a.mp3      → Track 15 (third number: "015")
+B_3_5_007b.mp3      → Track 7 (third number: "007")
+A_2_1_001a.mp3      → Track 1 (third number: "001")
+B_4_6_100c.mp3      → Track 100 (third number: "100")
 ```
+
+### 4. Automatic Flow ID Detection
+
+The system auto-detects flow IDs from the **first number** in filenames:
+
+**Format:** `A_[FLOW]_[song]_[track][order]`
+
+**Examples:**
+```
+A_1_2_015a.mp3      → Flow 01 (first number: "1")
+B_3_5_007b.mp3      → Flow 03 (first number: "3")
+A_4_1_007a.mp3      → Flow 04 (first number: "4")
+```
+
+**Smart Detection:**
+- Uses **most common** flow ID per track (handles mixed flows gracefully)
+- If all songs in track 15 have flow "1", the track gets flow ID "01"
+- If track has mixed flow IDs, uses the most frequent one
+- Can be overridden with `--flow-id` parameter if needed
+
+### 5. Automatic Half (A/B) Detection
+
+The system auto-detects which half (first or second) from filename prefix:
+
+**Examples:**
+```
+A_1_2_015a.mp3      → half_1 (first half)
+B_3_5_007b.mp3      → half_2 (second half)
+```
+
+**No manual organization needed!**
 
 ---
 
 ## Detailed Workflow
 
-### Step 1: Prepare Import Folder
+### Step 1: Auto-Detect and Generate Track Folders
+
+**Option A: Auto-Detection (Recommended)**
+
+First, place your MP3 files in the import folder:
 
 ```bash
-# Create import structure (if it doesn't exist)
-mkdir -p import_tracks/songs import_tracks/track_flows
-
-# Copy ALL your MP3 files to songs folder
-cp ~/OldProjects/Track1/*.mp3 import_tracks/songs/
-cp ~/OldProjects/Track2/*.mp3 import_tracks/songs/
-cp ~/OldProjects/Track3/*.mp3 import_tracks/songs/
-# ... etc
-
-# Copy track flow markdown files
-cp ~/TrackFlowDocs/track_001_flow.md import_tracks/track_flows/
-cp ~/TrackFlowDocs/track_002_flow.md import_tracks/track_flows/
+cp ~/OldTracks/*.mp3 import_tracks/songs/
 ```
 
-**Track Flow File Naming:**
-- `track_001_flow.md` (for Track 1)
-- `track_002_flow.md` (for Track 2)
-- `track_015_flow.md` (for Track 15)
-- etc.
-
-**Track Flow Content:**
-Each markdown file should have metadata at the top:
-```markdown
-# Track 1 - Production Flow
-
-**Track Number**: 1
-**Created**: 2025-11-20
-**Title**: Neon Rain Calm
-
-[rest of your track flow document...]
-```
-
----
-
-### Step 2: Auto-Create Track Folders
+Then run prepare without arguments to auto-detect track numbers:
 
 ```bash
 ./venv/bin/python3 agent/import_legacy_tracks.py --prepare
 ```
 
 **What happens:**
-1. Scans `import_tracks/track_flows/` for markdown files
-2. Extracts track numbers from filenames or content
-3. Creates track folders: `tracks/1/`, `tracks/2/`, etc.
-4. Creates folder structure (half_1/, half_2/, video/, image/)
-5. Copies track flow files to respective track folders
-6. Creates metadata.json for each track
+1. Scans all MP3 files in `import_tracks/songs/`
+2. Extracts track numbers from filenames (third number in format `A_x_x_TRACK`)
+3. Detects unique track numbers (e.g., if you have 40 songs all with track "5", detects only track 5)
+4. Creates track flow template markdown files in `import_tracks/track_flows/`
+5. Does NOT create track folders yet (that happens during import)
 
 **Output:**
 ```
-🔍 Scanning track flow files in import_tracks/track_flows/...
-   ✅ Created track 1: tracks/1/
-   ✅ Created track 2: tracks/2/
-   ✅ Created track 15: tracks/15/
+🔍 No track numbers specified, auto-detecting from songs...
+   ✅ Detected 1 track(s) from songs: 5
 
-✅ Successfully created 3 track folders!
+📝 Creating track flow templates for 1 track(s)...
+   ✅ Created track flow template: track_005_flow.md
 
-📋 Created tracks: 1, 2, 15
+✅ Successfully created 1 track flow template(s)!
+
+📋 Created templates for tracks: 5
+
+📝 Files created in: import_tracks/track_flows
+   - track_005_flow.md
 
 🎯 Next steps:
-   1. Place all MP3 files in import_tracks/songs
-   2. Run import: ./venv/bin/python3 agent/import_legacy_tracks.py --import --flow-id 04
+   1. Edit track flow files and paste your content:
+      nano import_tracks/track_flows/track_005_flow.md
+   2. Run import to create track folders and organize songs:
+      ./venv/bin/python3 agent/import_legacy_tracks.py --import
 ```
 
 ---
 
-### Step 3: Auto-Organize Songs
+**Option B: Manual Specification**
+
+If songs aren't ready yet, manually specify track numbers:
 
 ```bash
+./venv/bin/python3 agent/import_legacy_tracks.py --prepare --tracks 1 2 15
+```
+
+This creates track flow templates for tracks 1, 2, and 15 without needing songs present.
+
+---
+
+### Step 2: Paste Your Track Flow Content
+
+Edit the generated template files in `import_tracks/track_flows/` and paste your complete track flow documents:
+
+```bash
+nano import_tracks/track_flows/track_005_flow.md
+```
+
+The template looks like this:
+```markdown
+# Track 1 - Production Flow
+
+**Created**: 2025-11-20 10:30
+**Track Number**: 1
+
+---
+
+## 📋 Instructions
+
+**Paste your complete track flow document content below this line.**
+
+This should include:
+- Track overview (title, filename, duration, mood arc)
+- SEO & discovery (hashtags, tags, title formula)
+- Description (hook, use cases, vibe, CTA)
+- Visual design (prompts, animation instructions)
+- Music arc structure (phases, anchor phrase, song descriptions)
+- Post-upload checklist
+- Brand notes
+
+---
+
+**Your content here:**
+
+```
+
+Simply paste your complete track flow document below the instructions section.
+
+---
+
+### Step 3: Place MP3 Files
+
+Copy all your MP3 files to the import folder:
+
+```bash
+cp ~/OldProjects/Track1/*.mp3 import_tracks/songs/
+cp ~/OldProjects/Track2/*.mp3 import_tracks/songs/
+cp ~/OldProjects/Track15/*.mp3 import_tracks/songs/
+
+# Verify
+ls import_tracks/songs/*.mp3 | wc -l
+# Output: 45
+```
+
+---
+
+### Step 4: Import and Organize
+
+```bash
+# Flow ID is auto-detected from filenames
+./venv/bin/python3 agent/import_legacy_tracks.py --import
+
+# Or override if needed
 ./venv/bin/python3 agent/import_legacy_tracks.py --import --flow-id 04
 ```
 
 **What happens:**
 1. Scans `import_tracks/songs/` for MP3 files
-2. Detects track numbers from filenames
-3. Groups songs by track and half (A/B)
-4. Copies songs to correct track folders
+2. Auto-detects track numbers from filenames (position 3: A_x_x_**TRACK**)
+3. Auto-detects flow IDs from filenames (position 1: A_**FLOW**_x_x)
+4. Auto-detects half (A_/B_ prefix) for each song
+5. Creates track folders in `/tracks` (if they don't exist)
+6. Copies track flow MD files from `import_tracks/track_flows/` to track folders
+7. Creates metadata.json for each track with detected flow ID
+8. Organizes songs into half_1/ and half_2/ based on A_/B_ prefix
 
 **Output:**
 ```
@@ -177,11 +280,11 @@ Each markdown file should have metadata at the top:
 📋 Found 45 songs
 
 📊 Song distribution:
-   Track 1: 10 songs (half_1), 8 songs (half_2)
-   Track 2: 12 songs (half_1), 10 songs (half_2)
-   Track 15: 3 songs (half_1), 2 songs (half_2)
+   Track 1: 10 songs (half_1), 8 songs (half_2) (flow: 01)
+   Track 2: 12 songs (half_1), 10 songs (half_2) (flow: 01)
+   Track 15: 3 songs (half_1), 2 songs (half_2) (flow: 04)
 
-📦 Copying songs to track folders...
+📦 Creating track folders and organizing songs...
    ✅ Track 1: 18 songs copied
    ✅ Track 2: 22 songs copied
    ✅ Track 15: 5 songs copied
@@ -190,29 +293,88 @@ Each markdown file should have metadata at the top:
 
 🎯 Next steps:
    For each track, run:
-   ./venv/bin/python3 agent/add_to_bank.py --track 1 --flow-id 04
-   ./venv/bin/python3 agent/add_to_bank.py --track 2 --flow-id 04
+   ./venv/bin/python3 agent/add_to_bank.py --track 1 --flow-id 01
+   ./venv/bin/python3 agent/add_to_bank.py --track 2 --flow-id 01
    ./venv/bin/python3 agent/add_to_bank.py --track 15 --flow-id 04
 ```
 
 **Dry Run:**
 ```bash
 # Preview what would happen without making changes
-./venv/bin/python3 agent/import_legacy_tracks.py --import --flow-id 04 --dry-run
+./venv/bin/python3 agent/import_legacy_tracks.py --import --dry-run
 ```
 
 ---
 
-### Step 4: Add to Bank
+### Step 5: Add to Bank
 
-For each track, run add_to_bank.py:
+**Option A: Bulk Processing (Recommended)**
+
+Process all tracks at once:
 
 ```bash
-./venv/bin/python3 agent/add_to_bank.py --track 1 --flow-id 04
+./venv/bin/python3 agent/add_to_bank.py --bulk --flow-id 04
 ```
 
 **What happens:**
-1. Scans `tracks/1/half_1/` and `tracks/1/half_2/`
+1. Scans all track folders in `/tracks`
+2. For each track, identifies songs not already in bank
+3. Skips tracks that are already fully in bank
+4. Prompts for metadata for each new song
+5. Processes all tracks sequentially
+
+**Output:**
+```
+🔍 Scanning for tracks with songs...
+📋 Found 3 track(s) with songs: 1, 2, 5
+
+   Process all 3 tracks? (y/n): y
+
+======================================================================
+Processing Track 1
+======================================================================
+
+📋 Found 18 new songs:
+   - A_001_song.mp3 (half_1)
+   ...
+
+[Interactive prompts for each song]
+
+✅ Added 18 songs from Track 1
+
+======================================================================
+Processing Track 2
+======================================================================
+
+✅ No new songs found. All songs already in bank.
+
+======================================================================
+Processing Track 5
+======================================================================
+
+📋 Found 40 new songs:
+   ...
+
+======================================================================
+🎉 Bulk processing complete!
+======================================================================
+✅ Total songs added: 58
+⏭️  Tracks skipped (no new songs): 1
+📊 Total tracks processed: 3
+```
+
+---
+
+**Option B: Single Track**
+
+Process one track at a time:
+
+```bash
+./venv/bin/python3 agent/add_to_bank.py --track 5 --flow-id 04
+```
+
+**What happens:**
+1. Scans `tracks/5/half_1/` and `tracks/5/half_2/`
 2. Cleans filenames (removes special characters)
 3. Normalizes for deduplication (removes A_/B_ prefixes)
 4. Prompts for metadata for each song
@@ -220,7 +382,7 @@ For each track, run add_to_bank.py:
 
 **Interactive Prompts:**
 ```
-🔍 Searching for new songs in Track 1...
+🔍 Searching for new songs in Track 5...
 
 🧹 Cleaned 2 filenames (removed special characters):
    - A_001_song!.mp3 → A_001_song.mp3
@@ -258,40 +420,44 @@ For each track, run add_to_bank.py:
 ### Scenario: Importing 3 legacy tracks (50 total songs)
 
 ```bash
-# === Step 1: Prepare Files ===
+# === Step 1: Auto-Generate Track Folders and Templates ===
+
+./venv/bin/python3 agent/import_legacy_tracks.py --prepare --tracks 1 2 15
+
+# Output:
+# 🔍 Preparing 3 track(s)...
+#    ✅ Created track 1: tracks/1/
+#    ✅ Created track 2: tracks/2/
+#    ✅ Created track 15: tracks/15/
+#
+# ✅ Successfully created 3 track folder(s)!
+# 📝 Track flow templates created:
+#    - tracks/1/track_001_flow.md
+#    - tracks/2/track_002_flow.md
+#    - tracks/15/track_015_flow.md
+
+
+# === Step 2: Paste Track Flow Content ===
+
+# Edit each file and paste your complete track flow document
+nano tracks/1/track_001_flow.md
+nano tracks/2/track_002_flow.md
+nano tracks/15/track_015_flow.md
+
+
+# === Step 3: Place All MP3 Files ===
 
 # Copy all MP3s to import folder
 cp ~/OldTracks/Track1/*.mp3 import_tracks/songs/
 cp ~/OldTracks/Track2/*.mp3 import_tracks/songs/
 cp ~/OldTracks/Track15/*.mp3 import_tracks/songs/
 
-# Copy track flow documents
-cp ~/Flows/track_001_flow.md import_tracks/track_flows/
-cp ~/Flows/track_002_flow.md import_tracks/track_flows/
-cp ~/Flows/track_015_flow.md import_tracks/track_flows/
-
 # Verify
 ls import_tracks/songs/ | wc -l
 # Output: 50
+`
 
-ls import_tracks/track_flows/
-# Output: track_001_flow.md  track_002_flow.md  track_015_flow.md
-
-
-# === Step 2: Auto-Create Track Folders ===
-
-./venv/bin/python3 agent/import_legacy_tracks.py --prepare
-
-# Output:
-# 🔍 Scanning track flow files in import_tracks/track_flows/...
-#    ✅ Created track 1: tracks/1/
-#    ✅ Created track 2: tracks/2/
-#    ✅ Created track 15: tracks/15/
-#
-# ✅ Successfully created 3 track folders!
-
-
-# === Step 3: Auto-Organize Songs ===
+# === Step 4: Auto-Organize Songs ===
 
 ./venv/bin/python3 agent/import_legacy_tracks.py --import --flow-id 04
 
@@ -312,22 +478,40 @@ ls import_tracks/track_flows/
 # ✅ Successfully copied 50 songs!
 
 
-# === Step 4: Add to Bank (Each Track) ===
+# === Step 5: Add to Bank (Bulk) ===
 
-# Track 1
-./venv/bin/python3 agent/add_to_bank.py --track 1 --flow-id 04
+./venv/bin/python3 agent/add_to_bank.py --bulk --flow-id 04
+
+# Output:
+# 🔍 Scanning for tracks with songs...
+# 📋 Found 3 track(s) with songs: 1, 2, 15
+#
+#    Process all 3 tracks? (y/n): y
+#
+# ======================================================================
+# Processing Track 1
+# ======================================================================
 # [Interactive prompts for 18 songs...]
-# ✅ Successfully added 18 songs to bank!
-
-# Track 2
-./venv/bin/python3 agent/add_to_bank.py --track 2 --flow-id 04
+# ✅ Added 18 songs from Track 1
+#
+# ======================================================================
+# Processing Track 2
+# ======================================================================
 # [Interactive prompts for 22 songs...]
-# ✅ Successfully added 22 songs to bank!
-
-# Track 15
-./venv/bin/python3 agent/add_to_bank.py --track 15 --flow-id 04
+# ✅ Added 22 songs from Track 2
+#
+# ======================================================================
+# Processing Track 15
+# ======================================================================
 # [Interactive prompts for 10 songs...]
-# ✅ Successfully added 10 songs to bank!
+# ✅ Added 10 songs from Track 15
+#
+# ======================================================================
+# 🎉 Bulk processing complete!
+# ======================================================================
+# ✅ Total songs added: 50
+# ⏭️  Tracks skipped (no new songs): 0
+# 📊 Total tracks processed: 3
 
 
 # === Verify ===

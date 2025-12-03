@@ -163,6 +163,10 @@ bash scripts/build_mix.sh 16 3
 After a successful render, add new songs to the bank:
 
 ```bash
+# Bulk mode: Process all tracks at once
+./venv/bin/python3 agent/add_to_bank.py --bulk --flow-id 04
+
+# OR single track
 ./venv/bin/python3 agent/add_to_bank.py --track 16 --flow-id 04
 ```
 
@@ -175,8 +179,9 @@ After a successful render, add new songs to the bank:
 **Output:** Songs copied to `song_bank/tracks/16/` with proper naming (e.g., `A_2_5_016a.mp3`)
 
 **Smart Handling:**
+- Bulk mode automatically skips tracks already fully in bank
 - Songs with `A_` or `B_` prefixes are automatically normalized for deduplication
-- Songs with invalid characters (e.g., `song!.mp3`, `1_1_16_a!.mp3`) are skipped
+- Songs with invalid characters (e.g., `song!.mp3`, `1_1_16_a!.mp3`) are cleaned automatically
 - Prevents duplicate songs from being added to the bank
 
 ---

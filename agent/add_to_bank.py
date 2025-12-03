@@ -4,12 +4,26 @@ Add to Bank
 -----------
 Adds new (non-banked) songs from a track to the song bank with proper naming.
 
+Auto-detects metadata from filenames in bank format (A_[phase]_[song]_[track][order].mp3).
 Handles songs with A_/B_ prefixes automatically (strips them for deduplication).
 Cleans songs with special characters (removes them automatically).
 
 Usage:
+    # Single track
     python3 agent/add_to_bank.py --track 16 --flow-id 04
     python3 agent/add_to_bank.py --track 16 --flow-id 04 --analyze
+
+    # Bulk processing (all tracks) - NO PROMPTS if filenames are properly formatted
+    python3 agent/add_to_bank.py --bulk --flow-id 04
+    python3 agent/add_to_bank.py --flow-id 04  # --bulk is optional, triggers if --track omitted
+
+Auto-Detection:
+    # Songs in bank format are processed automatically without prompts
+    A_2_6_12a.mp3 -> Auto-detected: Half A, Phase 2, Song 6, Order a
+    B_1_3_15b.mp3 -> Auto-detected: Half B, Phase 1, Song 3, Order b
+
+    # Only prompts if filename doesn't match format
+    random_song.mp3 -> Prompts for metadata interactively
 
 Examples:
     # Songs with A_/B_ prefixes are handled automatically
@@ -19,6 +33,8 @@ Examples:
     # Songs with special characters are cleaned
     1_1_16_a!.mp3 -> cleaned to 1_1_16_a.mp3
     song_name!@#.mp3 -> cleaned to song_name.mp3
+
+    # Bulk processing skips tracks that are already fully in bank
 """
 
 import argparse
@@ -165,9 +181,60 @@ def get_new_songs_from_track(track_number):
 
     return new_songs
 
+def extract_metadata_from_filename(filename):
+    """
+    Extract metadata from bank-formatted filename.
+
+    Format: A_[phase]_[song]_[track][order].mp3
+    Example: A_2_6_12a.mp3 -> {half: A, phase: 2, song_num: 6, order: a}
+
+    Handles filenames with special characters (cleans them first).
+    Example: A_2_6_13a*.mp3 -> {half: A, phase: 2, song_num: 6, order: a}
+
+    Returns:
+        Dict with metadata if successful, None if format doesn't match
+    """
+    import re
+
+    # Clean filename first (remove special characters)
+    cleaned = clean_filename(filename)
+
+    # Remove extension
+    name_without_ext = cleaned.rsplit('.', 1)[0]
+
+    # Pattern: A_[phase]_[song]_[track][order]
+    # We need to extract: half, phase, song_num, order
+    # track is embedded in position 3 but we don't need it here
+    parts = name_without_ext.split('_')
+
+    if len(parts) >= 4 and parts[0] in ['A', 'B']:
+        try:
+            half = parts[0]
+            phase = int(parts[1])
+            song_num = int(parts[2])
+
+            # Extract order letter from fourth part (e.g., "12a" -> "a", "13a" -> "a")
+            fourth_part = parts[3]
+            match = re.search(r'([a-z])$', fourth_part)
+            if match:
+                order = match.group(1)
+
+                # Validate phase
+                if 1 <= phase <= 4:
+                    return {
+                        "half": half,
+                        "phase": phase,
+                        "song_num": song_num,
+                        "order": order
+                    }
+        except (ValueError, IndexError):
+            pass
+
+    return None
+
 def prompt_for_metadata(song_path, suggested_half):
     """
-    Interactively prompt user for song metadata.
+    Extract metadata from filename or interactively prompt user if needed.
 
     Args:
         song_path: Path to the song file
@@ -176,6 +243,15 @@ def prompt_for_metadata(song_path, suggested_half):
     Returns:
         Dict with metadata: {half, phase, song_num, order}
     """
+    # Try to extract from filename first
+    auto_metadata = extract_metadata_from_filename(song_path.name)
+
+    if auto_metadata:
+        print(f"\n🎵 Song: {song_path.name}")
+        print(f"   ✅ Auto-detected: Half {auto_metadata['half']}, Phase {auto_metadata['phase']}, Song {auto_metadata['song_num']}, Order {auto_metadata['order']}")
+        return auto_metadata
+
+    # Fall back to interactive prompts
     print(f"\n🎵 Song: {song_path.name}")
     print(f"   Suggested half: {suggested_half}")
 
@@ -233,6 +309,61 @@ def generate_bank_filename(half, phase, song_num, track_number, order):
     """
     return f"{half}_{phase}_{song_num}_{track_number:03d}{order}.mp3"
 
+def extract_prompts_from_track_flow(track_number):
+    """
+    Extract prompts from track flow markdown file.
+
+    Looks for track_XXX_flow.md in the track folder and extracts
+    any Suno prompts or theme information.
+
+    Returns:
+        Dict with prompts by phase, or None if not found
+    """
+    import re
+
+    track_folder = TRACKS_DIR / str(track_number)
+    flow_file = track_folder / f"track_{track_number:03d}_flow.md"
+
+    if not flow_file.exists():
+        return None
+
+    try:
+        with open(flow_file, 'r') as f:
+            content = f.read()
+
+        prompts = {}
+
+        # Look for phase-specific prompts
+        # Pattern: ## Phase X or ### Phase X
+        phase_pattern = r'##\s*Phase\s*(\d+)[^\n]*\n(.*?)(?=##\s*Phase|\Z)'
+        matches = re.finditer(phase_pattern, content, re.DOTALL | re.IGNORECASE)
+
+        for match in matches:
+            phase_num = int(match.group(1))
+            phase_content = match.group(2)
+
+            # Extract prompt text (look for code blocks or quoted sections)
+            prompt_text = None
+
+            # Try to find code blocks
+            code_block = re.search(r'```(?:text|prompt)?\n(.*?)\n```', phase_content, re.DOTALL)
+            if code_block:
+                prompt_text = code_block.group(1).strip()
+            else:
+                # Try to find quoted sections
+                quote = re.search(r'>\s*(.+)', phase_content, re.MULTILINE)
+                if quote:
+                    prompt_text = quote.group(1).strip()
+
+            if prompt_text:
+                prompts[phase_num] = prompt_text
+
+        return prompts if prompts else None
+
+    except Exception as e:
+        print(f"   ⚠️  Could not extract prompts from track flow: {e}")
+        return None
+
 def run_audio_analysis(song_path):
     """
     Run audio analysis on a song using analyze_audio.py.
@@ -254,7 +385,7 @@ def run_audio_analysis(song_path):
         print(f"   ⚠️  Audio analysis failed: {e}")
         return None
 
-def add_song_to_bank(song_path, metadata, track_number, flow_id, catalog, prompt_index):
+def add_song_to_bank(song_path, metadata, track_number, flow_id, catalog, prompt_index, auto_skip=False):
     """
     Add a song to the bank with proper naming and metadata.
 
@@ -265,6 +396,7 @@ def add_song_to_bank(song_path, metadata, track_number, flow_id, catalog, prompt
         flow_id: Flow ID (e.g., "04")
         catalog: Song catalog dictionary
         prompt_index: Prompt index dictionary
+        auto_skip: If True, automatically skip duplicates without prompting
 
     Returns:
         True if successful, False otherwise
@@ -287,16 +419,39 @@ def add_song_to_bank(song_path, metadata, track_number, flow_id, catalog, prompt
     # Check if file already exists
     if dest_path.exists():
         print(f"   ⚠️  Warning: {bank_filename} already exists in bank")
-        response = input("      Overwrite? (y/n): ").strip().lower()
-        if response != 'y':
-            print("      Skipped.")
+        if auto_skip:
+            print("      Auto-skipped (duplicate).")
             return False
+        else:
+            response = input("      Overwrite? (y/n): ").strip().lower()
+            if response != 'y':
+                print("      Skipped.")
+                return False
 
     # Copy file
     shutil.copy2(song_path, dest_path)
 
     # Run audio analysis
     audio_features = run_audio_analysis(dest_path)
+
+    # Extract prompts from track flow file
+    track_prompts = extract_prompts_from_track_flow(track_number)
+    phase_prompt = None
+    if track_prompts and metadata["phase"] in track_prompts:
+        phase_prompt = track_prompts[metadata["phase"]]
+
+        # Update prompt index
+        prompt_key = f"track_{track_number:03d}_phase_{metadata['phase']}"
+        if prompt_key not in prompt_index.get("prompts", {}):
+            prompt_index.setdefault("prompts", {})[prompt_key] = {
+                "track_number": track_number,
+                "flow_id": flow_id,
+                "phase": metadata["phase"],
+                "prompt_text": phase_prompt,
+                "songs": []
+            }
+        # Add this song to the prompt's song list
+        prompt_index["prompts"][prompt_key]["songs"].append(track_id)
 
     # Generate track ID
     track_id = f"{metadata['half']}_{metadata['phase']}_{metadata['song_num']}_{track_number:03d}{metadata['order']}"
@@ -324,13 +479,51 @@ def add_song_to_bank(song_path, metadata, track_number, flow_id, catalog, prompt
         "added_to_bank": datetime.now().isoformat(),
         "track_flow": {
             "flow_id": flow_id,
-            "prompt": ""  # TODO: Link to prompt index
+            "prompt": phase_prompt if phase_prompt else ""
         }
     }
 
     print(f"   ✅ Added to bank: {bank_filename}")
+    if phase_prompt:
+        print(f"   📝 Linked prompt: {phase_prompt[:60]}..." if len(phase_prompt) > 60 else f"   📝 Linked prompt: {phase_prompt}")
 
     return True
+
+def get_all_tracks_with_songs():
+    """
+    Find all track folders that contain songs.
+
+    Returns:
+        List of track numbers
+    """
+    if not TRACKS_DIR.exists():
+        return []
+
+    track_numbers = []
+    for track_folder in TRACKS_DIR.iterdir():
+        if not track_folder.is_dir():
+            continue
+
+        # Check if folder name is numeric
+        if not track_folder.name.isdigit():
+            continue
+
+        track_num = int(track_folder.name)
+
+        # Check if track has songs
+        half_1 = track_folder / "half_1"
+        half_2 = track_folder / "half_2"
+
+        has_songs = False
+        if half_1.exists() and any(half_1.glob("*.mp3")):
+            has_songs = True
+        if half_2.exists() and any(half_2.glob("*.mp3")):
+            has_songs = True
+
+        if has_songs:
+            track_numbers.append(track_num)
+
+    return sorted(track_numbers)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -339,8 +532,7 @@ def main():
     parser.add_argument(
         '--track',
         type=int,
-        required=True,
-        help='Track number to process'
+        help='Track number to process (omit for bulk processing)'
     )
     parser.add_argument(
         '--flow-id',
@@ -358,8 +550,111 @@ def main():
         action='store_true',
         help='Auto-mode: use default metadata (for testing)'
     )
+    parser.add_argument(
+        '--bulk',
+        action='store_true',
+        help='Process all tracks in /tracks folder'
+    )
 
     args = parser.parse_args()
+
+    # Bulk mode: process all tracks
+    if args.bulk or args.track is None:
+        print(f"\n🔍 Scanning for tracks with songs...")
+        track_numbers = get_all_tracks_with_songs()
+
+        if not track_numbers:
+            print(f"❌ No tracks with songs found in {TRACKS_DIR}")
+            return
+
+        print(f"📋 Found {len(track_numbers)} track(s) with songs: {', '.join(map(str, track_numbers))}")
+
+        if not args.auto:
+            response = input(f"\n   Process all {len(track_numbers)} tracks? (y/n): ").strip().lower()
+            if response != 'y':
+                print("   Cancelled.")
+                return
+
+        total_added = 0
+        total_skipped = 0
+
+        for track_num in track_numbers:
+            print(f"\n{'=' * 70}")
+            print(f"Processing Track {track_num}")
+            print(f"{'=' * 70}")
+
+            track_folder = TRACKS_DIR / str(track_num)
+
+            if not track_folder.exists():
+                print(f"⚠️  Track {track_num} folder doesn't exist, skipping")
+                continue
+
+            # Find new songs
+            new_songs = get_new_songs_from_track(track_num)
+
+            if not new_songs:
+                print(f"✅ No new songs found. All songs already in bank.")
+                total_skipped += 1
+                continue
+
+            print(f"\n📋 Found {len(new_songs)} new songs:")
+            for song_path, half, cleaned_name in new_songs:
+                display_name = cleaned_name if cleaned_name != song_path.name else song_path.name
+                print(f"   - {display_name} (half_{1 if half == 'A' else 2})")
+
+            # Load catalog and prompt index
+            catalog = load_catalog()
+            prompt_index = load_prompt_index()
+
+            added_count = 0
+
+            for song_path, suggested_half, cleaned_name in new_songs:
+                if args.auto:
+                    # Auto mode: use defaults
+                    metadata = {
+                        "half": suggested_half,
+                        "phase": 1,
+                        "song_num": 1,
+                        "order": "a"
+                    }
+                else:
+                    # Interactive mode
+                    metadata = prompt_for_metadata(song_path, suggested_half)
+
+                success = add_song_to_bank(
+                    song_path,
+                    metadata,
+                    track_num,
+                    args.flow_id,
+                    catalog,
+                    prompt_index,
+                    auto_skip=True  # Auto-skip duplicates in bulk mode
+                )
+
+                if success:
+                    added_count += 1
+
+            # Save catalog
+            save_catalog(catalog)
+            save_prompt_index(prompt_index)
+
+            print(f"\n✅ Added {added_count} songs from Track {track_num}")
+            total_added += added_count
+
+        print(f"\n{'=' * 70}")
+        print(f"🎉 Bulk processing complete!")
+        print(f"{'=' * 70}")
+        print(f"✅ Total songs added: {total_added}")
+        print(f"⏭️  Tracks skipped (no new songs): {total_skipped}")
+        print(f"📊 Total tracks processed: {len(track_numbers)}")
+
+        return
+
+    # Single track mode
+    if not args.track:
+        print("❌ Error: --track is required for single track mode")
+        print("   Use --bulk to process all tracks")
+        return
 
     track_folder = TRACKS_DIR / str(args.track)
 

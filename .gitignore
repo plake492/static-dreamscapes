@@ -389,3 +389,6 @@ import_tracks/songs/*.mp3
 import_tracks/track_flows/*.md
 !import_tracks/track_flows/.gitkeep
 !import_tracks/songs/.gitkeep
+
+**/*.mp3
+**/*.mp4
