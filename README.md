@@ -1,433 +1,305 @@
-# 🌌 Static Dreamscapes - Track Production System
+# LoFi Track Manager - Complete Documentation Package
 
-> A streamlined pipeline for creating 3-hour Synthwave / Lo-Fi / Vaporwave mixes for the **Static Dreamscapes Lo-Fi YouTube Channel**.
-> This system provides a song bank architecture for efficient track creation with reusable songs and automated rendering.
+## 📚 Documentation Index
 
----
-
-## 🎯 Project Purpose
-
-Static Dreamscapes provides a **flexible, efficient workflow** for producing long-form ambient music mixes with:
-
-1. **Song Bank:** Centralized repository of reusable tracks with metadata
-2. **Track Templates:** Auto-generated project structure for new mixes
-3. **Flexible Selection:** Choose songs by count or duration from the bank
-4. **Manual Curation:** Organize songs into first/second halves manually
-5. **Automatic Rendering:** Build mixes with crossfades and automatic A_/B_ prefixing
-6. **Bank Growth:** Add new songs back to the bank for future reuse
+This package contains complete technical specifications and guides for building your automated lofi track management system.
 
 ---
 
-## 🧱 Folder Structure
+## 🎯 Start Here
 
-```
-static-dreamwaves/
-├── agent/                      # Python automation scripts
-│   ├── create_track_template.py   # Generate new track folders
-│   ├── select_bank_songs.py       # Query and select from bank
-│   ├── build_track.py             # Build mix with auto-prefixing
-│   ├── build_mix.py               # Python FFmpeg renderer
-│   └── add_to_bank.py             # Add songs to bank
-│
-├── scripts/                    # Shell utilities
-│   ├── build_mix.sh               # Shell FFmpeg renderer (fast)
-│   └── ...
-│
-├── tracks/                     # Track projects (working directories)
-│   └── <number>/
-│       ├── half_1/                # Songs for first half (no prefixes)
-│       ├── half_2/                # Songs for second half (no prefixes)
-│       ├── video/                 # Background video (<number>.mp4)
-│       ├── image/                 # Cover art (<number>.jpg)
-│       ├── metadata.json          # Track metadata
-│       ├── track_<number>_flow.md # Track flow document (auto-generated)
-│       └── bank_selection.json    # Selected songs (auto-generated)
-│
-├── song_bank/                  # Centralized song repository
-│   ├── tracks/                    # Songs organized by source track
-│   │   └── <number>/              # Named: A_2_5_016a.mp3
-│   ├── track_flows/               # Flow documents (prompts/themes)
-│   │   ├── README.md              # Track flow documentation
-│   │   └── 04_neon_rain_calm.md   # Example flow
-│   └── metadata/
-│       ├── song_catalog.json      # Master song index
-│       └── prompt_index.json      # Prompt references
-│
-├── rendered/                   # Final rendered mixes
-│   └── <number>/
-│       └── output_<timestamp>/
-│           └── output.mp4
-│
-└── documentation/              # User-facing guides
-    ├── GETTING_STARTED.md
-    ├── MANUAL_STEPS.md
-    └── ...
-```
+### 1. **QUICK_START.md** ⚡ FASTEST PATH
+**Complete workflow in one place!** Follow this for each new track.
+- Step-by-step commands
+- Time comparisons (before/after)
+- Common commands reference
+- Optimization tips
+
+### 2. **EXECUTIVE_SUMMARY.md** ⭐ OVERVIEW
+**Read this for understanding!** High-level overview, key concepts, and quick reference guide.
+- System goals and benefits
+- Architecture at-a-glance
+- Key technical decisions
+- Success metrics
+- Common issues and solutions
 
 ---
 
-## 🎵 Complete Workflow
+## 📖 Core Documentation
 
-### Step 1: Create Track Template
+### 2. **PROJECT_STRUCTURE.md**
+Complete project architecture and organization.
+- Directory structure
+- Database schema (SQLite)
+- Technology stack
+- CLI commands
+- Module organization
 
-Generate a new track project folder:
+**When to read:** After executive summary, before coding
+
+---
+
+### 3. **DATA_MODELS.md**
+Pydantic data models and schemas.
+- All model definitions (Song, Track, Arc, Prompt)
+- Validation rules
+- Type safety specifications
+- Usage examples
+
+**When to read:** When implementing Phase 1 (Foundation)
+
+---
+
+### 4. **WORKFLOW_GUIDE.md**
+Step-by-step user workflow from start to finish.
+- Complete workflow walkthrough
+- Command examples
+- Expected outputs
+- Tips and best practices
+- Troubleshooting
+
+**When to read:** After implementation to learn how to use the system
+
+---
+
+## 🔧 Technical Specifications
+
+### 5. **NOTION_PARSER_SPEC.md**
+Technical details for parsing Notion documents.
+- Notion API integration
+- Block-to-markdown conversion
+- Section parsing algorithms
+- Prompt extraction
+- Edge case handling
+
+**When to read:** When implementing Phase 2 (Ingestion Pipeline)
+
+---
+
+### 6. **SEMANTIC_SEARCH_SPEC.md**
+Semantic search and matching algorithm details.
+- Embedding generation
+- Similarity search
+- Filtering pipeline
+- Scoring algorithm
+- Performance optimization
+
+**When to read:** When implementing Phase 3 (Search System)
+
+---
+
+## 🗺️ Implementation Guide
+
+### 7. **IMPLEMENTATION_ROADMAP.md**
+Phase-by-phase development plan with milestones.
+- 6 phases broken down into tasks
+- Time estimates (9-14 days part-time)
+- Checkpoints and validation steps
+- Common pitfalls to avoid
+- Success criteria
+
+**When to read:** When starting development (your development Bible)
+
+---
+
+### 8. **RENDERING_WORKFLOW.md**
+Track folder structure and rendering integration.
+- Track folder conventions
+- Manifest file (track.yaml) structure
+- New CLI commands (scaffold, duration, prepare-render)
+- Complete rendering workflow
+- Post-render bank integration
+
+**When to read:** When implementing Phase 7 (Rendering Integration) or setting up track workflows
+
+---
+
+## 📋 Recommended Reading Order
+
+### For Developers/AI Agents Building This:
+1. **EXECUTIVE_SUMMARY.md** - Understand the why and what
+2. **PROJECT_STRUCTURE.md** - Understand the how (architecture)
+3. **IMPLEMENTATION_ROADMAP.md** - Follow the phases step-by-step
+4. **DATA_MODELS.md** - Reference during Phase 1
+5. **NOTION_PARSER_SPEC.md** - Reference during Phase 2
+6. **SEMANTIC_SEARCH_SPEC.md** - Reference during Phase 3
+7. **RENDERING_WORKFLOW.md** - Reference during Phase 7
+8. **WORKFLOW_GUIDE.md** - Test and validate after building
+
+### For End Users (You, Patrick):
+1. **EXECUTIVE_SUMMARY.md** - High-level understanding
+2. **WORKFLOW_GUIDE.md** - Learn how to use the system
+3. Other docs as needed for troubleshooting
+
+---
+
+## 🎯 Key Decisions Made
+
+### Storage: Local, Not Cloud
+- **SQLite** for database (not PostgreSQL/MySQL)
+- **Local embeddings** in numpy/pickle (not vector DB service)
+- **File system** for audio (not S3/cloud storage)
+
+**Why:** Simplicity, no costs, your scale doesn't need cloud infrastructure
+
+### Embedding Model: sentence-transformers
+- **Model:** `all-MiniLM-L6-v2`
+- **Dimensions:** 384
+- **Size:** ~90MB
+- **Speed:** Fast on CPU
+
+**Why:** Good balance of speed, quality, and runs locally
+
+### Search Strategy: Semantic + Filters
+- **Semantic similarity:** Find thematically similar songs
+- **BPM filtering:** Ensure technical compatibility
+- **Arc awareness:** Prefer matching arc structure
+- **Usage balancing:** Encourage variety
+
+**Why:** Balances meaning, technical requirements, and variety
+
+### Video Generation: FFMPEG
+- **Concatenate audio:** Direct copy (fast)
+- **Loop video:** Match audio duration
+- **Encode:** H.264, AAC, optimized for YouTube
+
+**Why:** Industry standard, reliable, well-documented
+
+---
+
+## 💾 Quick Facts
+
+| Metric | Value |
+|--------|-------|
+| **Estimated Dev Time** | 9-14 days (part-time) |
+| **Lines of Code (est.)** | ~3000-4000 LOC |
+| **Dependencies** | ~10 Python packages |
+| **Database Size** | <100 MB (even with 1000+ songs) |
+| **Embedding Size** | ~150 KB per 1000 songs |
+| **Import Speed** | ~2 min per track |
+| **Query Speed** | <30 seconds |
+| **Expected Reuse** | 60-70% of songs |
+
+---
+
+## 🚀 Quick Start (After Building)
 
 ```bash
-# Auto-increment (if last is 15, creates 16)
-./venv/bin/python3 agent/create_track_template.py
+# 1. Import existing tracks
+python -m src.cli.main import \
+  --notion-url "https://notion.so/track-1" \
+  --songs-dir "./songs/track-1"
 
-# Or specify number
-./venv/bin/python3 agent/create_track_template.py --track-number 20
-```
+# 2. Query for new track
+python -m src.cli.main query \
+  --notion-url "https://notion.so/new-track" \
+  --output "playlist.json"
 
-**Creates:**
-- `tracks/<number>/half_1/` - Songs for first half
-- `tracks/<number>/half_2/` - Songs for second half
-- `tracks/<number>/video/` - Background video
-- `tracks/<number>/image/` - Cover art
-- `tracks/<number>/metadata.json` - Track metadata
-- `tracks/<number>/track_<number>_flow.md` - Track flow template (auto-generated)
-
----
-
-### Step 2: Select Songs from Bank (Optional)
-
-Pull songs from the bank by count or duration:
-
-```bash
-# Select 5 songs from bank
-./venv/bin/python3 agent/select_bank_songs.py --track 16 --count 5 --flow-id 04
-
-# Or select ~30 minutes of songs
-./venv/bin/python3 agent/select_bank_songs.py --track 16 --duration 30 --flow-id 04
-
-# Execute the selection (copies files)
-./venv/bin/python3 agent/select_bank_songs.py --track 16 --execute
+# 3. Generate video
+python -m src.cli.main generate \
+  --playlist "playlist.json" \
+  --video-loop "./loops/study.mp4"
 ```
 
 ---
 
-### Step 3: Add New Songs Manually
+## 🎯 Success Criteria
 
-Generate songs in Suno and add to track folders:
-
-```bash
-# Add songs to first half
-mv ~/Downloads/new_song_*.mp3 tracks/16/half_1/
-
-# Add songs to second half
-mv ~/Downloads/other_song_*.mp3 tracks/16/half_2/
-```
-
-**Important:** Songs do NOT need A_/B_ prefixes at this stage. Organize them into half_1/ and half_2/ as desired.
+You'll know it's working when:
+1. ✅ Can import a track in <2 minutes
+2. ✅ Query finds 60%+ matching songs
+3. ✅ Playlist generates in <30 seconds
+4. ✅ Video generation completes successfully
+5. ✅ Time per track reduced by 40-60%
 
 ---
 
-### Step 4: Add Video and Image
+## 📊 Project Stats
 
-```bash
-# Copy background video
-cp ~/path/to/background.mp4 tracks/16/video/16.mp4
-
-# Copy cover art
-cp ~/path/to/cover.jpg tracks/16/image/16.jpg
-```
+- **Total Documentation:** 9 files
+- **Total Pages:** ~70 pages
+- **Total Word Count:** ~23,000 words
+- **Code Examples:** 130+ snippets
+- **Diagrams:** Multiple architecture/flow diagrams
 
 ---
 
-### Step 5: Build Track
+## 🛠️ Tools Needed
 
-Build the final mix with automatic A_/B_ prefixing:
+### Development
+- Python 3.10+
+- Git
+- SQLite3
+- FFMPEG
+- Text editor/IDE
 
-```bash
-# Python version (recommended)
-./venv/bin/python3 agent/build_track.py --track 16 --duration 3
-
-# Or shell version (faster startup)
-bash scripts/build_mix.sh 16 3
-
-# Test mode (5 minutes)
-./venv/bin/python3 agent/build_track.py --track 16 --duration test
-```
-
-**What happens:**
-- Songs from `half_1/` get A_ prefixes (A_001, A_002, etc.)
-- Songs from `half_2/` get B_ prefixes (B_001, B_002, etc.)
-- FFmpeg renders with crossfades
-- Output saved to `rendered/16/output_<timestamp>/output.mp4`
+### Runtime
+- ~2GB RAM
+- ~500MB disk space (excluding your audio files)
+- CPU with AVX support (for sentence-transformers)
 
 ---
 
-### Step 6: Add New Songs to Bank
+## 🎓 Learning Resources
 
-After a successful render, add new songs to the bank:
+If you need more background on technologies:
 
-```bash
-# Bulk mode: Process all tracks at once
-./venv/bin/python3 agent/add_to_bank.py --bulk --flow-id 04
+### Embeddings & Semantic Search
+- sentence-transformers documentation
+- "Understanding Embeddings" articles
+- Cosine similarity basics
 
-# OR single track
-./venv/bin/python3 agent/add_to_bank.py --track 16 --flow-id 04
-```
+### Audio Processing
+- librosa documentation
+- Audio signal processing basics
 
-**Interactive prompts:**
-- Half (A/B)
-- Phase (1-4: Calm, Flow, Uplift, Reflect)
-- Song number within phase
-- Order letter (a, b, c...)
+### FFMPEG
+- FFMPEG documentation
+- ffmpeg-python examples
 
-**Output:** Songs copied to `song_bank/tracks/16/` with proper naming (e.g., `A_2_5_016a.mp3`)
-
-**Smart Handling:**
-- Bulk mode automatically skips tracks already fully in bank
-- Songs with `A_` or `B_` prefixes are automatically normalized for deduplication
-- Songs with invalid characters (e.g., `song!.mp3`, `1_1_16_a!.mp3`) are cleaned automatically
-- Prevents duplicate songs from being added to the bank
+### SQLite
+- SQLite tutorial
+- SQL basics
 
 ---
 
-## 🎯 Song Naming Convention
+## 🐛 Support & Troubleshooting
 
-Bank songs use the format: **`A_2_5_016a.mp3`**
+### Common Issues Covered:
+- Low match quality
+- Import errors
+- FFMPEG failures
+- Notion API issues
+- Embedding problems
 
-- `A` = Half (A = first half, B = second half)
-- `2` = Phase (1=Calm, 2=Flow, 3=Uplift, 4=Reflect)
-- `5` = Song number within phase
-- `016` = Source track number (zero-padded)
-- `a` = Order letter (a, b, c... for variations)
-
----
-
-## 🔧 Quick Start
-
-### Initial Setup (One-Time)
-
-```bash
-# 1. Create virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# 2. Install dependencies
-pip install -r requirements.txt
-
-# 3. Make scripts executable
-chmod +x scripts/*.sh agent/*.py
-```
-
-### Create Your First Track
-
-```bash
-# 1. Create track template
-./venv/bin/python3 agent/create_track_template.py
-
-# 2. Add songs (from Suno downloads)
-mv ~/Downloads/*.mp3 tracks/16/half_1/
-
-# 3. Add video
-cp background.mp4 tracks/16/video/16.mp4
-
-# 4. Build (auto duration = total songs length)
-./venv/bin/python3 agent/build_track.py --track 16
-
-# 5. Add to bank for future use
-./venv/bin/python3 agent/add_to_bank.py --track 16 --flow-id 04
-```
+**See:** `EXECUTIVE_SUMMARY.md` (Common Issues section)
 
 ---
 
-## 📚 Documentation
+## 🎉 You're Ready!
 
-| Document | Description |
-|----------|-------------|
-| [GETTING_STARTED.md](documentation/GETTING_STARTED.md) | Complete setup and first track guide |
-| [MANUAL_STEPS.md](documentation/MANUAL_STEPS.md) | What YOU do vs what's automated |
-| [WORKFLOW_COMPLETE.md](agent/song_sorting_update-11-16-25/WORKFLOW_COMPLETE.md) | Complete workflow reference |
-| [BUILD_MIX_COMPARISON.md](documentation/BUILD_MIX_COMPARISON.md) | Shell vs Python build scripts |
-| [YARN_COMMANDS.md](documentation/YARN_COMMANDS.md) | Yarn/NPM command reference |
+This documentation package gives you everything needed to:
+1. Understand the system architecture
+2. Implement it phase-by-phase
+3. Use it effectively in your workflow
+4. Troubleshoot common issues
+5. Optimize and improve over time
 
----
-
-## 🎨 Four-Phase Emotional Arc
-
-Each track can follow a four-phase structure:
-
-| Phase | Description | BPM Range |
-|-------|-------------|-----------|
-| **1: Calm Intro** | Ambient, nostalgic, warm opening | 70-80 |
-| **2: Flow/Focus** | Steady mid-tempo, sustained attention | 80-90 |
-| **3: Uplift/Clarity** | Bright, optimistic, creative momentum | 90-100 |
-| **4: Reflective Fade** | Slow, analog-warm closing | 60-75 |
-
-This structure is optional and tracked via the `phase` metadata when adding songs to the bank.
+**Next Step:** Read `EXECUTIVE_SUMMARY.md` to understand the big picture, then follow `IMPLEMENTATION_ROADMAP.md` to start building!
 
 ---
 
-## 📋 Track Flows
+## 📝 Notes
 
-**Track flows** are markdown documents that define themes, prompts, and emotional arcs for specific mix styles.
+- All code examples are Python 3.10+ compatible
+- All commands are Unix/Linux style (adjust for Windows if needed)
+- All examples use your actual naming conventions
+- All specs are based on your actual Notion doc structure
 
-**Purpose:**
-- Document Suno prompts for consistent theme generation
-- Maintain consistency across multiple tracks
-- Track emotional progression and BPM ranges
-- Reference past successful themes
-
-**Example:** `song_bank/track_flows/04_neon_rain_calm.md`
-- Contains Suno prompts for each phase
-- Documents theme, mood, and technical notes
-- Links to example songs from the bank
-- Provides generation tips and avoid-list
-
-**Usage:**
-```bash
-# View available flows
-ls song_bank/track_flows/
-
-# Read a flow document
-cat song_bank/track_flows/04_neon_rain_calm.md
-
-# Select songs by flow ID
-./venv/bin/python3 agent/select_bank_songs.py --track 16 --count 10 --flow-id 04
-```
-
-See [`song_bank/track_flows/README.md`](song_bank/track_flows/README.md) for complete documentation.
+Good luck with your project! 🎵🚀
 
 ---
 
-## 🚀 Key Features
-
-### Song Bank System
-- ✅ Centralized repository of reusable tracks
-- ✅ Metadata tracking (BPM, phase, theme, prompts)
-- ✅ Query by count, duration, flow ID, or theme
-- ✅ Prevents duplication via catalog
-
-### Flexible Workflow
-- ✅ Mix bank songs with new songs
-- ✅ Manual organization (half_1/ and half_2/)
-- ✅ No prefixes needed until render
-- ✅ Auto-incrementing track numbers
-
-### Intelligent Rendering
-- ✅ Automatic A_/B_ prefixing during build
-- ✅ FFmpeg crossfades (5s overlap)
-- ✅ Volume boost (1.75x)
-- ✅ Fade in/out
-- ✅ Auto or custom duration
-
-### Metadata Tracking
-- ✅ Track metadata (metadata.json)
-- ✅ Song catalog (song_catalog.json)
-- ✅ Prompt index for themes
-- ✅ Build history and tracklists
-
----
-
-## 🔄 Build Options
-
-### Duration Modes
-
-```bash
-# Auto: Use total song duration
-./venv/bin/python3 agent/build_track.py --track 16
-
-# Custom: Specify in hours
-./venv/bin/python3 agent/build_track.py --track 16 --duration 3
-
-# Test: 5 minutes
-./venv/bin/python3 agent/build_track.py --track 16 --duration test
-```
-
-### Shell vs Python
-
-**Python** (`agent/build_mix.py`):
-- More readable code
-- Better error handling
-- Easy to extend
-
-**Shell** (`scripts/build_mix.sh`):
-- Faster startup
-- Minimal dependencies
-- Direct FFmpeg control
-
-See [BUILD_MIX_COMPARISON.md](documentation/BUILD_MIX_COMPARISON.md) for details.
-
----
-
-## 🧰 Development Notes
-
-- **Track numbers auto-increment** - System finds highest number and creates next
-- **Songs stay unprefixed** until render - Easier to reorganize and modify
-- **Bank songs are immutable** - Once in bank, they're preserved with metadata
-- **Flexible selection** - Pull any number of songs or specific duration
-- **Metadata is key** - Track themes, flows, and prompts for smart selection
-
----
-
-## 🎯 Example: Complete Workflow
-
-```bash
-# === Setup (one time) ===
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-chmod +x scripts/*.sh agent/*.py
-
-# === Create Track 16 ===
-./venv/bin/python3 agent/create_track_template.py
-# Output: Created tracks/16/
-
-# === Select from Bank (if bank has songs) ===
-./venv/bin/python3 agent/select_bank_songs.py --track 16 --count 5 --flow-id 04
-./venv/bin/python3 agent/select_bank_songs.py --track 16 --execute
-# Copied 5 songs to half_1/ and half_2/
-
-# === Add New Songs ===
-# Generate in Suno, download to ~/Downloads/
-mv ~/Downloads/new_*.mp3 tracks/16/half_1/
-mv ~/Downloads/other_*.mp3 tracks/16/half_2/
-
-# === Add Media ===
-cp background.mp4 tracks/16/video/16.mp4
-cp cover.jpg tracks/16/image/16.jpg
-
-# === Build ===
-./venv/bin/python3 agent/build_track.py --track 16 --duration 3
-# Output: rendered/16/output_20251119_103000/output.mp4
-
-# === Add to Bank ===
-./venv/bin/python3 agent/add_to_bank.py --track 16 --flow-id 04
-# Prompts for metadata, copies to song_bank/
-
-# === Create Next Track ===
-./venv/bin/python3 agent/create_track_template.py
-# Output: Created tracks/17/ (auto-incremented)
-```
-
----
-
-## 🛠️ Script Reference
-
-| Script | Purpose |
-|--------|---------|
-| `create_track_template.py` | Generate new track folder |
-| `select_bank_songs.py` | Query and select from bank |
-| `build_track.py` | Build mix (Python) |
-| `build_mix.sh` | Build mix (Shell) |
-| `add_to_bank.py` | Add songs to bank |
-
----
-
-## 🌟 Future Enhancements
-
-- [ ] Smart song selection (BPM matching, phase balance)
-- [ ] Theme-based filtering
-- [ ] Automatic emotional arc generation
-- [ ] Web UI for bank management
-- [ ] Track flow document parser
-- [ ] YouTube auto-upload integration
-
----
-
-**© 2025 Static Dreamscapes Lo-Fi**
-Developed by Patrick Lake — Track Production System
+**Package Version:** 1.2  
+**Last Updated:** December 2, 2025  
+**Total Documentation Size:** ~23,000 words across 9 files

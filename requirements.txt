@@ -1,12 +1,36 @@
-# Static Dreamscapes - Python Dependencies
-# Install with: pip install -r requirements.txt
+# Core Dependencies
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+pyyaml>=6.0.1
+typer>=0.9.0
+rich>=13.7.0
 
-# Audio analysis
-librosa>=0.10.0
+# Notion Integration
+notion-client>=2.2.1
+
+# Audio Analysis
+librosa>=0.10.1
+soundfile>=0.12.1
+audioread>=3.0.1
+
+# Embeddings & Search
+sentence-transformers>=2.2.2
 numpy>=1.24.0
+scikit-learn>=1.3.2
+torch>=2.0.0
 
-# FFmpeg integration (optional - for programmatic FFmpeg control)
+# Video Generation
 ffmpeg-python>=0.2.0
 
-# File system monitoring
-watchdog>=3.0.0
+# Utilities
+tqdm>=4.66.1
+requests>=2.31.0
+
+# Database
+# sqlite3 is built into Python
+
+# Development
+pytest>=7.4.3
+pytest-cov>=4.1.0
+black>=23.12.1
+mypy>=1.7.1
