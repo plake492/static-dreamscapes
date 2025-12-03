@@ -1,7 +1,7 @@
 {
   "name": "static-dreamwaves",
-  "version": "1.0.0",
-  "description": "Automated pipeline for generating 3-hour Synthwave/Lo-Fi/Vaporwave mixes",
+  "version": "2.0.0",
+  "description": "Track production system with song bank for creating 3-hour Synthwave/Lo-Fi/Vaporwave mixes",
   "author": "Patrick Lake",
   "license": "MIT",
   "scripts": {
@@ -9,56 +9,36 @@
     "setup:deps": "./venv/bin/pip install -r requirements.txt",
     "setup:permissions": "chmod +x scripts/*.sh && chmod +x agent/*.py",
 
-    "orchestrator:watch": "./venv/bin/python3 agent/orchestrator.py --watch",
-    "orchestrator:run": "./venv/bin/python3 agent/orchestrator.py --run-once",
-    "orchestrator:analyze": "./venv/bin/python3 agent/orchestrator.py --analyze-only",
+    "track:create": "./venv/bin/python3 agent/create_track_template.py",
+    "track:create:num": "./venv/bin/python3 agent/create_track_template.py --track-number",
 
-    "watch": "yarn orchestrator:watch",
-    "run": "yarn orchestrator:run",
-    "analyze": "yarn orchestrator:analyze",
+    "bank:select": "./venv/bin/python3 agent/select_bank_songs.py",
+    "bank:select:count": "./venv/bin/python3 agent/select_bank_songs.py --track",
+    "bank:select:duration": "./venv/bin/python3 agent/select_bank_songs.py --track",
+    "bank:execute": "./venv/bin/python3 agent/select_bank_songs.py --track",
+    "bank:add": "./venv/bin/python3 agent/add_to_bank.py --track",
+    "bank:status": "echo '=== Song Bank Status ===' && ./venv/bin/python3 -c 'import json; data = json.load(open(\"song_bank/metadata/song_catalog.json\")); print(f\"Total songs: {data.get(\\\"total_tracks\\\", 0)}\")' && echo '' && find song_bank/tracks -name '*.mp3' | wc -l | xargs echo 'Files on disk:'",
 
-    "analyze:manual": "./venv/bin/python3 agent/analyze_audio.py --input ./arc_library --output ./metadata",
+    "build:py": "./venv/bin/python3 agent/build_track.py --track",
+    "build:sh": "bash scripts/build_mix.sh",
+    "build:test": "./venv/bin/python3 agent/build_track.py --track",
 
-    "sort:unsorted": "./venv/bin/python3 agent/auto_sort.py --input ./unsorted_tracks",
-    "sort:unsorted:dry": "./venv/bin/python3 agent/auto_sort.py --input ./unsorted_tracks --dry-run",
-    "sort:downloads": "./venv/bin/python3 agent/auto_sort.py --scan-downloads",
-    "sort:downloads:dry": "./venv/bin/python3 agent/auto_sort.py --scan-downloads --dry-run",
+    "render:test": "./venv/bin/python3 agent/build_track.py --duration test --track",
+    "render:auto": "./venv/bin/python3 agent/build_track.py --track",
+    "render:1h": "./venv/bin/python3 agent/build_track.py --duration 1 --track",
+    "render:2h": "./venv/bin/python3 agent/build_track.py --duration 2 --track",
+    "render:3h": "./venv/bin/python3 agent/build_track.py --duration 3 --track",
 
-    "rename:phase1": "bash scripts/rename_by_mod_time.sh arc_library/phase_1_calm_intro",
-    "rename:phase2": "bash scripts/rename_by_mod_time.sh arc_library/phase_2_flow_focus",
-    "rename:phase3": "bash scripts/rename_by_mod_time.sh arc_library/phase_3_uplift_clarity",
-    "rename:phase4": "bash scripts/rename_by_mod_time.sh arc_library/phase_4_reflective_fade",
-    "rename:all": "yarn rename:phase1 && yarn rename:phase2 && yarn rename:phase3 && yarn rename:phase4",
+    "status": "echo '=== Tracks ===' && find tracks -maxdepth 1 -type d | grep -E 'tracks/[0-9]+$' | wc -l | xargs echo 'Track folders:' && echo '' && echo '=== Song Bank ===' && ./venv/bin/python3 -c 'import json; data = json.load(open(\"song_bank/metadata/song_catalog.json\")); print(f\"Songs in bank: {data.get(\\\"total_tracks\\\", 0)}\")' && echo '' && echo '=== Rendered ===' && find rendered -name 'output.mp4' | wc -l | xargs echo 'Rendered mixes:'",
+    "status:bank": "yarn bank:status",
+    "status:tracks": "find tracks -maxdepth 1 -type d | grep -E 'tracks/[0-9]+$' | sort && echo '' && find tracks -name '*.mp3' | wc -l | xargs echo 'Total MP3 files in tracks:'",
 
-    "rename:phase1:dry": "bash scripts/rename_by_mod_time.sh arc_library/phase_1_calm_intro --dry-run",
-    "rename:phase2:dry": "bash scripts/rename_by_mod_time.sh arc_library/phase_2_flow_focus --dry-run",
-    "rename:phase3:dry": "bash scripts/rename_by_mod_time.sh arc_library/phase_3_uplift_clarity --dry-run",
-    "rename:phase4:dry": "bash scripts/rename_by_mod_time.sh arc_library/phase_4_reflective_fade --dry-run",
-    "rename:all:dry": "yarn rename:phase1:dry && yarn rename:phase2:dry && yarn rename:phase3:dry && yarn rename:phase4:dry",
-
-    "prepend": "bash scripts/prepend_tracks.sh",
-
-    "verify:length": "bash scripts/track_length_report.sh",
-    "verify:metadata": "./venv/bin/python3 agent/validate_metadata.py",
-    "verify:metadata:fix": "./venv/bin/python3 agent/validate_metadata.py --fix-orphans",
-
-    "build:test": "bash scripts/build_mix.sh 1 test",
-    "build:1h": "bash scripts/build_mix.sh 1 1",
-    "build:2h": "bash scripts/build_mix.sh 1 2",
-    "build:3h": "bash scripts/build_mix.sh 1 3",
-
-    "logs": "tail -f logs/orchestrator.log",
-    "logs:last": "tail -50 logs/orchestrator.log",
-    "logs:errors": "grep -i error logs/orchestrator.log",
-
-    "status": "echo '=== MP3 Files ===' && find arc_library -name '*.mp3' | wc -l && echo '=== Metadata Entries ===' && ./venv/bin/python3 -c 'import json; data = json.load(open(\"metadata/song_index.json\")); print(len(data.get(\"tracks\", {})))' && echo '=== Build History ===' && ./venv/bin/python3 -c 'import json; data = json.load(open(\"metadata/build_history.json\")); print(len(data.get(\"builds\", [])), \"builds\")'",
-
-    "clean:metadata": "rm -f metadata/phase_*.json metadata/song_index.json metadata/build_history.json && ./venv/bin/python3 -c 'import json; open(\"metadata/song_index.json\", \"w\").write(json.dumps({\"_comment\": \"Global index\", \"tracks\": {}}, indent=2)); open(\"metadata/build_history.json\", \"w\").write(json.dumps({\"builds\": []}, indent=2))'",
-    "clean:logs": "rm -f logs/*.log",
+    "clean:track": "rm -rf tracks/",
     "clean:rendered": "rm -rf rendered/*",
-    "clean:all": "yarn clean:metadata && yarn clean:logs && yarn clean:rendered",
+    "clean:bank": "rm -rf song_bank/tracks/* && ./venv/bin/python3 -c 'import json; open(\"song_bank/metadata/song_catalog.json\", \"w\").write(json.dumps({\"catalog_version\": \"1.0\", \"last_updated\": null, \"total_tracks\": 0, \"tracks\": {}}, indent=2)); open(\"song_bank/metadata/prompt_index.json\", \"w\").write(json.dumps({\"prompts\": {}}, indent=2))'",
+    "clean:all": "yarn clean:rendered",
 
-    "help": "echo '\n📜 Static Dreamscapes - Available Commands\n' && echo '🚀 Main Pipeline:' && echo '  yarn watch                - Watch for new files (auto-trigger)' && echo '  yarn run                  - Run pipeline once' && echo '  yarn analyze              - Analyze audio only' && echo '' && echo '🎯 Auto-Sort Tracks:' && echo '  yarn sort:downloads:dry   - Preview sorting from ~/Downloads' && echo '  yarn sort:downloads       - Auto-sort from ~/Downloads' && echo '  yarn sort:unsorted:dry    - Preview sorting from ./unsorted_tracks' && echo '  yarn sort:unsorted        - Auto-sort from ./unsorted_tracks' && echo '' && echo '🔧 Manual Steps:' && echo '  yarn rename:all           - Rename all tracks by date' && echo '  yarn rename:all:dry       - Preview renaming (dry run)' && echo '  yarn prepend              - Add phase prefixes' && echo '  yarn analyze:manual       - Run audio analysis' && echo '  yarn verify:length        - Check total duration' && echo '  yarn verify:metadata      - Validate metadata' && echo '' && echo '🎬 Build Mix:' && echo '  yarn build:test           - 5 min test mix' && echo '  yarn build:1h             - 1 hour mix' && echo '  yarn build:3h             - 3 hour mix' && echo '' && echo '📊 Monitoring:' && echo '  yarn status               - Show file/metadata counts' && echo '  yarn logs                 - Follow logs (live)' && echo '  yarn logs:last            - Show last 50 log lines' && echo '' && echo '🧹 Cleanup:' && echo '  yarn clean:metadata       - Reset metadata files' && echo '  yarn clean:logs           - Clear log files' && echo '  yarn clean:all            - Clean everything' && echo ''"
+    "help": "echo '\n📜 Static Dreamscapes - Track Production System\n' && echo '🏗️  Track Creation:' && echo '  yarn track:create                  - Create new track (auto-increment)' && echo '  yarn track:create:num <number>     - Create specific track number' && echo '' && echo '🏦 Song Bank:' && echo '  yarn bank:select <track> <count>   - Select N songs from bank' && echo '  yarn bank:execute <track>          - Execute bank selection (copy files)' && echo '  yarn bank:add <track> --flow-id X  - Add songs to bank' && echo '  yarn bank:status                   - Show bank statistics' && echo '' && echo '🎬 Building:' && echo '  yarn render:auto <track>           - Build with auto duration' && echo '  yarn render:test <track>           - Build 5-minute test' && echo '  yarn render:1h <track>             - Build 1-hour mix' && echo '  yarn render:3h <track>             - Build 3-hour mix' && echo '  yarn build:py <track>              - Build with Python' && echo '  yarn build:sh <track> <duration>   - Build with shell script' && echo '' && echo '📊 Status:' && echo '  yarn status                        - Show overall status' && echo '  yarn status:tracks                 - Show track folders' && echo '  yarn status:bank                   - Show bank status' && echo '' && echo '🧹 Cleanup:' && echo '  yarn clean:rendered                - Clear rendered output' && echo '  yarn clean:bank                    - Reset song bank' && echo '' && echo '📖 Examples:' && echo '  yarn track:create                        # Create track 16' && echo '  yarn bank:select 16 --count 5 --flow-id 04  # Select 5 songs' && echo '  yarn bank:execute 16                     # Copy selected songs' && echo '  yarn render:3h 16                        # Build 3-hour mix' && echo '  yarn bank:add 16 --flow-id 04            # Add to bank' && echo ''"
   },
   "keywords": [
     "lofi",
@@ -67,6 +47,8 @@
     "audio",
     "automation",
     "ffmpeg",
-    "music"
+    "music",
+    "song-bank",
+    "track-production"
   ]
 }

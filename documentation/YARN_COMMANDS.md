@@ -1,6 +1,6 @@
-# 🧶 Yarn Commands Reference
+# 📜 Yarn Commands Reference
 
-Complete reference for all yarn/npm scripts available in the Static Dreamscapes project.
+Complete reference for all Yarn/NPM commands in the Static Dreamscapes track production system.
 
 ---
 
@@ -11,10 +11,10 @@ Complete reference for all yarn/npm scripts available in the Static Dreamscapes 
 yarn setup
 
 # Show all available commands
-yarn run help
+yarn help
 
-# Start watching for new files
-yarn watch
+# Create a new track
+yarn track:create
 ```
 
 ---
@@ -23,372 +23,449 @@ yarn watch
 
 ### 🛠️ Setup & Installation
 
+#### `yarn setup`
+Complete one-time setup for the project.
+
+**Usage:**
 ```bash
-# Full setup (venv + dependencies + permissions)
 yarn setup
-
-# Install/update Python dependencies only
-yarn setup:deps
-
-# Fix script permissions
-yarn setup:permissions
 ```
 
-**What `yarn setup` does:**
+**What it does:**
 1. Creates Python virtual environment (`venv/`)
 2. Upgrades pip to latest version
 3. Installs all dependencies from `requirements.txt`
 4. Makes all scripts executable (`chmod +x`)
 
----
-
-### 🎯 Main Pipeline (Orchestrator)
-
-```bash
-# Watch mode - continuously monitor for new MP3 files
-yarn watch
-# Alias: yarn orchestrator:watch
-
-# Run pipeline once immediately
-yarn run
-# Alias: yarn orchestrator:run
-
-# Analyze audio only (skip rename/prepend/build)
-yarn analyze
-# Alias: yarn orchestrator:analyze
-```
-
-**Watch Mode Details:**
-- Monitors `/arc_library/` for new `.mp3` files
-- 60-second cooldown after last file before triggering
-- Automatically runs full pipeline when ready
-- Press `Ctrl+C` to stop
-
-**Run Once Details:**
-- Executes complete pipeline immediately
-- No file watching
-- Returns exit code 0 on success
-- Good for scheduled/cron jobs
+**When to run:**
+- First time setting up project
+- After cloning repository
+- After major dependency updates
 
 ---
 
-### 🔧 Manual Pipeline Steps
+#### `yarn setup:deps`
+Reinstall Python dependencies only.
 
-#### Step 1: Rename Tracks by Date
-
+**Usage:**
 ```bash
-# Rename all phases at once
-yarn rename:all
-
-# Rename individual phases
-yarn rename:phase1    # Phase 1: Calm Intro
-yarn rename:phase2    # Phase 2: Flow Focus
-yarn rename:phase3    # Phase 3: Uplift Clarity
-yarn rename:phase4    # Phase 4: Reflective Fade
-
-# Preview changes without actually renaming (dry run)
-yarn rename:all:dry
-yarn rename:phase1:dry
-yarn rename:phase2:dry
-yarn rename:phase3:dry
-yarn rename:phase4:dry
+yarn setup:deps
 ```
 
-**What it does:**
-- Sorts files by modification time (oldest first)
-- Renames to `001_filename.mp3`, `002_filename.mp3`, etc.
-- Skips files already numbered
-- Preserves original modification dates
-
-#### Step 2: Add Phase Prefixes
-
-```bash
-yarn prepend
-```
-
-**What it does:**
-- Adds `A_` or `B_` prefixes based on arc logic
-- Example: `001_track.mp3` → `A_001_track.mp3`
-- Maintains proper playback order for rendering
-
-#### Step 3: Analyze Audio
-
-```bash
-# Run audio analysis (manual, not via orchestrator)
-yarn analyze:manual
-```
-
-**What it does:**
-- Extracts BPM, key, brightness, RMS, zero-crossing rate
-- Updates `/metadata/Phase_X.json` files
-- Refreshes `/metadata/song_index.json`
-- Uses librosa for feature extraction
-
-#### Step 4: Verify Total Length
-
-```bash
-yarn verify:length
-```
-
-**What it does:**
-- Calculates total duration of all MP3s
-- Outputs to `total_length.txt`
-- Checks against 3-hour target (10,800s ± 60s)
+**When to use:**
+- After updating `requirements.txt`
+- If dependencies are corrupted
+- After Python version upgrade
 
 ---
 
-### 🎬 Build Final Mix
+#### `yarn setup:permissions`
+Fix script permissions.
 
+**Usage:**
 ```bash
-# Quick 5-minute test render
-yarn build:test
-
-# 1-hour mix
-yarn build:1h
-
-# 2-hour mix
-yarn build:2h
-
-# 3-hour full mix
-yarn build:3h
+yarn setup:permissions
 ```
 
-**Note:** These commands use track number `1` by default. To use a different track number:
+**When to use:**
+- If you get "Permission denied" errors
+- After pulling new scripts from git
 
+---
+
+## 🏗️ Track Creation
+
+### `yarn track:create`
+Create a new track with auto-incrementing number.
+
+**Usage:**
 ```bash
-# Custom track number (requires manual command)
-bash scripts/build_mix.sh 5 3    # Track 5, 3 hours
-bash scripts/build_mix.sh 9 test # Track 9, 5 min test
+yarn track:create
 ```
 
 **What it does:**
-- Combines all MP3s with crossfades
-- Loops song sequence to fill duration
-- Applies volume boost (1.75x default)
-- Outputs to `rendered/<track_num>/output_<timestamp>/output.mp4`
-- Saves FFmpeg command and filter for debugging
+- Scans `tracks/` folder for highest track number
+- Creates next track folder (e.g., if 15 exists, creates 16)
+- Generates folder structure: `half_1/`, `half_2/`, `video/`, `image/`
+- Creates `metadata.json` and `README.md`
 
----
-
-### ✅ Validation & Verification
-
+**Example:**
 ```bash
-# Validate metadata consistency
-yarn verify:metadata
-
-# Validate and fix orphaned entries
-yarn verify:metadata:fix
-
-# Check total track duration
-yarn verify:length
+$ yarn track:create
+✅ Track 16 template created successfully!
 ```
 
-**`verify:metadata` checks for:**
-- Orphaned entries (metadata exists but file missing)
-- Missing entries (file exists but no metadata)
-- Phase mismatches (file in Phase 1 but metadata says Phase 2)
+---
 
-**`verify:metadata:fix` will:**
-- Remove orphaned metadata entries automatically
-- Show summary of fixes applied
+### `yarn track:create:num <number>`
+Create a track with a specific number.
+
+**Usage:**
+```bash
+yarn track:create:num 20
+```
+
+**When to use:**
+- Creating non-sequential track numbers
+- Recreating a deleted track
+- Starting with a specific number
 
 ---
 
-### 📊 Monitoring & Status
+## 🏦 Song Bank Management
+
+### Select Songs from Bank
+
+**Select by count:**
+```bash
+./venv/bin/python3 agent/select_bank_songs.py --track 16 --count 5 --flow-id 04
+```
+
+**Select by duration:**
+```bash
+./venv/bin/python3 agent/select_bank_songs.py --track 16 --duration 30 --flow-id 04
+```
+
+**What it does:**
+- Queries `song_catalog.json` for available songs
+- Filters by flow ID (if specified)
+- Selects N songs OR ~X minutes of songs
+- Saves selection to `tracks/<number>/bank_selection.json`
+
+---
+
+### Execute Bank Selection
 
 ```bash
-# Show system status (file counts, builds)
+./venv/bin/python3 agent/select_bank_songs.py --track 16 --execute
+```
+
+**What it does:**
+- Reads `bank_selection.json`
+- Copies selected songs to `half_1/` or `half_2/` based on song metadata
+- Marks selection as executed
+
+---
+
+### Add Songs to Bank
+
+```bash
+./venv/bin/python3 agent/add_to_bank.py --track 16 --flow-id 04
+```
+
+**What it does:**
+- Scans `half_1/` and `half_2/` for new songs
+- Prompts interactively for metadata
+- Generates bank filenames (e.g., `A_2_5_016a.mp3`)
+- Copies to `song_bank/tracks/<number>/`
+- Updates `song_catalog.json`
+
+**Optional flags:**
+- `--analyze`: Run audio analysis (requires librosa)
+- `--auto`: Use default metadata (for testing)
+
+---
+
+### `yarn bank:status`
+Show song bank statistics.
+
+**Usage:**
+```bash
+yarn bank:status
+```
+
+**Example output:**
+```bash
+=== Song Bank Status ===
+Total songs: 25
+
+Files on disk: 25
+```
+
+---
+
+## 🎬 Building & Rendering
+
+### `yarn render:auto <track>`
+Build mix with auto duration (uses total song length).
+
+**Usage:**
+```bash
+yarn render:auto 16
+```
+
+**What it does:**
+- Calculates total duration of all songs
+- Builds mix exactly that long (no looping or truncation)
+- Best for variable-length content
+
+---
+
+### `yarn render:test <track>`
+Build 5-minute test mix.
+
+**Usage:**
+```bash
+yarn render:test 16
+```
+
+**When to use:**
+- Quick quality check
+- Testing crossfades
+- Verifying song order
+- Before full 3-hour render
+
+---
+
+### `yarn render:1h <track>`
+### `yarn render:2h <track>`
+### `yarn render:3h <track>`
+Build mix with specific duration.
+
+**Usage:**
+```bash
+yarn render:1h 16    # 1 hour
+yarn render:2h 16    # 2 hours
+yarn render:3h 16    # 3 hours
+```
+
+**What it does:**
+- Loops songs if total duration < target
+- Truncates if total duration > target
+- Good for fixed-length requirements
+
+---
+
+### `yarn build:py <track> [options]`
+Build mix using Python script (recommended).
+
+**Usage:**
+```bash
+yarn build:py 16                    # Auto duration
+yarn build:py 16 --duration 3       # 3 hours
+yarn build:py 16 --duration test    # 5 minutes
+```
+
+**Features:**
+- More readable code
+- Better error handling
+- Python-native integration
+- Easy to extend
+
+---
+
+### `yarn build:sh <track> <duration>`
+Build mix using shell script (faster startup).
+
+**Usage:**
+```bash
+yarn build:sh 16 3       # 3 hours
+yarn build:sh 16 test    # 5 minutes
+yarn build:sh 16         # Auto duration
+```
+
+**Features:**
+- Faster startup (~50ms vs ~100ms for Python)
+- Minimal dependencies
+- Direct FFmpeg control
+
+---
+
+## 📊 Status & Monitoring
+
+### `yarn status`
+Show overall system status.
+
+**Usage:**
+```bash
 yarn status
-
-# Follow logs in real-time
-yarn logs
-
-# Show last 50 log lines
-yarn logs:last
-
-# Search logs for errors
-yarn logs:errors
 ```
 
-**Status Output Example:**
-```
-=== MP3 Files ===
-24
-=== Metadata Entries ===
-24
-=== Build History ===
-3 builds
+**Example output:**
+```bash
+=== Tracks ===
+Track folders: 3
+
+=== Song Bank ===
+Songs in bank: 25
+
+=== Rendered ===
+Rendered mixes: 5
 ```
 
 ---
 
-### 🧹 Cleanup Commands
+### `yarn status:tracks`
+List all track folders and MP3 counts.
 
+**Usage:**
 ```bash
-# Reset all metadata files (CAUTION: deletes data)
-yarn clean:metadata
+yarn status:tracks
+```
 
-# Clear all log files
-yarn clean:logs
+**Example output:**
+```bash
+tracks/16
+tracks/17
+tracks/18
 
-# Delete all rendered mixes
+Total MP3 files in tracks: 45
+```
+
+---
+
+### `yarn status:bank`
+Show detailed bank status (alias for `yarn bank:status`).
+
+---
+
+## 🧹 Cleanup Commands
+
+### `yarn clean:rendered`
+Clear all rendered output.
+
+**Usage:**
+```bash
 yarn clean:rendered
-
-# Clean everything (metadata + logs + rendered)
-yarn clean:all
 ```
 
-**⚠️ Warning:** These commands are destructive! Use with caution.
-
-**What gets cleaned:**
-- `clean:metadata` - Resets phase JSON files, song_index.json, build_history.json
-- `clean:logs` - Removes all `*.log` files from `/logs/`
-- `clean:rendered` - Deletes all content in `/rendered/`
-- `clean:all` - All of the above
+**⚠️ Caution:** This deletes all files in `rendered/` folder. Backup important mixes first.
 
 ---
 
-## 📖 Common Workflows
+### `yarn clean:bank`
+Reset song bank to empty state.
 
-### Workflow 1: New Batch of Suno Tracks
-
+**Usage:**
 ```bash
-# 1. Add MP3 files to arc_library/phase_X folders
-# (manually organize by phase)
-
-# 2. Start auto-processing
-yarn watch
-
-# 3. Wait for pipeline to complete (will auto-trigger after 60s cooldown)
-
-# 4. Check results
-yarn status
-yarn logs:last
+yarn clean:bank
 ```
 
-### Workflow 2: Manual Step-by-Step
+**What it does:**
+- Deletes all songs from `song_bank/tracks/`
+- Resets `song_catalog.json` to empty
+- Resets `prompt_index.json` to empty
 
+**⚠️ Caution:** This is destructive! Backup your bank first.
+
+---
+
+### `yarn clean:track <number>`
+Delete a specific track folder (manual).
+
+**Usage:**
 ```bash
-# 1. Preview renaming first (dry run)
-yarn rename:all:dry
-
-# 2. Actually rename
-yarn rename:all
-
-# 3. Add prefixes
-yarn prepend
-
-# 4. Analyze audio
-yarn analyze:manual
-
-# 5. Verify length
-yarn verify:length
-cat total_length.txt
-
-# 6. Build 5-min test
-yarn build:test
-
-# 7. If test looks good, build full mix
-yarn build:3h
-```
-
-### Workflow 3: Quick Validation
-
-```bash
-# Check if metadata is in sync with files
-yarn verify:metadata
-
-# Check file counts
-yarn status
-
-# Review recent activity
-yarn logs:last
-```
-
-### Workflow 4: Fresh Start
-
-```bash
-# Reset everything (CAUTION)
-yarn clean:all
-
-# Re-analyze all tracks
-yarn analyze:manual
-
-# Verify metadata
-yarn verify:metadata
+rm -rf tracks/16
 ```
 
 ---
 
-## 🎓 Examples
+## 📖 Complete Workflow Examples
 
-### Example 1: Process Phase 1 Only
-
-```bash
-# Rename Phase 1 tracks by date
-yarn rename:phase1
-
-# View what would happen (dry run)
-yarn rename:phase1:dry
-
-# Add prefixes
-yarn prepend
-
-# Analyze
-yarn analyze:manual
-```
-
-### Example 2: Create Test Mix Quickly
+### Example 1: First Track (Empty Bank)
 
 ```bash
-# 1. Ensure you have some MP3s in arc_library
-# 2. Run quick pipeline
-yarn run
+# 1. Setup (one time)
+yarn setup
 
-# 3. Build 5-minute test
-yarn build:test
+# 2. Create track
+yarn track:create
+# Output: Created tracks/16/
 
-# 4. Check output
-ls -lh rendered/1/output_*/
-```
+# 3. Generate music in Suno, download to ~/Downloads/
 
-### Example 3: Monitor Live Processing
+# 4. Organize songs (no prefixes!)
+mv ~/Downloads/calm*.mp3 tracks/16/half_1/
+mv ~/Downloads/bright*.mp3 tracks/16/half_2/
 
-```bash
-# Terminal 1: Start watching
-yarn watch
+# 5. Add video
+cp background.mp4 tracks/16/video/16.mp4
 
-# Terminal 2: Follow logs
-yarn logs
+# 6. Build
+yarn render:3h 16
 
-# Add files to arc_library in file explorer
-# Watch both terminals for real-time updates
-```
+# 7. Review
+open rendered/16/output_*/output.mp4
 
-### Example 4: Fix Metadata Issues
-
-```bash
-# Find issues
-yarn verify:metadata
-
-# Output might show:
-#   ❌ old_track.mp3 (in phase_1_calm_intro)
-#   ⚠️  new_track.mp3 (file exists but not in metadata)
-
-# Fix orphans automatically
-yarn verify:metadata:fix
-
-# Re-analyze to add missing entries
-yarn analyze:manual
-
-# Verify again
-yarn verify:metadata
-# Should now show: ✅ Validation passed
+# 8. Add to bank
+./venv/bin/python3 agent/add_to_bank.py --track 16 --flow-id 04
 ```
 
 ---
 
-## 🔍 Troubleshooting
+### Example 2: Second Track (Using Bank)
+
+```bash
+# 1. Create track
+yarn track:create
+# Output: Created tracks/17/
+
+# 2. Select from bank
+./venv/bin/python3 agent/select_bank_songs.py --track 17 --count 10 --flow-id 04
+./venv/bin/python3 agent/select_bank_songs.py --track 17 --execute
+# Copied 10 songs
+
+# 3. Generate NEW music, add to track
+mv ~/Downloads/new*.mp3 tracks/17/half_1/
+
+# 4. Add video
+cp background.mp4 tracks/17/video/17.mp4
+
+# 5. Build
+yarn render:auto 17
+
+# 6. Add NEW songs to bank
+./venv/bin/python3 agent/add_to_bank.py --track 17 --flow-id 04
+```
+
+---
+
+### Example 3: Quick Test
+
+```bash
+# 1. Create track
+yarn track:create
+
+# 2. Add a few test songs
+cp ~/Music/test*.mp3 tracks/16/half_1/
+
+# 3. Add video
+cp background.mp4 tracks/16/video/16.mp4
+
+# 4. Test build (5 minutes)
+yarn render:test 16
+
+# 5. Review
+open rendered/16/output_*/output.mp4
+```
+
+---
+
+### Example 4: Select by Duration
+
+```bash
+# 1. Create track
+yarn track:create
+
+# 2. Select 90 minutes from bank
+./venv/bin/python3 agent/select_bank_songs.py --track 16 --duration 90 --flow-id 04
+./venv/bin/python3 agent/select_bank_songs.py --track 16 --execute
+
+# 3. Generate 90 more minutes in Suno
+
+# 4. Add new songs
+mv ~/Downloads/*.mp3 tracks/16/half_1/
+
+# 5. Build with auto duration (total = ~3 hours)
+yarn render:auto 16
+
+# 6. Add to bank
+./venv/bin/python3 agent/add_to_bank.py --track 16 --flow-id 04
+```
+
+---
+
+## 🆘 Troubleshooting
 
 ### Commands Not Working
 
@@ -406,6 +483,8 @@ ls -la venv/
 yarn setup
 ```
 
+---
+
 ### Permission Errors
 
 ```bash
@@ -413,43 +492,160 @@ yarn setup
 yarn setup:permissions
 
 # Or manually
-chmod +x scripts/*.sh
-chmod +x agent/*.py
+chmod +x scripts/*.sh agent/*.py
 ```
 
-### Logs Not Showing
+---
+
+### Check Track Structure
 
 ```bash
-# Create logs directory if missing
-mkdir -p logs
+# List tracks
+ls -la tracks/
 
-# Run pipeline to generate logs
-yarn run
+# Check specific track
+find tracks/16 -name "*.mp3"
+ls tracks/16/video/
+ls tracks/16/image/
+```
 
-# Then check
-yarn logs:last
+---
+
+### Check Bank Health
+
+```bash
+# List bank songs
+find song_bank/tracks -name "*.mp3"
+
+# View catalog
+cat song_bank/metadata/song_catalog.json
+
+# Count songs
+yarn bank:status
+```
+
+---
+
+### Check Rendered Output
+
+```bash
+# List all renders
+find rendered -name "output.mp4"
+
+# Check specific track renders
+ls -lh rendered/16/
+```
+
+---
+
+## 💡 Pro Tips
+
+**1. Use `yarn help` for quick reference:**
+```bash
+yarn help
+```
+
+**2. Chain commands for efficient workflow:**
+```bash
+yarn track:create && \
+mv ~/Downloads/*.mp3 tracks/16/half_1/ && \
+cp background.mp4 tracks/16/video/16.mp4 && \
+yarn render:auto 16
+```
+
+**3. Test before full render:**
+```bash
+yarn render:test 16 && open rendered/16/output_*/output.mp4
+```
+
+**4. Check status frequently:**
+```bash
+yarn status && yarn status:tracks && yarn bank:status
+```
+
+**5. Backup before cleanup:**
+```bash
+cp -r song_bank /path/to/backup/
+yarn clean:bank
+```
+
+**6. Use descriptive filenames:**
+```bash
+# Name files to control order within each half
+mv ~/Downloads/song1.mp3 tracks/16/half_1/01_calm_intro.mp3
+mv ~/Downloads/song2.mp3 tracks/16/half_1/02_building_energy.mp3
+```
+
+---
+
+## 🔍 Command Syntax Reference
+
+### Track Creation
+```bash
+yarn track:create                        # Auto-increment
+yarn track:create:num 20                 # Specific number
+```
+
+### Bank Operations
+```bash
+# Select (no yarn alias - use Python directly)
+./venv/bin/python3 agent/select_bank_songs.py --track N --count X
+./venv/bin/python3 agent/select_bank_songs.py --track N --duration M
+./venv/bin/python3 agent/select_bank_songs.py --track N --execute
+
+# Add (no yarn alias - use Python directly)
+./venv/bin/python3 agent/add_to_bank.py --track N --flow-id ID
+
+# Status
+yarn bank:status
+```
+
+### Building
+```bash
+yarn render:auto 16                      # Auto duration
+yarn render:test 16                      # 5 minutes
+yarn render:1h 16                        # 1 hour
+yarn render:2h 16                        # 2 hours
+yarn render:3h 16                        # 3 hours
+
+yarn build:py 16 --duration 3            # Python builder
+yarn build:sh 16 3                       # Shell builder
+```
+
+### Status
+```bash
+yarn status                              # Overall status
+yarn status:tracks                       # Track folders
+yarn status:bank                         # Bank status
+```
+
+### Cleanup
+```bash
+yarn clean:rendered                      # Clear rendered output
+yarn clean:bank                          # Reset song bank
 ```
 
 ---
 
 ## 📚 Related Documentation
 
-- [GETTING_STARTED.md](GETTING_STARTED.md) - Initial setup guide
-- [CLAUDE.md](../CLAUDE.md) - Architecture and technical details
-- [README.md](../README.md) - Project overview
-- [agent/README_AGENT.md](../agent/README_AGENT.md) - Python agent documentation
-- [metadata/README_METADATA.md](../metadata/README_METADATA.md) - Metadata system guide
+- [README.md](../README.md) - Project overview and quick start
+- [MANUAL_STEPS.md](MANUAL_STEPS.md) - What you do vs what's automated
+- [GETTING_STARTED.md](GETTING_STARTED.md) - Complete setup guide
+- [WORKFLOW_COMPLETE.md](../agent/song_sorting_update-11-16-25/WORKFLOW_COMPLETE.md) - Detailed workflow reference
+- [BUILD_MIX_COMPARISON.md](BUILD_MIX_COMPARISON.md) - Shell vs Python build scripts
 
 ---
 
-## 💡 Tips
+## 📝 Notes
 
-1. **Always use dry run first**: `yarn rename:all:dry` before `yarn rename:all`
-2. **Monitor logs**: Keep `yarn logs` running in a separate terminal during processing
-3. **Validate often**: Run `yarn verify:metadata` after making changes
-4. **Use test builds**: Test with `yarn build:test` before full 3-hour renders
-5. **Check status**: Use `yarn status` to get quick overview of system state
+- **Yarn vs NPM:** All commands work with both `yarn` and `npm run`
+- **Python activation:** Yarn scripts automatically use `./venv/bin/python3`
+- **Error codes:** Scripts exit with code 0 on success, non-zero on failure
+- **Logs:** FFmpeg output goes to console, commands save to files in `rendered/`
 
 ---
+
+**Need help?** Run `yarn help` or see [MANUAL_STEPS.md](MANUAL_STEPS.md)
 
 **© 2025 Static Dreamscapes Lo-Fi**

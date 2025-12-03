@@ -1,0 +1,20 @@
+{
+  "track_number": 10,
+  "created": "2025-11-20T11:50:55.432643",
+  "status": "importing",
+  "track_flow_id": "02",
+  "title": "Track 10",
+  "theme": null,
+  "duration_target_hours": 3,
+  "notes": "Legacy track import",
+  "bank_songs": {
+    "count": 0,
+    "total_duration": 0,
+    "sources": []
+  },
+  "new_songs": {
+    "count": 0,
+    "total_duration": 0,
+    "files": []
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "track_number": 16,
+  "created": "2025-11-19T21:54:30.951625",
+  "status": "in_progress",
+  "track_flow_id": null,
+  "title": "Track 16",
+  "theme": null,
+  "duration_target_hours": 3,
+  "notes": "Add notes about this track here",
+  "bank_songs": {
+    "count": 0,
+    "total_duration": 0,
+    "sources": []
+  },
+  "new_songs": {
+    "count": 0,
+    "total_duration": 0,
+    "files": []
+  }
+}

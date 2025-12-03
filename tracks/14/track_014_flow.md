@@ -1,0 +1,139 @@
+---
+
+### 🪩 1. TRACK OVERVIEW
+
+| Field | Value |
+| --- | --- |
+| **Title** | City Signals 🌃 LoFi Vaporwave Night Mix |
+| **Filename** | city-signals-lofi-vaporwave-night-mix.mp4 |
+| **Upload Schedule** | Wednesday 10 AM ET |
+| **Duration** | 3 hr |
+| **Mood Arc** | Urban Twilight → Focus Flow → Midnight Calm → Dreamlike Fade |
+| **CTR Target** | ≥ 2.8 % |
+| **Retention Target** | ≥ 32–35 min |
+
+---
+
+### 🧠 2. SEO & DISCOVERY
+
+**Visible Hashtags (3–5):**
+
+`#LoFi #Vaporwave #NightMix #CityChill #RoyaltyFree`
+
+**Hidden Tags (≤ 500 chars):**
+
+`lofistudy,vaporwave,cityrain,urbanlofi,neoncity,nightmix,synthwave,chillmix,ambientmusic,focusmusic,studymusic,deepfocus,staticscape,rainynight,vhsstatic,analoglove,creativeflow,urbanvibes,rainycitystreets,neonwindowglow,lofimix`
+
+**File Naming Rules:**
+
+- lowercase
+- hyphens only
+- include “lofi”, “vaporwave”, “night”, “mix”, “rain”
+
+**Title Formula:**
+
+`[Mood/Scene] + [Genre Keywords] | [Use Case] + (Royalty Free)`
+
+---
+
+### 📝 3. DESCRIPTION TEMPLATE
+
+**🌃 City Lights Through the Rain — A Vaporwave Night to Focus In**
+
+Inside a quiet studio overlooking the rainy city, the CRT glows teal against neon reflections drifting across the window. LoFi + Vaporwave textures pulse softly, forming a calm workspace for deep focus, late-night flow, and introspective creativity.
+
+🎧 *Royalty-Free | Urban Rain Ambience | Night City Focus*
+
+**💡 Best For**
+
+- Coding late into the night
+- Study or deep concentration
+- Creative flow sessions
+- Ambient background listening
+
+**🎨 Vibe & Aesthetic**
+
+CRT glow • rainy neon reflections • vaporwave purple/teal • indoor studio calm • plants framing the window • analog hiss and subtle static
+
+**💬 CTA**
+
+> Drop a 🌃 if you vibed with the rainy neon studio tonight.
+> 
+
+---
+
+### 🎨 4. VISUAL DESIGN (Leonardo + Dreamina)
+
+**Prompt:**
+
+> Cozy nighttime studio with CRT monitor glowing teal, rain streaming gently down a large city window, neon reflections in pink and cyan on wet streets, plants framing the scene, subtle analog equipment glow, vaporwave palette (teal/purple), cinematic lighting, high detail.
+> 
+
+**Dreamina Animation Instructions:**
+
+- Light rain streaks outside window (slow, looping)
+- Subtle CRT flicker every ~30s
+- Soft neon reflection shimmer on wet pavement
+- Gentle plant sway (very subtle)
+- No camera motion
+- Maintain static composition for loop
+
+---
+
+### 🎼 5. MUSIC ARC STRUCTURE
+
+(Each prompt ends with **“rainy neon studio vibes”** for consistency)
+
+---
+
+### 🌇 Phase 1 – Urban Twilight (Opening Ambience)
+
+- [x]  ambient vaporwave hum, low analog tone, slow city rhythm — *rainy neon studio vibes*
+- [x]  distant traffic ambience, soft pad layers, urban calm — *rainy neon studio vibes*
+- [x]  mellow lofi beat, warm reverb, lights flickering outside — *rainy neon studio vibes*
+
+---
+
+### 🚦 Phase 2 – Focus Flow (Creative Pulse)
+
+- [x]  midtempo lofi vaporwave, gentle analog drive, smooth bass — *rainy neon studio vibes*
+- [x]  rhythmic synth chords, glowing ambient reflections — *rainy neon studio vibes*
+- [x]  steady beat, deep urban hum, focus progression — *rainy neon studio vibes*
+- [x]  dreamwave textures, analog clarity, late-night workflow — *rainy neon studio vibes*
+
+---
+
+### 🌃 Phase 3 – Midnight Calm (Inner Reflection)
+
+- [x]  minimal lofi chords, tape warmth, ambient window glow — *rainy neon studio vibes*
+- [x]  soft rhythm fading, nostalgic synth resonance — *rainy neon studio vibes*
+- [x]  emotional analog layers, faint static, subdued bass — *rainy neon studio vibes*
+
+---
+
+### 🌌 Phase 4 – Dreamlike Fade (Night’s End)
+
+- [x]  slow vaporwave outro, static haze, CRT hum lingering — *rainy neon studio vibes*
+- [x]  warm outro pads, gentle delay, fading into night silence — *rainy neon studio vibes*
+- [x]  analog fade-out with subtle background noise, complete stillness — *rainy neon studio vibes*
+
+---
+
+### 📈 6. POST-UPLOAD CHECKLIST
+
+| Step | Description | Done |
+| --- | --- | --- |
+| Thumbnail | CRT glow + rainy neon window | [ ] |
+| Chapters | Add phase markers | [ ] |
+| Comment Pin | CTA + timestamps | [ ] |
+| Playlist | Night City / Rain & Coding | [ ] |
+| Analytics | CTR + retention after 48 hr | [ ] |
+
+---
+
+### 🧭 7. BRAND NOTES
+
+- This track bridges **Rainy Night Coding Desk** and **City Rain** aesthetics
+- Keep teal + magenta dominance
+- Emphasize indoor calm vs. outdoor neon chaos
+- Maintain Static Dreamscapes identity: **CRT • Rain • Analog • Stillness**
