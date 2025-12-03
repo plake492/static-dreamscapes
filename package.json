@@ -4,5 +4,22 @@
   "main": "index.js",
   "repository": "https://github.com/plake492/static-dreamscapes.git",
   "author": "Patrick Lake",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "init-db": "source venv/bin/activate && python3 -m src.cli.main init-db",
+    "import": "source venv/bin/activate && python3 -m src.cli.main import-songs",
+    "import:force": "source venv/bin/activate && python3 -m src.cli.main import-songs --force",
+    "query": "source venv/bin/activate && python3 -m src.cli.main query",
+    "stats": "source venv/bin/activate && python3 -m src.cli.main stats songs",
+    "stats:songs": "source venv/bin/activate && python3 -m src.cli.main stats songs",
+    "stats:tracks": "source venv/bin/activate && python3 -m src.cli.main stats tracks",
+    "gaps": "source venv/bin/activate && python3 -m src.cli.main playlist-gaps",
+    "scaffold": "source venv/bin/activate && python3 -m src.cli.main scaffold-track",
+    "duration": "source venv/bin/activate && python3 -m src.cli.main track-duration",
+    "prepare": "source venv/bin/activate && python3 -m src.cli.main prepare-render",
+    "post-render": "source venv/bin/activate && python3 -m src.cli.main post-render",
+    "publish": "source venv/bin/activate && python3 -m src.cli.main mark-published",
+    "version": "source venv/bin/activate && python3 -m src.cli.main version",
+    "help": "source venv/bin/activate && python3 -m src.cli.main --help"
+  }
 }
