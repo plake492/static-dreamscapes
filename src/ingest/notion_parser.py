@@ -203,12 +203,20 @@ class NotionParser:
         """Parse the TRACK OVERVIEW section."""
         result = {}
 
-        # Title
+        # Title - try multiple formats
+        # Format 1: **Title:** **title**
         title_match = re.search(r'\*\*Title:\*\*\s*\*\*(.*?)\*\*', markdown, re.IGNORECASE)
+        if not title_match:
+            # Format 2: ✅ SEO Title: title
+            title_match = re.search(r'(?:✅|☑)\s*SEO Title:\s*(.+?)(?:\n|$)', markdown, re.IGNORECASE)
         result['title'] = title_match.group(1).strip() if title_match else "Untitled Track"
 
-        # Filename
+        # Filename - try multiple formats
+        # Format 1: **Filename:** filename.mp4
         filename_match = re.search(r'\*\*Filename:\*\*\s*(.+?)\.mp4', markdown, re.IGNORECASE)
+        if not filename_match:
+            # Format 2: ✅ Filename: filename.mp4
+            filename_match = re.search(r'(?:✅|☑)\s*Filename:\s*(.+?)\.mp4', markdown, re.IGNORECASE)
         result['output_filename'] = filename_match.group(1).strip() + ".mp4" if filename_match else "output.mp4"
 
         # Upload schedule
@@ -256,13 +264,14 @@ class NotionParser:
 
     def _parse_music_arc_structure(self, markdown: str) -> Dict:
         """Parse the MUSIC ARC STRUCTURE section."""
-        # Extract anchor phrase
+        # Extract anchor phrase (optional)
         anchor_match = re.search(r'\*\*⭐ Anchor Phrase:\*\*\s*`(.+?)`', markdown, re.IGNORECASE)
         anchor_phrase = anchor_match.group(1).strip() if anchor_match else ""
 
-        # Find all arc sections
-        arc_pattern = r'### Phase (\d+) [–—] (.+?)\((\d+) Prompts?\)'
-        arc_matches = list(re.finditer(arc_pattern, markdown, re.IGNORECASE))
+        # Find all arc sections - flexible pattern to match various formats
+        # Matches: "### PHASE 1 – Arc Name (Description)" or "### Phase 1 - Arc Name (3 Prompts)"
+        arc_pattern = r'### (?:PHASE|Phase) (\d+) [–—-] (.+?)(?:\((.+?)\))?$'
+        arc_matches = list(re.finditer(arc_pattern, markdown, re.IGNORECASE | re.MULTILINE))
 
         arcs = []
 
@@ -274,6 +283,9 @@ class NotionParser:
             start_pos = match.end()
             end_pos = arc_matches[i + 1].start() if i + 1 < len(arc_matches) else len(markdown)
             arc_section = markdown[start_pos:end_pos]
+
+            # Debug: show what section we're parsing
+            logger.debug(f"Arc {arc_number} section (first 300 chars):\n{arc_section[:300]}")
 
             # Parse prompts
             prompts = self._parse_prompts_from_section(arc_section, anchor_phrase)
@@ -289,35 +301,81 @@ class NotionParser:
     def _parse_prompts_from_section(self, section: str, anchor_phrase: str) -> List[Dict]:
         """Parse individual prompts from an arc section."""
         prompts = []
-        prompt_number = 1
 
-        # Pattern: - [x] or - [ ] followed by text ending with anchor phrase
-        pattern = r'-\s*\[([ x])\]\s*(.+?)' + re.escape(anchor_phrase)
+        # Debug logging
+        logger.debug(f"Parsing section (first 200 chars): {section[:200]}")
+        logger.debug(f"Anchor phrase: '{anchor_phrase}'")
 
-        for match in re.finditer(pattern, section, re.IGNORECASE | re.MULTILINE):
-            checked = match.group(1).strip().lower() == 'x'
-            prompt_text = match.group(2).strip()
+        # Try multiple patterns to support different Notion formats
 
-            # Clean up markdown formatting
-            prompt_text = re.sub(r'\*\*', '', prompt_text)
-            prompt_text = prompt_text.strip()
+        # Pattern 1: New format - "X 1. text..." or "✓ 1. text..."
+        # Captures everything on the line, then strips quotes later
+        pattern1 = r'^\s*[X✓x]\s+(\d+)\.\s*(.+?)$'
+        matches1 = list(re.finditer(pattern1, section, re.IGNORECASE | re.MULTILINE))
+        logger.debug(f"Pattern1 found {len(matches1)} matches")
 
-            # Extract characteristics
-            tempo_hints = self._extract_tempo_hints(prompt_text)
-            instrument_hints = self._extract_instrument_hints(prompt_text)
-            vibe_hints = self._extract_vibe_hints(prompt_text)
+        # Pattern 2: Old format - "- [x] text anchor_phrase"
+        if anchor_phrase:
+            pattern2 = r'-\s*\[([ xX])\]\s*(.+?)' + re.escape(anchor_phrase)
+        else:
+            pattern2 = r'-\s*\[([ xX])\]\s*(.+?)(?:\n|$)'
+        matches2 = list(re.finditer(pattern2, section, re.IGNORECASE | re.MULTILINE))
+        logger.debug(f"Pattern2 found {len(matches2)} matches")
 
-            prompts.append({
-                'prompt_number': prompt_number,
-                'prompt_text': prompt_text,
-                'anchor_phrase': anchor_phrase,
-                'completed': checked,
-                'tempo_hints': tempo_hints,
-                'instrument_hints': instrument_hints,
-                'vibe_hints': vibe_hints
-            })
+        # Use whichever pattern found matches
+        if matches1:
+            for match in matches1:
+                prompt_num = int(match.group(1))
+                prompt_text = match.group(2).strip()
 
-            prompt_number += 1
+                # Strip quotes (both regular and smart quotes)
+                prompt_text = prompt_text.strip('""\'"\'')
+
+                # Clean up markdown formatting
+                prompt_text = re.sub(r'\*\*', '', prompt_text)
+                prompt_text = prompt_text.strip()
+
+                # Extract characteristics
+                tempo_hints = self._extract_tempo_hints(prompt_text)
+                instrument_hints = self._extract_instrument_hints(prompt_text)
+                vibe_hints = self._extract_vibe_hints(prompt_text)
+
+                prompts.append({
+                    'prompt_number': prompt_num,
+                    'prompt_text': prompt_text,
+                    'anchor_phrase': anchor_phrase,
+                    'completed': True,  # X or ✓ means completed
+                    'tempo_hints': tempo_hints,
+                    'instrument_hints': instrument_hints,
+                    'vibe_hints': vibe_hints
+                })
+
+        elif matches2:
+            prompt_number = 1
+            for match in matches2:
+                checked = match.group(1).strip().lower() == 'x'
+                prompt_text = match.group(2).strip()
+
+                # Clean up markdown formatting
+                prompt_text = re.sub(r'\*\*', '', prompt_text)
+                prompt_text = prompt_text.strip()
+
+                # Extract characteristics
+                tempo_hints = self._extract_tempo_hints(prompt_text)
+                instrument_hints = self._extract_instrument_hints(prompt_text)
+                vibe_hints = self._extract_vibe_hints(prompt_text)
+
+                prompts.append({
+                    'prompt_number': prompt_number,
+                    'prompt_text': prompt_text,
+                    'anchor_phrase': anchor_phrase,
+                    'completed': checked,
+                    'tempo_hints': tempo_hints,
+                    'instrument_hints': instrument_hints,
+                    'vibe_hints': vibe_hints
+                })
+
+                prompt_number += 1
 
         return prompts
 

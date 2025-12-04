@@ -13,8 +13,9 @@ logger = logging.getLogger(__name__)
 class FilenameParser:
     """Parse song filenames matching pattern: arc_prompt_song[order].mp3"""
 
-    # Pattern: 2_6_19a.mp3 -> arc=2, prompt=6, song=19, order=a
-    PATTERN = r'^(\d+)_(\d+)_(\d+)([a-z]+)\.(?:mp3|wav|m4a|flac)$'
+    # Pattern: 2_6_19a.mp3 or A_2_6_19a.mp3 -> arc=2, prompt=6, song=19, order=a
+    # Optional prefix (A_, B_, etc.) for rendered versions
+    PATTERN = r'^(?:[a-z]_)?(\d+)_(\d+)_(\d+)([a-z]+)\.(?:mp3|wav|m4a|flac)$'
 
     @classmethod
     def parse(cls, filename: str) -> Optional[FilenameComponents]:
