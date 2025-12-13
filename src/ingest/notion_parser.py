@@ -264,16 +264,72 @@ class NotionParser:
 
     def _parse_music_arc_structure(self, markdown: str) -> Dict:
         """Parse the MUSIC ARC STRUCTURE section."""
-        # Extract anchor phrase (optional)
-        anchor_match = re.search(r'\*\*⭐ Anchor Phrase:\*\*\s*`(.+?)`', markdown, re.IGNORECASE)
+        # Extract anchor phrase (optional) - supports multiple formats
+        # Format 1: **⭐ Anchor Phrase:** `text`
+        # Format 2: **⭐ Anchor Phrase:** "text"
+        # Format 3: **Anchor Phrase:** text
+        anchor_match = re.search(r'\*\*⭐?\s*Anchor Phrase:\*\*\s*[`"]?(.+?)[`"]?$', markdown, re.IGNORECASE | re.MULTILINE)
+        if not anchor_match:
+            # Try without star emoji
+            anchor_match = re.search(r'\*\*Anchor Phrase:\*\*\s*[`"]?(.+?)[`"]?$', markdown, re.IGNORECASE | re.MULTILINE)
         anchor_phrase = anchor_match.group(1).strip() if anchor_match else ""
 
         # Find all arc sections - flexible pattern to match various formats
         # Format 1: "### PHASE 1 – Arc Name (Description)"
         # Format 2: "### Phase 1 - Arc Name (3 Prompts)"
         # Format 3: "### 🌅 Phase 1 – Arc Name"
-        arc_pattern = r'### (?:🌅|💫|🌤|🌙|⭐)?\s*(?:PHASE|Phase) (\d+) [–—-] (.+?)(?:\((.+?)\))?$'
+        # Format 4: "## 🌇 **PHASE 1 — Arc Name**" (emoji-only with H2)
+        # Format 5: "## 🌇" (emoji-only H2, extract from context)
+
+        # Try format with explicit PHASE text first
+        arc_pattern = r'###? (?:🌅|💫|🌤|🌙|⭐|🌇|🚦|🌃|🌌)?\s*(?:\*\*)?\s*(?:PHASE|Phase) (\d+) [–—-] (.+?)(?:\((.+?)\))?\s*(?:\*\*)?$'
         arc_matches = list(re.finditer(arc_pattern, markdown, re.IGNORECASE | re.MULTILINE))
+
+        # If no matches, try emoji-only H2 format: ## 🌇 or ## 🚦 etc.
+        if not arc_matches:
+            emoji_pattern = r'^## (🌇|🚦|🌃|🌌|🌅|💫|🌤|🌙)\s*(?:\*\*)?\s*(.*)$'
+            emoji_matches = list(re.finditer(emoji_pattern, markdown, re.MULTILINE))
+
+            # Map emojis to arc numbers if we find them
+            emoji_to_arc = {
+                '🌇': (1, 'Rain Ambience'),      # Sunset/dusk
+                '🚦': (2, 'Steady Focus Flow'),   # Traffic light
+                '🌃': (3, 'Midnight Clarity'),    # Night cityscape
+                '🌌': (4, 'Vaporwave Fadeout')    # Milky way/stars
+            }
+
+            # Convert emoji matches to arc pattern format
+            for emoji_match in emoji_matches:
+                emoji = emoji_match.group(1)
+                extra_text = emoji_match.group(2).strip()
+
+                if emoji in emoji_to_arc:
+                    arc_num, default_name = emoji_to_arc[emoji]
+                    arc_name = extra_text if extra_text else default_name
+
+                    # Create a synthetic match object
+                    class SyntheticMatch:
+                        def __init__(self, arc_num, arc_name, start, end):
+                            self.arc_num = arc_num
+                            self.arc_name = arc_name
+                            self._start = start
+                            self._end = end
+                        def group(self, n):
+                            if n == 1: return str(self.arc_num)
+                            if n == 2: return self.arc_name
+                            return None
+                        def start(self): return self._start
+                        def end(self): return self._end
+
+                    arc_matches.append(SyntheticMatch(
+                        arc_num, arc_name,
+                        emoji_match.start(), emoji_match.end()
+                    ))
+
+            # Sort by position in document
+            arc_matches = sorted(arc_matches, key=lambda m: m.start())
+
+        arc_matches = list(arc_matches)
 
         arcs = []
 
