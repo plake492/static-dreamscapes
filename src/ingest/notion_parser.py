@@ -269,8 +269,10 @@ class NotionParser:
         anchor_phrase = anchor_match.group(1).strip() if anchor_match else ""
 
         # Find all arc sections - flexible pattern to match various formats
-        # Matches: "### PHASE 1 – Arc Name (Description)" or "### Phase 1 - Arc Name (3 Prompts)"
-        arc_pattern = r'### (?:PHASE|Phase) (\d+) [–—-] (.+?)(?:\((.+?)\))?$'
+        # Format 1: "### PHASE 1 – Arc Name (Description)"
+        # Format 2: "### Phase 1 - Arc Name (3 Prompts)"
+        # Format 3: "### 🌅 Phase 1 – Arc Name"
+        arc_pattern = r'### (?:🌅|💫|🌤|🌙|⭐)?\s*(?:PHASE|Phase) (\d+) [–—-] (.+?)(?:\((.+?)\))?$'
         arc_matches = list(re.finditer(arc_pattern, markdown, re.IGNORECASE | re.MULTILINE))
 
         arcs = []
@@ -314,13 +316,18 @@ class NotionParser:
         matches1 = list(re.finditer(pattern1, section, re.IGNORECASE | re.MULTILINE))
         logger.debug(f"Pattern1 found {len(matches1)} matches")
 
-        # Pattern 2: Old format - "- [x] text anchor_phrase"
-        if anchor_phrase:
-            pattern2 = r'-\s*\[([ xX])\]\s*(.+?)' + re.escape(anchor_phrase)
-        else:
-            pattern2 = r'-\s*\[([ xX])\]\s*(.+?)(?:\n|$)'
+        # Pattern 2: Format with checkbox and number - "- [x] 1. text"
+        pattern2 = r'^\s*-\s*\[([ xX])\]\s*(\d+)\.\s*(.+?)$'
         matches2 = list(re.finditer(pattern2, section, re.IGNORECASE | re.MULTILINE))
         logger.debug(f"Pattern2 found {len(matches2)} matches")
+
+        # Pattern 3: Old format - "- [x] text anchor_phrase" (no number)
+        if anchor_phrase:
+            pattern3 = r'-\s*\[([ xX])\]\s*(.+?)' + re.escape(anchor_phrase)
+        else:
+            pattern3 = r'-\s*\[([ xX])\]\s*(.+?)(?:\n|$)'
+        matches3 = list(re.finditer(pattern3, section, re.IGNORECASE | re.MULTILINE))
+        logger.debug(f"Pattern3 found {len(matches3)} matches")
 
         # Use whichever pattern found matches
         if matches1:
@@ -351,10 +358,43 @@ class NotionParser:
                 })
 
         elif matches2:
-            prompt_number = 1
+            # Pattern 2: "- [x] 1. text"
             for match in matches2:
                 checked = match.group(1).strip().lower() == 'x'
+                prompt_num = int(match.group(2))
+                prompt_text = match.group(3).strip()
+
+                # Strip quotes
+                prompt_text = prompt_text.strip('""\'"\'')
+
+                # Clean up markdown formatting
+                prompt_text = re.sub(r'\*\*', '', prompt_text)
+                prompt_text = prompt_text.strip()
+
+                # Extract characteristics
+                tempo_hints = self._extract_tempo_hints(prompt_text)
+                instrument_hints = self._extract_instrument_hints(prompt_text)
+                vibe_hints = self._extract_vibe_hints(prompt_text)
+
+                prompts.append({
+                    'prompt_number': prompt_num,
+                    'prompt_text': prompt_text,
+                    'anchor_phrase': anchor_phrase,
+                    'completed': checked,
+                    'tempo_hints': tempo_hints,
+                    'instrument_hints': instrument_hints,
+                    'vibe_hints': vibe_hints
+                })
+
+        elif matches3:
+            # Pattern 3: "- [x] text" (no number)
+            prompt_number = 1
+            for match in matches3:
+                checked = match.group(1).strip().lower() == 'x'
                 prompt_text = match.group(2).strip()
+
+                # Strip quotes
+                prompt_text = prompt_text.strip('""\'"\'')
 
                 # Clean up markdown formatting
                 prompt_text = re.sub(r'\*\*', '', prompt_text)

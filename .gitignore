@@ -1,2 +1,9 @@
 .claude
 .agent-docs
+
+https://www.notion.so/Track-17-2a8433e57885800ab456d6dd739b5d36
+
+  yarn query \
+    --notion-url "https://www.notion.so/Track-17-2a8433e57885800ab456d6dd739b5d36" \
+    --output "./output/playlists/track-17-matches.json" \
+    --top-k 5

@@ -136,26 +136,332 @@ def import_songs(
 
 
 @app.command()
+def generate_embeddings(
+    force: bool = typer.Option(False, "--force", "-f", help="Regenerate all embeddings"),
+    config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
+):
+    """Generate embeddings for all songs in the database."""
+    try:
+        from ..embeddings.generator import EmbeddingGenerator
+
+        config = get_config(config_path)
+        db = Database(config.database_path)
+
+        console.print("\n[bold blue]🧠 Generating Embeddings[/bold blue]\n")
+
+        # Get all songs
+        songs = db.get_all_songs()
+        console.print(f"Found {len(songs)} songs in database\n")
+
+        if len(songs) == 0:
+            console.print("[yellow]No songs found. Import some tracks first![/yellow]\n")
+            return
+
+        # Initialize generator
+        generator = EmbeddingGenerator(config.embedding_model_name)
+        console.print(f"Using model: [cyan]{config.embedding_model_name}[/cyan]")
+        console.print(f"Embedding dimension: [cyan]{generator.dimension}[/cyan]\n")
+
+        # Generate embeddings
+        from pathlib import Path
+        embeddings_dir = Path(config.embeddings_cache)
+        embeddings_dir.mkdir(parents=True, exist_ok=True)
+
+        import numpy as np
+        import json
+        from datetime import datetime
+
+        embeddings = []
+        song_ids = []
+
+        with console.status("[bold green]Generating embeddings...") as status:
+            for i, song in enumerate(songs, 1):
+                status.update(f"[bold green]Processing {i}/{len(songs)}: {song.filename}")
+
+                # Generate embedding
+                embedding = generator.generate_for_song(song)
+                embeddings.append(embedding)
+                song_ids.append(song.id)
+
+        # Save to cache
+        embeddings_matrix = np.array(embeddings)
+        cache_file = embeddings_dir / "embeddings.npz"
+
+        np.savez(
+            cache_file,
+            embeddings=embeddings_matrix,
+            song_ids=song_ids
+        )
+
+        # Save metadata
+        metadata = {
+            'model': config.embedding_model_name,
+            'dimension': generator.dimension,
+            'song_count': len(songs),
+            'generated_at': datetime.now().isoformat()
+        }
+
+        metadata_file = embeddings_dir / "metadata.json"
+        metadata_file.write_text(json.dumps(metadata, indent=2))
+
+        console.print(f"\n[bold green]✅ Generated embeddings for {len(songs)} songs![/bold green]")
+        console.print(f"Saved to: {cache_file}\n")
+
+        db.close()
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error generating embeddings")
+        raise typer.Exit(1)
+
+
+@app.command()
 def query(
     notion_url: str = typer.Option(..., "--notion-url", "-n", help="Notion document URL for new track"),
     output: str = typer.Option("./output/playlists/playlist.json", "--output", "-o", help="Output JSON file"),
     target_duration: int = typer.Option(180, "--duration", "-d", help="Target duration in minutes"),
     songs_per_arc: int = typer.Option(11, "--songs-per-arc", help="Songs per arc"),
     min_similarity: float = typer.Option(0.6, "--min-similarity", help="Minimum similarity score"),
+    top_k: int = typer.Option(5, "--top-k", "-k", help="Number of matches per prompt"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
     """Query for matching songs for a new track."""
-    console.print("\n[bold yellow]🚧 Query command not yet implemented[/bold yellow]")
-    console.print("This will be implemented in Phase 4\n")
+    try:
+        from ..ingest.notion_parser import NotionParser
+        from ..embeddings.generator import EmbeddingGenerator
+        from ..embeddings.store import EmbeddingStore
+        from ..query.matcher import SongMatcher
+        from ..query.filters import SearchFilters
+        from pathlib import Path
+        import json
+
+        config = get_config(config_path)
+        db = Database(config.database_path)
+
+        console.print("\n[bold blue]🔍 Querying for Matching Songs[/bold blue]\n")
+        console.print(f"Notion URL: {notion_url}\n")
+
+        # Parse Notion document
+        console.print("[cyan]Parsing Notion document...[/cyan]")
+        notion_parser = NotionParser(config.notion_api_token)
+        track_metadata = notion_parser.parse_notion_doc(notion_url)
+
+        console.print(f"Track: [bold]{track_metadata.title}[/bold]")
+        console.print(f"Arcs: {len(track_metadata.arcs)}\n")
+
+        # Load embeddings
+        embeddings_dir = Path(config.embeddings_cache)
+        cache_file = embeddings_dir / "embeddings.npz"
+
+        if not cache_file.exists():
+            console.print("[bold red]❌ No embeddings found![/bold red]")
+            console.print("Run: [cyan]yarn generate-embeddings[/cyan] first\n")
+            raise typer.Exit(1)
+
+        console.print("[cyan]Loading embeddings...[/cyan]")
+
+        # Load all songs and build embedding store
+        all_songs = db.get_all_songs()
+        generator = EmbeddingGenerator(config.embedding_model_name)
+        store = EmbeddingStore(config.embeddings_cache)
+
+        import numpy as np
+        data = np.load(cache_file)
+
+        # Map song IDs to songs
+        song_map = {song.id: song for song in all_songs}
+
+        for song_id, embedding in zip(data['song_ids'], data['embeddings']):
+            if song_id in song_map:
+                store.add_song(song_map[song_id], embedding)
+
+        console.print(f"Loaded {len(store.song_map)} songs with embeddings\n")
+
+        # Initialize matcher
+        matcher = SongMatcher(
+            embedding_generator=generator,
+            embedding_store=store
+        )
+
+        # Query for each arc
+        results = {}
+        total_matches = 0
+
+        for arc in track_metadata.arcs:
+            console.print(f"[bold]Arc {arc.arc_number}: {arc.arc_name}[/bold]")
+
+            arc_results = []
+
+            for prompt in arc.prompts:
+                matches = matcher.find_matches_for_prompt(
+                    prompt=prompt,
+                    arc=arc,
+                    track_metadata=track_metadata,
+                    count=top_k
+                )
+
+                arc_results.append({
+                    'prompt_number': prompt.prompt_number,
+                    'prompt_text': prompt.prompt_text,
+                    'matches': [
+                        {
+                            'filename': m.song.filename,
+                            'score': round(m.final_score, 3),
+                            'similarity': round(m.similarity_score, 3),
+                            'bpm': m.song.bpm,
+                            'key': m.song.key,
+                            'arc': m.song.arc_number,
+                            'duration': round(m.song.duration_seconds) if m.song.duration_seconds else None
+                        }
+                        for m in matches
+                    ]
+                })
+
+                total_matches += len(matches)
+                console.print(f"  Prompt {prompt.prompt_number}: Found {len(matches)} matches")
+
+            results[f"arc_{arc.arc_number}"] = arc_results
+            console.print()
+
+        # Save results
+        output_path = Path(output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        output_data = {
+            'track_title': track_metadata.title,
+            'notion_url': notion_url,
+            'total_prompts': sum(len(arc.prompts) for arc in track_metadata.arcs),
+            'total_matches': total_matches,
+            'results': results
+        }
+
+        output_path.write_text(json.dumps(output_data, indent=2))
+
+        console.print(f"[bold green]✅ Query complete![/bold green]")
+        console.print(f"Total matches: {total_matches}")
+        console.print(f"Results saved to: {output}\n")
+
+        db.close()
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error querying songs")
+        raise typer.Exit(1)
 
 
 @app.command()
 def playlist_gaps(
-    playlist: str = typer.Argument(..., help="Path to playlist JSON file")
+    playlist: str = typer.Argument(..., help="Path to playlist JSON file"),
+    min_similarity: float = typer.Option(0.6, "--min-similarity", "-m", help="Minimum acceptable similarity score")
 ):
-    """Show songs that need to be generated."""
-    console.print("\n[bold yellow]🚧 Playlist gaps command not yet implemented[/bold yellow]")
-    console.print("This will be implemented in Phase 4\n")
+    """Analyze playlist to identify prompts that need new song generation."""
+    try:
+        from pathlib import Path
+        import json
+        from rich.table import Table
+
+        console.print("\n[bold blue]🔍 Analyzing Playlist Gaps[/bold blue]\n")
+
+        # Load playlist JSON
+        playlist_file = Path(playlist)
+        if not playlist_file.exists():
+            console.print(f"[bold red]❌ Playlist file not found: {playlist}[/bold red]\n")
+            raise typer.Exit(1)
+
+        with open(playlist_file) as f:
+            data = json.load(f)
+
+        console.print(f"Track: [bold]{data.get('track_title', 'Unknown')}[/bold]")
+        console.print(f"Total prompts: {data.get('total_prompts', 0)}")
+        console.print(f"Total matches: {data.get('total_matches', 0)}\n")
+
+        # Analyze gaps
+        gaps_by_arc = {}
+        low_quality_by_arc = {}
+        good_matches_by_arc = {}
+
+        for arc_name, prompts in data.get('results', {}).items():
+            gaps = []
+            low_quality = []
+            good_matches = []
+
+            for prompt_data in prompts:
+                prompt_num = prompt_data.get('prompt_number')
+                prompt_text = prompt_data.get('prompt_text', '')
+                matches = prompt_data.get('matches', [])
+
+                # Truncate prompt text for display
+                display_text = prompt_text[:60] + "..." if len(prompt_text) > 60 else prompt_text
+
+                if not matches:
+                    # No matches at all
+                    gaps.append((prompt_num, display_text))
+                elif matches and matches[0]['similarity'] < min_similarity:
+                    # Has matches but quality is low
+                    best_score = matches[0]['similarity']
+                    low_quality.append((prompt_num, display_text, best_score))
+                else:
+                    # Good match found
+                    best_score = matches[0]['similarity']
+                    good_matches.append((prompt_num, best_score))
+
+            if gaps or low_quality:
+                gaps_by_arc[arc_name] = gaps
+                low_quality_by_arc[arc_name] = low_quality
+            good_matches_by_arc[arc_name] = good_matches
+
+        # Display results
+        total_gaps = sum(len(g) for g in gaps_by_arc.values())
+        total_low_quality = sum(len(lq) for lq in low_quality_by_arc.values())
+        total_good = sum(len(gm) for gm in good_matches_by_arc.values())
+
+        # Summary table
+        summary_table = Table(title="Gap Analysis Summary", show_header=True, header_style="bold cyan")
+        summary_table.add_column("Category", style="white")
+        summary_table.add_column("Count", justify="right", style="cyan")
+        summary_table.add_column("Percentage", justify="right", style="yellow")
+
+        total = data.get('total_prompts', 1)
+        summary_table.add_row("No matches (need generation)", str(total_gaps), f"{(total_gaps/total*100):.1f}%")
+        summary_table.add_row(f"Low quality (< {min_similarity:.0%})", str(total_low_quality), f"{(total_low_quality/total*100):.1f}%")
+        summary_table.add_row(f"Good matches (≥ {min_similarity:.0%})", str(total_good), f"{(total_good/total*100):.1f}%")
+
+        console.print(summary_table)
+        console.print()
+
+        # Show gaps by arc
+        if total_gaps > 0:
+            console.print("[bold red]❌ Prompts Needing New Generation:[/bold red]\n")
+            for arc_name, gaps in gaps_by_arc.items():
+                if gaps:
+                    console.print(f"[bold]{arc_name}:[/bold]")
+                    for prompt_num, prompt_text in gaps:
+                        console.print(f"  {prompt_num}. {prompt_text}")
+            console.print()
+
+        # Show low quality matches
+        if total_low_quality > 0:
+            console.print(f"[bold yellow]⚠️  Low Quality Matches (< {min_similarity:.0%}):[/bold yellow]\n")
+            for arc_name, low_quality in low_quality_by_arc.items():
+                if low_quality:
+                    console.print(f"[bold]{arc_name}:[/bold]")
+                    for prompt_num, prompt_text, score in low_quality:
+                        console.print(f"  {prompt_num}. {prompt_text} ([yellow]{score:.1%}[/yellow])")
+            console.print()
+
+        # Recommendation
+        songs_to_generate = total_gaps + total_low_quality
+        if songs_to_generate == 0:
+            console.print("[bold green]✅ All prompts have good matches! No new generation needed.[/bold green]\n")
+        else:
+            console.print(f"[bold cyan]💡 Recommendation:[/bold cyan]")
+            console.print(f"Generate approximately [bold]{songs_to_generate}[/bold] new songs")
+            console.print(f"This represents {(songs_to_generate/total*100):.1f}% of the track\n")
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error analyzing playlist gaps")
+        raise typer.Exit(1)
 
 
 @app.command()
@@ -165,49 +471,519 @@ def scaffold_track(
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
     """Create track folder structure from Notion doc."""
-    console.print("\n[bold yellow]🚧 Scaffold track command not yet implemented[/bold yellow]")
-    console.print("This will be implemented in Phase 5\n")
+    try:
+        from ..ingest.notion_parser import NotionParser
+        from pathlib import Path
+
+        config = get_config(config_path)
+
+        console.print("\n[bold blue]📁 Scaffolding Track Folder[/bold blue]\n")
+        console.print(f"Track number: {track_number}")
+        console.print(f"Notion URL: {notion_url}\n")
+
+        # Parse Notion doc
+        console.print("[cyan]Parsing Notion document...[/cyan]")
+        notion_parser = NotionParser(config.notion_api_token)
+        track_metadata = notion_parser.parse_notion_doc(notion_url)
+
+        console.print(f"Track title: [bold]{track_metadata.title}[/bold]\n")
+
+        # Create folder structure
+        track_dir = Path(f"./Tracks/{track_number}")
+
+        if track_dir.exists():
+            console.print(f"[yellow]⚠️  Track folder already exists: {track_dir}[/yellow]")
+            if not typer.confirm("Continue anyway?"):
+                console.print("[red]Cancelled[/red]\n")
+                return
+
+        # Create directories
+        dirs_to_create = [
+            track_dir,
+            track_dir / "Songs",
+            track_dir / "Rendered",
+            track_dir / "metadata"
+        ]
+
+        for dir_path in dirs_to_create:
+            dir_path.mkdir(parents=True, exist_ok=True)
+            console.print(f"✅ Created: {dir_path}")
+
+        # Create metadata file
+        import json
+        metadata_file = track_dir / "metadata" / "track_info.json"
+        metadata_content = {
+            "track_number": track_number,
+            "title": track_metadata.title,
+            "notion_url": notion_url,
+            "duration_target_minutes": track_metadata.duration_target_minutes,
+            "overall_theme": track_metadata.overall_theme,
+            "arcs": [
+                {
+                    "arc_number": arc.arc_number,
+                    "arc_name": arc.arc_name,
+                    "prompts": len(arc.prompts)
+                }
+                for arc in track_metadata.arcs
+            ],
+            "created_at": str(Path.cwd())
+        }
+
+        metadata_file.write_text(json.dumps(metadata_content, indent=2))
+        console.print(f"✅ Created: {metadata_file}")
+
+        # Create README
+        readme_file = track_dir / "README.md"
+        readme_content = f"""# Track {track_number}: {track_metadata.title}
+
+## Overview
+- **Duration Target**: {track_metadata.duration_target_minutes} minutes
+- **Theme**: {track_metadata.overall_theme}
+- **Notion**: [View Document]({notion_url})
+
+## Arcs
+"""
+        for arc in track_metadata.arcs:
+            readme_content += f"\n### Arc {arc.arc_number}: {arc.arc_name}\n"
+            readme_content += f"- Prompts: {len(arc.prompts)}\n"
+
+        readme_file.write_text(readme_content)
+        console.print(f"✅ Created: {readme_file}")
+
+        console.print(f"\n[bold green]✅ Track {track_number} scaffolded successfully![/bold green]")
+        console.print(f"Location: {track_dir}\n")
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error scaffolding track")
+        raise typer.Exit(1)
 
 
 @app.command()
 def track_duration(
     track: Optional[int] = typer.Option(None, "--track", "-t", help="Track number"),
-    current_dir: bool = typer.Option(False, "--current-dir", help="Use current directory")
+    songs_dir: Optional[str] = typer.Option(None, "--songs-dir", "-s", help="Songs directory"),
+    config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
     """Calculate total duration of songs in a track."""
-    console.print("\n[bold yellow]🚧 Track duration command not yet implemented[/bold yellow]")
-    console.print("This will be implemented in Phase 5\n")
+    try:
+        from ..ingest.audio_analyzer import AudioAnalyzer
+        from ..ingest.filename_parser import FilenameParser
+        from pathlib import Path
+
+        console.print("\n[bold blue]⏱️  Calculating Track Duration[/bold blue]\n")
+
+        # Determine songs directory
+        if songs_dir:
+            songs_path = Path(songs_dir)
+        elif track:
+            songs_path = Path(f"./Tracks/{track}/Songs")
+        else:
+            console.print("[red]Error: Provide either --track or --songs-dir[/red]\n")
+            raise typer.Exit(1)
+
+        if not songs_path.exists():
+            console.print(f"[red]Error: Directory not found: {songs_path}[/red]\n")
+            raise typer.Exit(1)
+
+        console.print(f"Scanning: {songs_path}\n")
+
+        # Find all audio files
+        parser = FilenameParser()
+        audio_files = parser.scan_directory(songs_path)
+
+        if not audio_files:
+            console.print("[yellow]No valid audio files found[/yellow]\n")
+            return
+
+        console.print(f"Found {len(audio_files)} songs\n")
+
+        # Analyze durations
+        analyzer = AudioAnalyzer()
+        arc_durations = {}
+        total_duration = 0
+
+        with console.status("[bold green]Analyzing audio files...") as status:
+            for file_path in audio_files:
+                status.update(f"[bold green]Analyzing: {file_path.name}")
+
+                # Get duration
+                analysis = analyzer.analyze(file_path)
+                duration = analysis.duration_seconds or 0
+                total_duration += duration
+
+                # Parse filename
+                components = parser.parse(file_path.name)
+                if components:
+                    arc = components.arc_number
+                    if arc not in arc_durations:
+                        arc_durations[arc] = {'count': 0, 'duration': 0}
+                    arc_durations[arc]['count'] += 1
+                    arc_durations[arc]['duration'] += duration
+
+        # Display results
+        table = Table(title="Duration Summary")
+        table.add_column("Arc", style="cyan")
+        table.add_column("Songs", style="green")
+        table.add_column("Duration", style="yellow")
+        table.add_column("Minutes", style="magenta")
+
+        for arc in sorted(arc_durations.keys()):
+            data = arc_durations[arc]
+            minutes = data['duration'] / 60
+            table.add_row(
+                f"Arc {arc}",
+                str(data['count']),
+                f"{int(data['duration'])}s",
+                f"{minutes:.1f}m"
+            )
+
+        console.print(table)
+
+        # Total
+        total_minutes = total_duration / 60
+        total_hours = total_minutes / 60
+
+        console.print(f"\n[bold]Total Duration:[/bold]")
+        console.print(f"  • {int(total_duration)} seconds")
+        console.print(f"  • {total_minutes:.1f} minutes")
+        console.print(f"  • {total_hours:.2f} hours\n")
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error calculating track duration")
+        raise typer.Exit(1)
 
 
 @app.command()
 def prepare_render(
     track: int = typer.Option(..., "--track", "-t", help="Track number"),
+    playlist: str = typer.Option(..., "--playlist", "-p", help="Path to playlist JSON file"),
+    copy: bool = typer.Option(True, "--copy/--move", help="Copy files (default) or move them"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
-    """Prepare track for rendering (sort and organize songs)."""
-    console.print("\n[bold yellow]🚧 Prepare render command not yet implemented[/bold yellow]")
-    console.print("This will be implemented in Phase 5\n")
+    """Prepare track for rendering by organizing matched songs into track folder."""
+    try:
+        from pathlib import Path
+        import json
+        import shutil
+        from rich.table import Table
+
+        config = get_config(config_path)
+        db = Database(config.database_path)
+
+        console.print("\n[bold blue]🎬 Preparing Track for Render[/bold blue]\n")
+        console.print(f"Track: {track}")
+        console.print(f"Playlist: {playlist}\n")
+
+        # Load playlist
+        playlist_file = Path(playlist)
+        if not playlist_file.exists():
+            console.print(f"[bold red]❌ Playlist file not found: {playlist}[/bold red]\n")
+            raise typer.Exit(1)
+
+        with open(playlist_file) as f:
+            data = json.load(f)
+
+        # Prepare destination
+        track_dir = Path(f"./Tracks/{track}")
+        songs_dir = track_dir / "Songs"
+
+        if not track_dir.exists():
+            console.print(f"[yellow]Track folder doesn't exist. Creating: {track_dir}[/yellow]")
+            songs_dir.mkdir(parents=True, exist_ok=True)
+
+        console.print(f"Destination: {songs_dir}\n")
+
+        # Collect all matched songs
+        songs_to_copy = []
+        for arc_name, prompts in data.get('results', {}).items():
+            for prompt_data in prompts:
+                prompt_num = prompt_data.get('prompt_number')
+                matches = prompt_data.get('matches', [])
+
+                if matches:
+                    # Take the best match
+                    best_match = matches[0]
+                    filename = best_match['filename']
+
+                    # Find the song in database to get source path
+                    song = db.get_song_by_filename(filename)
+                    if song and song.source_path:
+                        source_path = Path(song.source_path)
+                        if source_path.exists():
+                            songs_to_copy.append((source_path, filename, prompt_num, arc_name))
+                        else:
+                            console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
+
+        if not songs_to_copy:
+            console.print("[yellow]No songs to copy. All prompts need new generation.[/yellow]\n")
+            return
+
+        console.print(f"[cyan]Found {len(songs_to_copy)} songs to {'copy' if copy else 'move'}[/cyan]\n")
+
+        # Copy/move files
+        copied_count = 0
+        operation = "Copying" if copy else "Moving"
+
+        for source_path, filename, prompt_num, arc_name in songs_to_copy:
+            dest_path = songs_dir / filename
+
+            try:
+                if copy:
+                    shutil.copy2(source_path, dest_path)
+                else:
+                    shutil.move(str(source_path), str(dest_path))
+
+                copied_count += 1
+                console.print(f"  ✓ {filename} ({arc_name}, prompt {prompt_num})")
+
+            except Exception as e:
+                console.print(f"  [red]✗ Failed to copy {filename}: {e}[/red]")
+
+        console.print(f"\n[bold green]✅ Prepared {copied_count} songs for rendering[/bold green]")
+        console.print(f"Location: {songs_dir}\n")
+
+        # Show summary by arc
+        from collections import defaultdict
+        arc_counts = defaultdict(int)
+        for _, _, _, arc_name in songs_to_copy:
+            arc_counts[arc_name] += 1
+
+        summary_table = Table(title="Songs by Arc", show_header=True, header_style="bold cyan")
+        summary_table.add_column("Arc", style="white")
+        summary_table.add_column("Songs", justify="right", style="cyan")
+
+        for arc_name in sorted(arc_counts.keys()):
+            summary_table.add_row(arc_name, str(arc_counts[arc_name]))
+
+        console.print(summary_table)
+        console.print()
+
+        db.close()
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error preparing render")
+        raise typer.Exit(1)
 
 
 @app.command()
 def post_render(
     track: int = typer.Option(..., "--track", "-t", help="Track number"),
+    rendered_dir: Optional[str] = typer.Option(None, "--rendered-dir", "-r", help="Rendered songs directory (default: Tracks/{N}/Rendered)"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
-    """Import new songs to bank after rendering."""
-    console.print("\n[bold yellow]🚧 Post render command not yet implemented[/bold yellow]")
-    console.print("This will be implemented in Phase 5\n")
+    """Import rendered songs back to the database for future reuse."""
+    try:
+        from pathlib import Path
+        from ..ingest.audio_analyzer import AudioAnalyzer
+        from ..ingest.filename_parser import FilenameParser
+
+        config = get_config(config_path)
+        db = Database(config.database_path)
+
+        console.print("\n[bold blue]📥 Importing Rendered Songs[/bold blue]\n")
+        console.print(f"Track: {track}\n")
+
+        # Determine rendered directory
+        if rendered_dir:
+            rendered_path = Path(rendered_dir)
+        else:
+            rendered_path = Path(f"./Tracks/{track}/Rendered")
+
+        if not rendered_path.exists():
+            console.print(f"[bold red]❌ Rendered directory not found: {rendered_path}[/bold red]\n")
+            console.print("Make sure you've rendered the track first.\n")
+            raise typer.Exit(1)
+
+        console.print(f"Scanning: {rendered_path}\n")
+
+        # Find all audio files
+        audio_extensions = ['.mp3', '.wav', '.m4a', '.flac']
+        audio_files = []
+        for ext in audio_extensions:
+            audio_files.extend(rendered_path.glob(f"*{ext}"))
+
+        if not audio_files:
+            console.print("[yellow]No audio files found in rendered directory.[/yellow]\n")
+            return
+
+        console.print(f"Found {len(audio_files)} audio files\n")
+
+        # Process each file
+        analyzer = AudioAnalyzer()
+        parser = FilenameParser()
+        imported_count = 0
+        skipped_count = 0
+
+        for file_path in audio_files:
+            filename = file_path.name
+
+            # Check if already in database
+            existing = db.get_song_by_filename(filename)
+            if existing:
+                console.print(f"  [yellow]⊘ {filename} (already in database)[/yellow]")
+                skipped_count += 1
+                continue
+
+            try:
+                # Parse filename
+                parsed = parser.parse(filename)
+                if not parsed:
+                    console.print(f"  [red]✗ {filename} (invalid filename format)[/red]")
+                    continue
+
+                # Analyze audio
+                analysis = analyzer.analyze(file_path)
+
+                # Create song model
+                from ..models import Song
+
+                song = Song(
+                    filename=filename,
+                    source_path=str(file_path.absolute()),
+                    arc_number=parsed.arc,
+                    prompt_number=parsed.prompt,
+                    song_number=parsed.song,
+                    order=parsed.order,
+                    bpm=analysis.bpm,
+                    key=analysis.key,
+                    duration_seconds=analysis.duration_seconds,
+                    usage_count=0
+                )
+
+                # Add to database
+                db.add_song(song)
+                imported_count += 1
+                console.print(f"  ✓ {filename} (Arc {song.arc_number}, BPM: {song.bpm:.1f})")
+
+            except Exception as e:
+                console.print(f"  [red]✗ {filename} (error: {e})[/red]")
+
+        console.print(f"\n[bold green]✅ Imported {imported_count} new songs[/bold green]")
+        if skipped_count > 0:
+            console.print(f"Skipped {skipped_count} existing songs\n")
+
+        # Suggest regenerating embeddings
+        if imported_count > 0:
+            console.print("[cyan]💡 Next step: Regenerate embeddings[/cyan]")
+            console.print("   [dim]yarn generate-embeddings[/dim]\n")
+
+        db.close()
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error importing rendered songs")
+        raise typer.Exit(1)
 
 
 @app.command()
 def mark_published(
     track: int = typer.Option(..., "--track", "-t", help="Track number"),
     youtube_url: str = typer.Option(..., "--youtube-url", "-u", help="YouTube video URL"),
+    published_date: Optional[str] = typer.Option(None, "--date", "-d", help="Published date (YYYY-MM-DD, default: today)"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
-    """Mark track as published with YouTube URL."""
-    console.print("\n[bold yellow]🚧 Mark published command not yet implemented[/bold yellow]")
-    console.print("This will be implemented in Phase 6\n")
+    """Mark track as published with YouTube URL and increment usage counts."""
+    try:
+        from pathlib import Path
+        from datetime import datetime
+        import json
+
+        config = get_config(config_path)
+        db = Database(config.database_path)
+
+        console.print("\n[bold blue]📺 Marking Track as Published[/bold blue]\n")
+        console.print(f"Track: {track}")
+        console.print(f"YouTube URL: {youtube_url}\n")
+
+        # Parse or use today's date
+        if published_date:
+            try:
+                pub_date = datetime.strptime(published_date, "%Y-%m-%d")
+            except ValueError:
+                console.print("[red]Invalid date format. Use YYYY-MM-DD[/red]\n")
+                raise typer.Exit(1)
+        else:
+            pub_date = datetime.now()
+
+        # Get track from database
+        track_record = db.get_track_by_number(track)
+        if not track_record:
+            console.print(f"[red]Track {track} not found in database.[/red]")
+            console.print("[yellow]Make sure you've imported the track first.[/yellow]\n")
+            raise typer.Exit(1)
+
+        # Update track with YouTube URL and published date
+        db.mark_track_published(
+            track_id=track_record.id,
+            youtube_url=youtube_url,
+            published_date=pub_date
+        )
+
+        console.print(f"[green]✓ Updated track record[/green]")
+
+        # Get all songs from this track and increment their usage counts
+        track_dir = Path(f"./Tracks/{track}/Songs")
+        if track_dir.exists():
+            audio_extensions = ['.mp3', '.wav', '.m4a', '.flac']
+            audio_files = []
+            for ext in audio_extensions:
+                audio_files.extend(track_dir.glob(f"*{ext}"))
+
+            updated_songs = 0
+            for audio_file in audio_files:
+                filename = audio_file.name
+                song = db.get_song_by_filename(filename)
+                if song:
+                    db.increment_song_usage(song.id)
+                    updated_songs += 1
+
+            console.print(f"[green]✓ Incremented usage count for {updated_songs} songs[/green]\n")
+        else:
+            console.print(f"[yellow]⚠️  Songs directory not found: {track_dir}[/yellow]")
+            console.print("[yellow]Usage counts not updated[/yellow]\n")
+
+        # Save metadata file
+        track_metadata_dir = Path(f"./Tracks/{track}/metadata")
+        track_metadata_dir.mkdir(parents=True, exist_ok=True)
+
+        metadata_file = track_metadata_dir / "published.json"
+        metadata = {
+            "track_number": track,
+            "youtube_url": youtube_url,
+            "published_date": pub_date.strftime("%Y-%m-%d"),
+            "marked_at": datetime.now().isoformat()
+        }
+
+        with open(metadata_file, 'w') as f:
+            json.dump(metadata, f, indent=2)
+
+        console.print(f"[green]✓ Saved metadata: {metadata_file}[/green]\n")
+
+        console.print("[bold green]✅ Track marked as published successfully![/bold green]\n")
+
+        # Show summary
+        from rich.table import Table
+        summary_table = Table(show_header=False, box=None)
+        summary_table.add_column("Field", style="cyan")
+        summary_table.add_column("Value", style="white")
+
+        summary_table.add_row("Track", str(track))
+        summary_table.add_row("YouTube", youtube_url)
+        summary_table.add_row("Published", pub_date.strftime("%Y-%m-%d"))
+        summary_table.add_row("Songs Used", str(updated_songs) if track_dir.exists() else "N/A")
+
+        console.print(summary_table)
+        console.print()
+
+        db.close()
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error marking track as published")
+        raise typer.Exit(1)
 
 
 @app.command()

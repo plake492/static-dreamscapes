@@ -1,0 +1,363 @@
+{
+  "track_title": "Untitled Track",
+  "notion_url": "https://www.notion.so/Track-17-2a8433e57885800ab456d6dd739b5d36",
+  "total_prompts": 19,
+  "total_matches": 27,
+  "results": {
+    "arc_1": [
+      {
+        "prompt_number": 1,
+        "prompt_text": "Ambient synth pad intro, deep bass line, gentle tape hiss, sound of city traffic and rain on glass, slow tempo, 808 drums, synthwave Lofi beat. \u2014 neon rain focus flow",
+        "matches": []
+      },
+      {
+        "prompt_number": 2,
+        "prompt_text": "Distant traffic reverb, warm pad layers, muted reflections, slow, atmospheric synth piece, vinyl crackle. \u2014 neon rain focus flow",
+        "matches": []
+      },
+      {
+        "prompt_number": 3,
+        "prompt_text": "Mellow Lofi beat, filtered piano loop, soft rain ambience, minimal percussion. \u2014 neon rain focus flow",
+        "matches": [
+          {
+            "filename": "B_1_3_19d.mp3",
+            "score": 0.627,
+            "similarity": 0.753,
+            "bpm": 125.0,
+            "key": "C minor",
+            "arc": 1,
+            "duration": 267
+          },
+          {
+            "filename": "B_1_3_19c.mp3",
+            "score": 0.627,
+            "similarity": 0.753,
+            "bpm": 112.5,
+            "key": "G minor",
+            "arc": 1,
+            "duration": 236
+          },
+          {
+            "filename": "A_1_3_19b.mp3",
+            "score": 0.626,
+            "similarity": 0.753,
+            "bpm": 86.5,
+            "key": "F minor",
+            "arc": 1,
+            "duration": 206
+          }
+        ]
+      },
+      {
+        "prompt_number": 4,
+        "prompt_text": "Dark, moody synth drone with slow delay, focused on rain texture and deep bass pads. \u2014 neon rain focus flow",
+        "matches": []
+      }
+    ],
+    "arc_2": [
+      {
+        "prompt_number": 1,
+        "prompt_text": "Mid-tempo Lofi synthwave, clean analog bass groove, rhythmic drum machine, slight vaporwave delay on synth lead, perfect for coding. \u2014 neon rain focus flow",
+        "matches": [
+          {
+            "filename": "A_2_6_19a.mp3",
+            "score": 0.786,
+            "similarity": 0.782,
+            "bpm": 95.3,
+            "key": "D minor",
+            "arc": 2,
+            "duration": 222
+          },
+          {
+            "filename": "A_2_4_19b.mp3",
+            "score": 0.777,
+            "similarity": 0.79,
+            "bpm": 93.8,
+            "key": "A# minor",
+            "arc": 2,
+            "duration": 289
+          },
+          {
+            "filename": "B_2_6_13d.mp3",
+            "score": 0.772,
+            "similarity": 0.805,
+            "bpm": 97.0,
+            "key": "F minor",
+            "arc": 2,
+            "duration": 271
+          }
+        ]
+      },
+      {
+        "prompt_number": 2,
+        "prompt_text": "Steady four-on-the-floor Lofi pulse, clear synth lead with minor key chords, soft percussion. \u2014 neon rain focus flow",
+        "matches": [
+          {
+            "filename": "B_2_6_13c.mp3",
+            "score": 0.632,
+            "similarity": 0.763,
+            "bpm": 117.2,
+            "key": "G minor",
+            "arc": 2,
+            "duration": 279
+          },
+          {
+            "filename": "B_2_6_13d.mp3",
+            "score": 0.624,
+            "similarity": 0.748,
+            "bpm": 97.0,
+            "key": "F minor",
+            "arc": 2,
+            "duration": 271
+          },
+          {
+            "filename": "A_2_4_19b.mp3",
+            "score": 0.623,
+            "similarity": 0.746,
+            "bpm": 93.8,
+            "key": "A# minor",
+            "arc": 2,
+            "duration": 289
+          }
+        ]
+      },
+      {
+        "prompt_number": 3,
+        "prompt_text": "Rhythmic synth chords, driving but mellow pace, focus on clean, productive energy, minimal noise. \u2014 neon rain focus flow",
+        "matches": [
+          {
+            "filename": "B_2_6_13c.mp3",
+            "score": 0.626,
+            "similarity": 0.752,
+            "bpm": 117.2,
+            "key": "G minor",
+            "arc": 2,
+            "duration": 279
+          },
+          {
+            "filename": "B_2_6_13d.mp3",
+            "score": 0.621,
+            "similarity": 0.742,
+            "bpm": 97.0,
+            "key": "F minor",
+            "arc": 2,
+            "duration": 271
+          },
+          {
+            "filename": "B_2_5_13d.mp3",
+            "score": 0.621,
+            "similarity": 0.742,
+            "bpm": 114.8,
+            "key": "F minor",
+            "arc": 2,
+            "duration": 188
+          }
+        ]
+      },
+      {
+        "prompt_number": 4,
+        "prompt_text": "Upbeat Lofi track, smooth synth melody, consistent tempo, light tape warble effect. \u2014 neon rain focus flow",
+        "matches": [
+          {
+            "filename": "B_2_6_13c.mp3",
+            "score": 0.777,
+            "similarity": 0.838,
+            "bpm": 117.2,
+            "key": "G minor",
+            "arc": 2,
+            "duration": 279
+          },
+          {
+            "filename": "B_2_5_19c.mp3",
+            "score": 0.775,
+            "similarity": 0.834,
+            "bpm": 117.2,
+            "key": "F# minor",
+            "arc": 2,
+            "duration": 252
+          },
+          {
+            "filename": "B_2_5_19d.mp3",
+            "score": 0.743,
+            "similarity": 0.836,
+            "bpm": 125.0,
+            "key": "F minor",
+            "arc": 2,
+            "duration": 205
+          }
+        ]
+      }
+    ],
+    "arc_3": [
+      {
+        "prompt_number": 1,
+        "prompt_text": "Minimalist vaporwave chords, deep synth reverb, quiet vinyl crackle, simple drum loop, reflective, slow, emotional Lofi mood. \u2014 neon rain focus flow",
+        "matches": []
+      },
+      {
+        "prompt_number": 2,
+        "prompt_text": "Subdued midnight bass, smooth analog texture, atmospheric synth, very slow and airy feel. \u2014 neon rain focus flow",
+        "matches": []
+      },
+      {
+        "prompt_number": 3,
+        "prompt_text": "Minimal percussion, long-sustained pads, focus on the warmth of the tape hiss and reverb trails. \u2014 neon rain focus flow",
+        "matches": [
+          {
+            "filename": "A_3_8_19a.mp3",
+            "score": 0.615,
+            "similarity": 0.731,
+            "bpm": 148.0,
+            "key": "F major",
+            "arc": 3,
+            "duration": 189
+          },
+          {
+            "filename": "B_3_8_19b.mp3",
+            "score": 0.615,
+            "similarity": 0.73,
+            "bpm": 165.4,
+            "key": "G minor",
+            "arc": 3,
+            "duration": 265
+          },
+          {
+            "filename": "B_3_10_13c.mp3",
+            "score": 0.589,
+            "similarity": 0.679,
+            "bpm": 102.3,
+            "key": "D minor",
+            "arc": 3,
+            "duration": 250
+          }
+        ]
+      }
+    ],
+    "arc_4": [
+      {
+        "prompt_number": 1,
+        "prompt_text": "Warm analog synth pad, slowly fading Lofi beat, long gentle delay, dissolving into rain and tape static ambience. \u2014 neon rain focus flow",
+        "matches": []
+      },
+      {
+        "prompt_number": 2,
+        "prompt_text": "Final section, ambient track focused purely on rain textures, white noise, and distant synth drone, no percussion. \u2014 neon rain focus flow",
+        "matches": [
+          {
+            "filename": "B_4_12_19d.mp3",
+            "score": 0.601,
+            "similarity": 0.702,
+            "bpm": 127.8,
+            "key": "A# major",
+            "arc": 4,
+            "duration": 187
+          },
+          {
+            "filename": "B_4_12_19c.mp3",
+            "score": 0.6,
+            "similarity": 0.7,
+            "bpm": 110.3,
+            "key": "G minor",
+            "arc": 4,
+            "duration": 218
+          },
+          {
+            "filename": "A_4_12_19a.mp3",
+            "score": 0.599,
+            "similarity": 0.698,
+            "bpm": 119.7,
+            "key": "G# major",
+            "arc": 4,
+            "duration": 155
+          }
+        ]
+      },
+      {
+        "prompt_number": 3,
+        "prompt_text": "Analog fade-out, final synth chord sustaining, tape static takeover, CRT hum dissolving into silence. \u2014 neon rain focus flow",
+        "matches": [
+          {
+            "filename": "B_4_13_13b.mp3",
+            "score": 0.606,
+            "similarity": 0.712,
+            "bpm": 125.0,
+            "key": "A# major",
+            "arc": 4,
+            "duration": 219
+          },
+          {
+            "filename": "A_4_13_13a.mp3",
+            "score": 0.605,
+            "similarity": 0.711,
+            "bpm": 122.3,
+            "key": "F major",
+            "arc": 4,
+            "duration": 213
+          },
+          {
+            "filename": "B_4_12_13d.mp3",
+            "score": 0.596,
+            "similarity": 0.692,
+            "bpm": 122.3,
+            "key": "G minor",
+            "arc": 4,
+            "duration": 272
+          }
+        ]
+      },
+      {
+        "prompt_number": 4,
+        "prompt_text": "Thumbnail: CRT + Rain Window + Magenta City Lights (High Contrast)",
+        "matches": []
+      },
+      {
+        "prompt_number": 5,
+        "prompt_text": "Chapters: Add phase markers and tracklist",
+        "matches": []
+      },
+      {
+        "prompt_number": 6,
+        "prompt_text": "Pin Comment: CTA + timestamps in top comment",
+        "matches": []
+      },
+      {
+        "prompt_number": 7,
+        "prompt_text": "Playlist: Add to: \u201cRainy Coding Nights\u201d + \u201cNeon Focus Mixes\u201d",
+        "matches": [
+          {
+            "filename": "B_4_11_13d.mp3",
+            "score": 0.552,
+            "similarity": 0.603,
+            "bpm": 140.6,
+            "key": "G major",
+            "arc": 4,
+            "duration": 169
+          },
+          {
+            "filename": "A_3_9_13b.mp3",
+            "score": 0.459,
+            "similarity": 0.617,
+            "bpm": 119.7,
+            "key": "D minor",
+            "arc": 3,
+            "duration": 293
+          },
+          {
+            "filename": "B_2_6_13c.mp3",
+            "score": 0.371,
+            "similarity": 0.643,
+            "bpm": 117.2,
+            "key": "G minor",
+            "arc": 2,
+            "duration": 279
+          }
+        ]
+      },
+      {
+        "prompt_number": 8,
+        "prompt_text": "Analytics: Check CTR & Avg View Duration (48 hrs)",
+        "matches": []
+      }
+    ]
+  }
+}

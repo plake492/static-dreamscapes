@@ -420,3 +420,26 @@ class Database:
             LIMIT ?
         """, (limit,))
         return [self._row_to_song(row) for row in cursor.fetchall()]
+
+    def increment_song_usage(self, song_id: str):
+        """Increment the usage count for a song."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            UPDATE songs
+            SET times_used = times_used + 1
+            WHERE id = ?
+        """, (song_id,))
+        self.conn.commit()
+
+    def mark_track_published(self, track_id: str, youtube_url: str, published_date: datetime):
+        """Mark a track as published with YouTube URL and date."""
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            UPDATE tracks
+            SET youtube_url = ?,
+                status = ?,
+                rendered_at = ?,
+                updated_at = ?
+            WHERE id = ?
+        """, (youtube_url, TrackStatus.PUBLISHED.value, published_date, datetime.now(), track_id))
+        self.conn.commit()
