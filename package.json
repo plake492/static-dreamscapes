@@ -9,6 +9,7 @@
     "init-db": "source venv/bin/activate && python3 -m src.cli.main init-db",
     "import-songs": "source venv/bin/activate && python3 -m src.cli.main import-songs",
     "import:force": "source venv/bin/activate && python3 -m src.cli.main import-songs --force",
+    "batch-import": "source venv/bin/activate && python3 -m src.cli.main batch-import",
     "generate-embeddings": "source venv/bin/activate && python3 -m src.cli.main generate-embeddings",
     "query": "source venv/bin/activate && python3 -m src.cli.main query",
     "gaps": "source venv/bin/activate && python3 -m src.cli.main playlist-gaps",

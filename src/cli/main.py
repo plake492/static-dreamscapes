@@ -707,10 +707,10 @@ def prepare_render(
                     best_match = matches[0]
                     filename = best_match['filename']
 
-                    # Find the song in database to get source path
+                    # Find the song in database to get file path
                     song = db.get_song_by_filename(filename)
-                    if song and song.source_path:
-                        source_path = Path(song.source_path)
+                    if song and song.file_path:
+                        source_path = Path(song.file_path)
                         if source_path.exists():
                             songs_to_copy.append((source_path, filename, prompt_num, arc_name))
                         else:
@@ -1091,6 +1091,165 @@ def stats(
     except Exception as e:
         console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
         raise typer.Exit(code=1)
+
+
+@app.command()
+def batch_import(
+    folder_id: str = typer.Option(..., "--folder-id", "-f", help="Notion folder/page ID containing track pages"),
+    base_dir: str = typer.Option("./Tracks", "--base-dir", "-d", help="Base directory for track folders"),
+    skip_existing: bool = typer.Option(True, "--skip-existing/--reimport", help="Skip tracks already in database"),
+    yes: bool = typer.Option(False, "--yes", "-y", help="Skip confirmation prompt"),
+    config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
+):
+    """Batch import all tracks from a Notion folder."""
+    try:
+        from notion_client import Client
+        import re
+        from rich.progress import Progress, SpinnerColumn, TextColumn
+
+        config = get_config(config_path)
+        db = Database(config.database_path)
+
+        console.print("\n[bold blue]📦 Batch Import from Notion Folder[/bold blue]\n")
+        console.print(f"Folder ID: {folder_id}")
+        console.print(f"Base directory: {base_dir}\n")
+
+        # Initialize Notion client
+        client = Client(auth=config.notion_api_token)
+
+        # Get child pages from folder
+        console.print("[cyan]Fetching track pages from Notion...[/cyan]")
+        blocks = client.blocks.children.list(block_id=folder_id)
+
+        # Find all track pages
+        track_pages = []
+        for block in blocks['results']:
+            if block['type'] == 'child_page':
+                title = block['child_page']['title']
+                page_id = block['id']
+
+                # Check if it starts with "Track"
+                if title.startswith('Track'):
+                    # Extract track number
+                    match = re.search(r'Track\s+(\d+)', title)
+                    track_num = int(match.group(1)) if match else None
+
+                    if track_num:
+                        track_pages.append({
+                            'title': title,
+                            'id': page_id,
+                            'number': track_num,
+                            'url': f"https://www.notion.so/{page_id.replace('-', '')}"
+                        })
+
+        # Sort by track number
+        track_pages.sort(key=lambda x: x['number'])
+
+        console.print(f"[green]Found {len(track_pages)} track pages[/green]\n")
+
+        if not track_pages:
+            console.print("[yellow]No track pages found in folder.[/yellow]\n")
+            return
+
+        # Show tracks found
+        tracks_table = Table(title="Tracks Found", show_header=True, header_style="bold cyan")
+        tracks_table.add_column("Track", style="cyan", width=8)
+        tracks_table.add_column("Title", style="white")
+        tracks_table.add_column("Songs Dir", style="dim")
+
+        for track in track_pages:
+            songs_dir = f"{base_dir}/{track['number']}/Songs"
+            tracks_table.add_row(
+                str(track['number']),
+                track['title'][:60] + "..." if len(track['title']) > 60 else track['title'],
+                songs_dir
+            )
+
+        console.print(tracks_table)
+        console.print()
+
+        # Confirm before proceeding
+        if not yes and not typer.confirm("Proceed with batch import?"):
+            console.print("[yellow]Cancelled[/yellow]\n")
+            return
+
+        # Import each track
+        from ..ingest.metadata_extractor import MetadataExtractor
+        from ..ingest.notion_parser import NotionParser
+        from ..ingest.audio_analyzer import AudioAnalyzer
+
+        # Initialize components
+        notion_parser = NotionParser()
+        audio_analyzer = AudioAnalyzer()
+        extractor = MetadataExtractor(db, notion_parser, audio_analyzer)
+
+        imported_count = 0
+        skipped_count = 0
+        error_count = 0
+
+        for i, track_info in enumerate(track_pages, 1):
+            track_num = track_info['number']
+            track_title = track_info['title']
+            notion_url = track_info['url']
+
+            console.print(f"\n[bold cyan]({i}/{len(track_pages)})[/bold cyan] Track {track_num}: {track_title[:50]}...")
+
+            # Check if already imported
+            if skip_existing:
+                existing = db.get_track_by_notion_url(notion_url)
+                if existing:
+                    console.print(f"  [yellow]⊘ Already imported[/yellow]")
+                    skipped_count += 1
+                    continue
+
+            # Find songs directory
+            songs_dir = Path(base_dir) / str(track_num) / "Songs"
+
+            if not songs_dir.exists():
+                console.print(f"  [red]✗ Songs directory not found: {songs_dir}[/red]")
+                error_count += 1
+                continue
+
+            # Import
+            try:
+                track, songs = extractor.import_track_from_notion(
+                    notion_url=notion_url,
+                    songs_dir=songs_dir,
+                    force_reanalyze=False
+                )
+
+                console.print(f"  [green]✓ Imported {len(songs)} songs[/green]")
+                imported_count += 1
+
+            except Exception as e:
+                console.print(f"  [red]✗ Error: {str(e)[:100]}[/red]")
+                logger.exception(f"Failed to import track {track_num}")
+                error_count += 1
+
+        # Summary
+        console.print("\n[bold]Batch Import Summary[/bold]")
+        summary_table = Table(show_header=False, box=None)
+        summary_table.add_column("Status", style="cyan")
+        summary_table.add_column("Count", justify="right", style="white")
+
+        summary_table.add_row("✓ Imported", str(imported_count))
+        summary_table.add_row("⊘ Skipped", str(skipped_count))
+        summary_table.add_row("✗ Errors", str(error_count))
+        summary_table.add_row("Total", str(len(track_pages)))
+
+        console.print(summary_table)
+        console.print()
+
+        if imported_count > 0:
+            console.print("[cyan]💡 Next step: Regenerate embeddings[/cyan]")
+            console.print("   [dim]yarn generate-embeddings[/dim]\n")
+
+        db.close()
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error in batch import")
+        raise typer.Exit(1)
 
 
 @app.command()

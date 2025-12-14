@@ -192,7 +192,41 @@ class NotionParser:
                 text = self._extract_text(block['paragraph'])
                 markdown_lines.append(text)
 
+            elif block_type == 'table':
+                # Notion tables need to fetch child blocks (rows)
+                table_id = block['id']
+                table_markdown = self._convert_table_to_markdown(table_id)
+                markdown_lines.append(table_markdown)
+
         return "\n".join(markdown_lines)
+
+    def _convert_table_to_markdown(self, table_id: str) -> str:
+        """Convert a Notion table to markdown format."""
+        try:
+            # Fetch table rows (child blocks of the table)
+            response = self.client.blocks.children.list(block_id=table_id)
+            rows = response['results']
+
+            if not rows:
+                return ""
+
+            markdown_rows = []
+            for row in rows:
+                if row['type'] == 'table_row':
+                    cells = row['table_row']['cells']
+                    # Extract text from each cell
+                    cell_texts = []
+                    for cell in cells:
+                        cell_text = "".join([text_obj.get('plain_text', '') for text_obj in cell])
+                        cell_texts.append(cell_text)
+                    # Create markdown table row: | cell1 | cell2 | cell3 |
+                    markdown_rows.append("| " + " | ".join(cell_texts) + " |")
+
+            return "\n".join(markdown_rows)
+
+        except Exception as e:
+            logger.warning(f"Could not convert table {table_id} to markdown: {e}")
+            return ""
 
     def _extract_text(self, rich_text_block: Dict) -> str:
         """Extract plain text from Notion rich text object."""
@@ -200,61 +234,53 @@ class NotionParser:
         return "".join([text_obj.get('plain_text', '') for text_obj in rich_text])
 
     def _parse_track_overview(self, markdown: str) -> Dict:
-        """Parse the TRACK OVERVIEW section."""
+        """Parse the TRACK OVERVIEW section (table format only)."""
         result = {}
 
-        # Title - try multiple formats
-        # Format 1: **Title:** **title**
-        title_match = re.search(r'\*\*Title:\*\*\s*\*\*(.*?)\*\*', markdown, re.IGNORECASE)
-        if not title_match:
-            # Format 2: ✅ SEO Title: title
-            title_match = re.search(r'(?:✅|☑)\s*SEO Title:\s*(.+?)(?:\n|$)', markdown, re.IGNORECASE)
+        # Title: | Title | 3HR Coding Nebula — ... |
+        title_match = re.search(r'\|\s*Title\s*\|\s*(.+?)\s*\|', markdown, re.IGNORECASE)
         result['title'] = title_match.group(1).strip() if title_match else "Untitled Track"
 
-        # Filename - try multiple formats
-        # Format 1: **Filename:** filename.mp4
-        filename_match = re.search(r'\*\*Filename:\*\*\s*(.+?)\.mp4', markdown, re.IGNORECASE)
-        if not filename_match:
-            # Format 2: ✅ Filename: filename.mp4
-            filename_match = re.search(r'(?:✅|☑)\s*Filename:\s*(.+?)\.mp4', markdown, re.IGNORECASE)
-        result['output_filename'] = filename_match.group(1).strip() + ".mp4" if filename_match else "output.mp4"
+        # Filename: | Filename | coding-nebula....mp4 |
+        filename_match = re.search(r'\|\s*Filename\s*\|\s*(.+?\.mp4)\s*\|', markdown, re.IGNORECASE)
+        result['output_filename'] = filename_match.group(1).strip() if filename_match else "output.mp4"
 
-        # Upload schedule
-        schedule_match = re.search(r'\*\*Upload Schedule:\*\*\s*\*\*(.+?)\*\*', markdown, re.IGNORECASE)
+        # Upload schedule: | Upload Schedule | Sunday @ 10 AM ET |
+        schedule_match = re.search(r'\|\s*Upload Schedule\s*\|\s*(.+?)\s*\|', markdown, re.IGNORECASE)
         result['upload_schedule'] = schedule_match.group(1).strip() if schedule_match else None
 
-        # Duration
-        duration_match = re.search(r'\*\*Duration:\*\*\s*(\d+)\s*hour', markdown, re.IGNORECASE)
+        # Duration: | Duration | 3 hours |
+        duration_match = re.search(r'\|\s*Duration\s*\|\s*(\d+)\s*hours?\s*\|', markdown, re.IGNORECASE)
         duration_hours = int(duration_match.group(1)) if duration_match else 3
         result['duration_target_minutes'] = duration_hours * 60
 
-        # Mood arc
-        mood_match = re.search(r'\*\*Mood Arc:\*\*\s*(.+?)(?:\n|$)', markdown, re.IGNORECASE)
+        # Mood arc: | Mood Arc | Neon Quiet → Tech Pulse → ... |
+        mood_match = re.search(r'\|\s*Mood Arc\s*\|\s*(.+?)\s*\|', markdown, re.IGNORECASE)
         result['mood_arc'] = mood_match.group(1).strip() if mood_match else None
 
-        # CTR target
-        ctr_match = re.search(r'\*\*CTR Target:\*\*\s*(.+?)(?:\n|$)', markdown, re.IGNORECASE)
+        # CTR target: | CTR Target | 2.8–4.0% |
+        ctr_match = re.search(r'\|\s*CTR Target\s*\|\s*(.+?)\s*\|', markdown, re.IGNORECASE)
         result['ctr_target'] = ctr_match.group(1).strip() if ctr_match else None
 
-        # Retention target
-        retention_match = re.search(r'\*\*Retention Target:\*\*\s*(.+?)(?:\n|$)', markdown, re.IGNORECASE)
+        # Retention target: | Retention Target | 28–38 min |
+        retention_match = re.search(r'\|\s*Retention Target\s*\|\s*(.+?)\s*\|', markdown, re.IGNORECASE)
         result['retention_target'] = retention_match.group(1).strip() if retention_match else None
 
         return result
 
     def _parse_seo_section(self, markdown: str) -> Dict:
-        """Parse hashtags and tags."""
+        """Parse hashtags and tags (new format only)."""
         result = {'visible_hashtags': [], 'hidden_tags': []}
 
-        # Visible hashtags
-        hashtags_match = re.search(r'\*\*Visible Hashtags:\*\*\s*(.+?)(?:\n|$)', markdown, re.IGNORECASE)
+        # Visible hashtags: `#LoFi #Synthwave #CodingMusic`
+        hashtags_match = re.search(r'(?:Visible Hashtags|### Visible Hashtags)\s*[:\n]\s*`([^`]+)`', markdown, re.IGNORECASE)
         if hashtags_match:
             hashtags_text = hashtags_match.group(1)
             tags = [tag.strip() for tag in hashtags_text.split('#') if tag.strip()]
             result['visible_hashtags'] = [f"#{tag}" for tag in tags]
 
-        # Hidden tags
-        hidden_match = re.search(r'\*\*Hidden Tags.*?:\*\*\s*(.+?)(?:\n|###)', markdown, re.IGNORECASE | re.DOTALL)
+        # Hidden tags: `lofistudy,lofimix,synthwave`
+        hidden_match = re.search(r'(?:Hidden Tags|### Hidden Tags).*?[:\n]\s*`([^`]+)`', markdown, re.IGNORECASE | re.DOTALL)
         if hidden_match:
             tags_text = hidden_match.group(1)
             tags = [tag.strip() for tag in tags_text.replace('\n', '').split(',') if tag.strip()]
