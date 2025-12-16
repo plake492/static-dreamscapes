@@ -500,7 +500,11 @@ def scaffold_track(
         # Create directories
         dirs_to_create = [
             track_dir,
+            track_dir / "1",
+            track_dir / "2",
             track_dir / "Songs",
+            track_dir / "Image",
+            track_dir / "Video",
             track_dir / "Rendered",
             track_dir / "metadata"
         ]
@@ -967,6 +971,8 @@ def render(
         bg_video = track_dir / "Video" / f"{track}.mp4"
         songs_dir = track_dir / "Songs"
         image_dir = track_dir / "Image"
+        folder_1_dir = track_dir / "1"
+        folder_2_dir = track_dir / "2"
 
         # Create timestamped output directory
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -997,7 +1003,37 @@ def render(
             console.print(f"[red]❌ Songs directory not found: {songs_dir}[/red]\n")
             raise typer.Exit(1)
 
-        # Find all MP3 files
+        # Prepend files from folders 1 and 2 into Songs
+        console.print("[cyan]Prepending audio files from folders 1 and 2...[/cyan]")
+
+        files_moved = 0
+
+        # Move files from folder 1/ with A_ prefix into Songs/
+        if folder_1_dir.exists():
+            folder_1_files = sorted(folder_1_dir.glob("*.mp3"))
+            for audio_file in folder_1_files:
+                dest_name = f"A_{audio_file.name}"
+                dest_path = songs_dir / dest_name
+                shutil.move(str(audio_file), str(dest_path))
+                files_moved += 1
+            if folder_1_files:
+                console.print(f"[green]✓[/green] Moved {len(folder_1_files)} files from folder 1/ to Songs/ with A_ prefix")
+
+        # Move files from folder 2/ with B_ prefix into Songs/
+        if folder_2_dir.exists():
+            folder_2_files = sorted(folder_2_dir.glob("*.mp3"))
+            for audio_file in folder_2_files:
+                dest_name = f"B_{audio_file.name}"
+                dest_path = songs_dir / dest_name
+                shutil.move(str(audio_file), str(dest_path))
+                files_moved += 1
+            if folder_2_files:
+                console.print(f"[green]✓[/green] Moved {len(folder_2_files)} files from folder 2/ to Songs/ with B_ prefix")
+
+        if files_moved > 0:
+            console.print(f"[cyan]Total files prepended:[/cyan] {files_moved}\n")
+
+        # Find all MP3 files in Songs directory
         mp3_files = sorted(songs_dir.glob("*.mp3"))
 
         if not mp3_files:
