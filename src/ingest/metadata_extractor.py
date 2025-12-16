@@ -58,8 +58,12 @@ class MetadataExtractor:
         logger.info("Parsing Notion document...")
         notion_metadata = self.notion_parser.parse_notion_doc(notion_url)
 
-        # 2. Create Track record
-        track = self._create_track_from_notion(notion_metadata)
+        # 2. Extract track number and folder from path
+        # Expected path format: "./Tracks/22/Songs" -> track_number=22, track_folder="Tracks/22"
+        track_number, track_folder = self._extract_track_info_from_path(songs_dir)
+
+        # 3. Create Track record
+        track = self._create_track_from_notion(notion_metadata, track_number, track_folder)
 
         # Check if track already exists
         existing_track = self.db.get_track_by_notion_url(notion_url)
@@ -99,7 +103,49 @@ class MetadataExtractor:
 
         return track, songs
 
-    def _create_track_from_notion(self, notion_metadata: NotionTrackMetadata) -> Track:
+    def _extract_track_info_from_path(self, songs_dir: Path) -> tuple[Optional[int], Optional[str]]:
+        """
+        Extract track number and folder from songs directory path.
+
+        Args:
+            songs_dir: Path to songs directory (e.g., "./Tracks/22/Songs")
+
+        Returns:
+            Tuple of (track_number, track_folder)
+            Example: (22, "Tracks/22")
+        """
+        try:
+            # Convert to absolute path and get parts
+            parts = songs_dir.resolve().parts
+
+            # Look for "Tracks" directory in the path
+            for i, part in enumerate(parts):
+                if part == "Tracks" and i + 1 < len(parts):
+                    # Next part should be the track number
+                    track_num_str = parts[i + 1]
+                    try:
+                        track_number = int(track_num_str)
+                        # Build track folder path (e.g., "Tracks/22")
+                        track_folder = f"Tracks/{track_num_str}"
+                        logger.info(f"Extracted track info: number={track_number}, folder={track_folder}")
+                        return track_number, track_folder
+                    except ValueError:
+                        logger.warning(f"Could not parse track number from path part: {track_num_str}")
+                        return None, None
+
+            logger.warning(f"Could not find Tracks directory in path: {songs_dir}")
+            return None, None
+
+        except Exception as e:
+            logger.error(f"Error extracting track info from path {songs_dir}: {e}")
+            return None, None
+
+    def _create_track_from_notion(
+        self,
+        notion_metadata: NotionTrackMetadata,
+        track_number: Optional[int] = None,
+        track_folder: Optional[str] = None
+    ) -> Track:
         """Create Track model from Notion metadata."""
         import json
 
@@ -116,6 +162,8 @@ class MetadataExtractor:
             hidden_tags=notion_metadata.hidden_tags,
             ctr_target=notion_metadata.ctr_target,
             retention_target=notion_metadata.retention_target,
+            track_number=track_number,
+            track_folder=track_folder,
             notion_content_json=json.dumps(notion_metadata.raw_notion_content) if notion_metadata.raw_notion_content else None
         )
 

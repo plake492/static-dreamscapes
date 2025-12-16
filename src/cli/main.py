@@ -936,19 +936,57 @@ def render(
         from pathlib import Path
         from datetime import datetime
         import subprocess
+        import re
+        import shutil
 
         console.print(f"\n[bold blue]🎬 Rendering Track {track}[/bold blue]\n")
+
+        # Get track info from database
+        track_title = None
+        output_filename = None
+        try:
+            db = Database()
+            cursor = db.conn.cursor()
+            # Try to find by track_number first, then by id
+            cursor.execute("SELECT title, output_filename FROM tracks WHERE track_number = ? OR id = ?", (track, str(track)))
+            result = cursor.fetchone()
+            if result:
+                track_title = result[0]
+                output_filename = result[1]
+                console.print(f"[cyan]Track title:[/cyan] {track_title}")
+                if output_filename:
+                    console.print(f"[cyan]Output filename:[/cyan] {output_filename}\n")
+                else:
+                    console.print()
+            db.close()
+        except Exception as e:
+            logger.warning(f"Could not fetch track info: {e}")
 
         # Setup paths
         track_dir = Path(f"Tracks/{track}")
         bg_video = track_dir / "Video" / f"{track}.mp4"
         songs_dir = track_dir / "Songs"
+        image_dir = track_dir / "Image"
 
         # Create timestamped output directory
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_dir = Path(f"Rendered/{track}/output_{timestamp}")
         output_dir.mkdir(parents=True, exist_ok=True)
-        output_file = output_dir / "output.mp4"
+
+        # Create filename from database field or sanitized title
+        if output_filename:
+            # Use the filename from Notion doc (already formatted)
+            # Ensure it ends with .mp4
+            if not output_filename.endswith('.mp4'):
+                output_filename = f"{output_filename}.mp4"
+            output_file = output_dir / output_filename
+        elif track_title:
+            # Fallback: Sanitize title for filename
+            sanitized_title = re.sub(r'[^\w\s-]', '', track_title)
+            sanitized_title = re.sub(r'[-\s]+', '_', sanitized_title).strip('_')
+            output_file = output_dir / f"{sanitized_title}.mp4"
+        else:
+            output_file = output_dir / "output.mp4"
 
         # Validate inputs
         if not bg_video.exists():
@@ -1106,6 +1144,18 @@ def render(
         if result.returncode == 0:
             console.print(f"\n[bold green]✅ Render complete![/bold green]")
             console.print(f"[cyan]Output:[/cyan] {output_file}\n")
+
+            # Copy Image folder to output directory
+            if image_dir.exists():
+                output_image_dir = output_dir / "Image"
+                try:
+                    shutil.copytree(image_dir, output_image_dir)
+                    console.print(f"[green]✓[/green] Copied Image folder to {output_image_dir}")
+                except Exception as e:
+                    logger.warning(f"Could not copy Image folder: {e}")
+                    console.print(f"[yellow]⚠[/yellow] Could not copy Image folder: {e}")
+            else:
+                console.print(f"[yellow]⚠[/yellow] No Image folder found at {image_dir}")
         else:
             console.print(f"\n[bold red]❌ Render failed with exit code {result.returncode}[/bold red]\n")
             raise typer.Exit(1)
