@@ -85,6 +85,12 @@ temp/
 # Node modules (if any)
 node_modules/
 
+# Environment variables and secrets (NEVER commit!)
+.env
+.env.local
+.env.*.local
+*.env
+
 # Config (if contains secrets)
 # Uncomment if you have API keys in config
 # config/settings.yaml
