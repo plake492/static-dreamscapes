@@ -1,0 +1,587 @@
+{
+  "track_title": "Pre-Dawn CRT Desk \ud83c\udf05 3HR LoFi & Synthwave Mix \u2014 Sunrise Coding Focus (Royalty Free)",
+  "notion_url": "https://www.notion.so/Track-24-Pre-Dawn-CRT-Desk-3HR-LoFi-Synthwave-Mix-Sunrise-Coding-Focus-Royalty-Free-2c8433e5788580d19582d4717cb767b4",
+  "total_prompts": 13,
+  "total_matches": 55,
+  "results": {
+    "arc_1": [
+      {
+        "prompt_number": 1,
+        "prompt_text": "soft ambient pads, distant city hush, analog warmth, minimal motion, pre-dawn stillness \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "B_1_1_20d.mp3",
+            "score": 0.687,
+            "similarity": 0.873,
+            "bpm": 117.2,
+            "key": "F# major",
+            "arc": 1,
+            "duration": 224
+          },
+          {
+            "filename": "A_1_1_20b.mp3",
+            "score": 0.687,
+            "similarity": 0.873,
+            "bpm": 133.9,
+            "key": "F# minor",
+            "arc": 1,
+            "duration": 273
+          },
+          {
+            "filename": "B_1_1_20c.mp3",
+            "score": 0.687,
+            "similarity": 0.873,
+            "bpm": 133.9,
+            "key": "C minor",
+            "arc": 1,
+            "duration": 197
+          },
+          {
+            "filename": "A_1_1_22a.mp3",
+            "score": 0.676,
+            "similarity": 0.853,
+            "bpm": 127.8,
+            "key": "F minor",
+            "arc": 1,
+            "duration": 211
+          },
+          {
+            "filename": "b_1_1_22f.mp3",
+            "score": 0.676,
+            "similarity": 0.852,
+            "bpm": 112.5,
+            "key": "G# major",
+            "arc": 1,
+            "duration": 291
+          }
+        ]
+      },
+      {
+        "prompt_number": 2,
+        "prompt_text": "slow vaporwave chord wash, subtle tape flutter, deep space between notes, night dissolving \u2014 vaporwave synthwave lofi",
+        "matches": []
+      },
+      {
+        "prompt_number": 3,
+        "prompt_text": "CRT-like drone tones, gentle modulation, calm nocturnal energy \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "b_1_3_22e.mp3",
+            "score": 0.633,
+            "similarity": 0.766,
+            "bpm": 114.8,
+            "key": "G minor",
+            "arc": 1,
+            "duration": 173
+          },
+          {
+            "filename": "b_1_3_22d.mp3",
+            "score": 0.633,
+            "similarity": 0.765,
+            "bpm": 125.0,
+            "key": "E major",
+            "arc": 1,
+            "duration": 210
+          },
+          {
+            "filename": "A_1_3_22a.mp3",
+            "score": 0.624,
+            "similarity": 0.747,
+            "bpm": 106.1,
+            "key": "F# major",
+            "arc": 1,
+            "duration": 259
+          },
+          {
+            "filename": "A_1_3_22b.mp3",
+            "score": 0.623,
+            "similarity": 0.746,
+            "bpm": 102.3,
+            "key": "G# minor",
+            "arc": 1,
+            "duration": 240
+          },
+          {
+            "filename": "A_1_1_22a.mp3",
+            "score": 0.613,
+            "similarity": 0.726,
+            "bpm": 127.8,
+            "key": "F minor",
+            "arc": 1,
+            "duration": 211
+          }
+        ]
+      }
+    ],
+    "arc_2": [
+      {
+        "prompt_number": 4,
+        "prompt_text": "warm lo-fi pulse with muted drums, analog bass foundation, early light emerging \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "b_2_4_22c.mp3",
+            "score": 0.665,
+            "similarity": 0.83,
+            "bpm": 102.3,
+            "key": "G# major",
+            "arc": 2,
+            "duration": 173
+          },
+          {
+            "filename": "A_2_4_22b.mp3",
+            "score": 0.664,
+            "similarity": 0.828,
+            "bpm": 104.2,
+            "key": "G# minor",
+            "arc": 2,
+            "duration": 207
+          },
+          {
+            "filename": "b_2_4_22d.mp3",
+            "score": 0.664,
+            "similarity": 0.828,
+            "bpm": 100.4,
+            "key": "E minor",
+            "arc": 2,
+            "duration": 195
+          },
+          {
+            "filename": "A_2_4_22a.mp3",
+            "score": 0.664,
+            "similarity": 0.828,
+            "bpm": 100.4,
+            "key": "D minor",
+            "arc": 2,
+            "duration": 173
+          },
+          {
+            "filename": "B_2_6_18c.mp3",
+            "score": 0.656,
+            "similarity": 0.812,
+            "bpm": 95.3,
+            "key": "A minor",
+            "arc": 2,
+            "duration": 265
+          }
+        ]
+      },
+      {
+        "prompt_number": 5,
+        "prompt_text": "pastel-toned synth chords, soft static texture, relaxed forward motion \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "A_2_5_21b.mp3",
+            "score": 0.675,
+            "similarity": 0.85,
+            "bpm": 102.3,
+            "key": "A minor",
+            "arc": 2,
+            "duration": 229
+          },
+          {
+            "filename": "B_2_5_21c.mp3",
+            "score": 0.675,
+            "similarity": 0.849,
+            "bpm": 86.5,
+            "key": "G major",
+            "arc": 2,
+            "duration": 236
+          },
+          {
+            "filename": "A_2_5_21a.mp3",
+            "score": 0.671,
+            "similarity": 0.843,
+            "bpm": 133.9,
+            "key": "D# major",
+            "arc": 2,
+            "duration": 152
+          },
+          {
+            "filename": "A_2_5_15a.mp3",
+            "score": 0.667,
+            "similarity": 0.834,
+            "bpm": 122.3,
+            "key": "G# major",
+            "arc": 2,
+            "duration": 209
+          },
+          {
+            "filename": "A_2_5_15b.mp3",
+            "score": 0.667,
+            "similarity": 0.834,
+            "bpm": 122.3,
+            "key": "G minor",
+            "arc": 2,
+            "duration": 239
+          }
+        ]
+      },
+      {
+        "prompt_number": 6,
+        "prompt_text": "subtle arpeggios with smooth filtering, restrained rhythm, focused calm \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "b_2_6_22c.mp3",
+            "score": 0.668,
+            "similarity": 0.837,
+            "bpm": 133.9,
+            "key": "D major",
+            "arc": 2,
+            "duration": 175
+          },
+          {
+            "filename": "b_2_6_22d.mp3",
+            "score": 0.653,
+            "similarity": 0.805,
+            "bpm": 95.3,
+            "key": "G minor",
+            "arc": 2,
+            "duration": 192
+          },
+          {
+            "filename": "A_2_6_22a.mp3",
+            "score": 0.652,
+            "similarity": 0.805,
+            "bpm": 98.7,
+            "key": "D major",
+            "arc": 2,
+            "duration": 200
+          },
+          {
+            "filename": "A_2_6_22b.mp3",
+            "score": 0.651,
+            "similarity": 0.802,
+            "bpm": 100.4,
+            "key": "D# minor",
+            "arc": 2,
+            "duration": 177
+          },
+          {
+            "filename": "A_2_6_18b.mp3",
+            "score": 0.617,
+            "similarity": 0.735,
+            "bpm": 93.8,
+            "key": "A minor",
+            "arc": 2,
+            "duration": 252
+          }
+        ]
+      },
+      {
+        "prompt_number": 7,
+        "prompt_text": "layered pads with gentle harmonic lift, quiet optimism \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "b_2_7_22d.mp3",
+            "score": 0.68,
+            "similarity": 0.86,
+            "bpm": 125.0,
+            "key": "A major",
+            "arc": 2,
+            "duration": 157
+          },
+          {
+            "filename": "A_2_7_22b.mp3",
+            "score": 0.679,
+            "similarity": 0.859,
+            "bpm": 110.3,
+            "key": "F# minor",
+            "arc": 2,
+            "duration": 193
+          },
+          {
+            "filename": "b_2_7_22c.mp3",
+            "score": 0.666,
+            "similarity": 0.833,
+            "bpm": 106.1,
+            "key": "F# minor",
+            "arc": 2,
+            "duration": 167
+          },
+          {
+            "filename": "A_2_7_22a.mp3",
+            "score": 0.666,
+            "similarity": 0.832,
+            "bpm": 97.0,
+            "key": "E major",
+            "arc": 2,
+            "duration": 163
+          },
+          {
+            "filename": "b_2_6_22c.mp3",
+            "score": 0.612,
+            "similarity": 0.724,
+            "bpm": 133.9,
+            "key": "D major",
+            "arc": 2,
+            "duration": 175
+          }
+        ]
+      }
+    ],
+    "arc_3": [
+      {
+        "prompt_number": 8,
+        "prompt_text": "steady focus rhythm, softened transients, warm nostalgic progression \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "A_3_10_22b.mp3",
+            "score": 0.652,
+            "similarity": 0.804,
+            "bpm": 117.2,
+            "key": "G major",
+            "arc": 3,
+            "duration": 209
+          },
+          {
+            "filename": "b_3_10_22c.mp3",
+            "score": 0.651,
+            "similarity": 0.802,
+            "bpm": 110.3,
+            "key": "F# minor",
+            "arc": 3,
+            "duration": 249
+          },
+          {
+            "filename": "A_3_10_22a.mp3",
+            "score": 0.643,
+            "similarity": 0.786,
+            "bpm": 104.2,
+            "key": "F minor",
+            "arc": 3,
+            "duration": 201
+          },
+          {
+            "filename": "A_3_10_19a.mp3",
+            "score": 0.639,
+            "similarity": 0.779,
+            "bpm": 114.8,
+            "key": "F# major",
+            "arc": 3,
+            "duration": 245
+          },
+          {
+            "filename": "B_3_9_21d.mp3",
+            "score": 0.639,
+            "similarity": 0.778,
+            "bpm": 104.2,
+            "key": "C major",
+            "arc": 3,
+            "duration": 206
+          }
+        ]
+      },
+      {
+        "prompt_number": 9,
+        "prompt_text": "deeper analog chords, light reverb haze, supportive beat, clear headspace \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "B_3_8_21c.mp3",
+            "score": 0.665,
+            "similarity": 0.83,
+            "bpm": 93.8,
+            "key": "G major",
+            "arc": 3,
+            "duration": 204
+          },
+          {
+            "filename": "A_3_8_21b.mp3",
+            "score": 0.662,
+            "similarity": 0.824,
+            "bpm": 156.2,
+            "key": "A# major",
+            "arc": 3,
+            "duration": 199
+          },
+          {
+            "filename": "A_3_8_21a.mp3",
+            "score": 0.662,
+            "similarity": 0.824,
+            "bpm": 156.2,
+            "key": "A# major",
+            "arc": 3,
+            "duration": 147
+          },
+          {
+            "filename": "B_3_10_21b.mp3",
+            "score": 0.65,
+            "similarity": 0.799,
+            "bpm": 85.2,
+            "key": "C# major",
+            "arc": 3,
+            "duration": 160
+          },
+          {
+            "filename": "A_3_10_21c.mp3",
+            "score": 0.648,
+            "similarity": 0.796,
+            "bpm": 112.5,
+            "key": "B minor",
+            "arc": 3,
+            "duration": 211
+          }
+        ]
+      },
+      {
+        "prompt_number": 10,
+        "prompt_text": "mid-energy focus track, evolving pads, smooth percussion \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "b_3_10_22c.mp3",
+            "score": 0.679,
+            "similarity": 0.859,
+            "bpm": 110.3,
+            "key": "F# minor",
+            "arc": 3,
+            "duration": 249
+          },
+          {
+            "filename": "A_3_10_22b.mp3",
+            "score": 0.679,
+            "similarity": 0.858,
+            "bpm": 117.2,
+            "key": "G major",
+            "arc": 3,
+            "duration": 209
+          },
+          {
+            "filename": "A_3_10_22a.mp3",
+            "score": 0.676,
+            "similarity": 0.853,
+            "bpm": 104.2,
+            "key": "F minor",
+            "arc": 3,
+            "duration": 201
+          },
+          {
+            "filename": "B_3_8_18b.mp3",
+            "score": 0.645,
+            "similarity": 0.79,
+            "bpm": 114.8,
+            "key": "D major",
+            "arc": 3,
+            "duration": 232
+          },
+          {
+            "filename": "B_3_8_18c.mp3",
+            "score": 0.644,
+            "similarity": 0.787,
+            "bpm": 122.3,
+            "key": "G major",
+            "arc": 3,
+            "duration": 210
+          }
+        ]
+      }
+    ],
+    "arc_4": [
+      {
+        "prompt_number": 11,
+        "prompt_text": "slow chord swells, airy synth layers, calm morning release \u2014 vaporwave synthwave lofi",
+        "matches": []
+      },
+      {
+        "prompt_number": 12,
+        "prompt_text": "analog pad movement with soft delay, minimal rhythm, emotional taper \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "B_4_12_17b.mp3",
+            "score": 0.663,
+            "similarity": 0.825,
+            "bpm": 127.8,
+            "key": "G# minor",
+            "arc": 4,
+            "duration": 248
+          },
+          {
+            "filename": "A_4_12_17c.mp3",
+            "score": 0.662,
+            "similarity": 0.824,
+            "bpm": 119.7,
+            "key": "A# major",
+            "arc": 4,
+            "duration": 235
+          },
+          {
+            "filename": "A_4_12_17a.mp3",
+            "score": 0.662,
+            "similarity": 0.823,
+            "bpm": 117.2,
+            "key": "B minor",
+            "arc": 4,
+            "duration": 195
+          },
+          {
+            "filename": "B_4_12_17d.mp3",
+            "score": 0.659,
+            "similarity": 0.819,
+            "bpm": 100.4,
+            "key": "G major",
+            "arc": 4,
+            "duration": 293
+          },
+          {
+            "filename": "A_4_12_18a.mp3",
+            "score": 0.649,
+            "similarity": 0.797,
+            "bpm": 119.7,
+            "key": "C major",
+            "arc": 4,
+            "duration": 280
+          }
+        ]
+      },
+      {
+        "prompt_number": 13,
+        "prompt_text": "drifting ambient tones, pastel warmth, dissolve into quiet clarity \u2014 vaporwave synthwave lofi",
+        "matches": [
+          {
+            "filename": "A_4_12_21a.mp3",
+            "score": 0.648,
+            "similarity": 0.795,
+            "bpm": 112.5,
+            "key": "C major",
+            "arc": 4,
+            "duration": 201
+          },
+          {
+            "filename": "B_4_12_21c.mp3",
+            "score": 0.646,
+            "similarity": 0.793,
+            "bpm": 125.0,
+            "key": "D# major",
+            "arc": 4,
+            "duration": 202
+          },
+          {
+            "filename": "A_4_12_22f.mp3",
+            "score": 0.64,
+            "similarity": 0.781,
+            "bpm": 119.7,
+            "key": "E major",
+            "arc": 4,
+            "duration": 205
+          },
+          {
+            "filename": "A_4_12_22c.mp3",
+            "score": 0.64,
+            "similarity": 0.779,
+            "bpm": 125.0,
+            "key": "G# minor",
+            "arc": 4,
+            "duration": 286
+          },
+          {
+            "filename": "b_4_12_22g.mp3",
+            "score": 0.639,
+            "similarity": 0.778,
+            "bpm": 130.8,
+            "key": "E major",
+            "arc": 4,
+            "duration": 218
+          }
+        ]
+      }
+    ]
+  }
+}

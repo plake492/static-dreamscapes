@@ -1,0 +1,615 @@
+"""Notion API integration and parser."""
+
+import re
+from typing import Dict, List, Optional, Any
+from pathlib import Path
+import json
+import logging
+
+from notion_client import Client
+from notion_client.errors import APIResponseError
+
+from ..core.models import NotionTrackMetadata, NotionArc, NotionPrompt
+from ..core.config import get_config
+
+logger = logging.getLogger(__name__)
+
+
+class NotionParser:
+    """Parse Notion track documents into structured metadata."""
+
+    def __init__(self, api_token: Optional[str] = None):
+        """
+        Initialize Notion client.
+
+        Args:
+            api_token: Notion API token (if None, loads from config)
+        """
+        if api_token is None:
+            config = get_config()
+            api_token = config.notion_api_token
+
+        if not api_token:
+            raise ValueError("Notion API token not provided. Set NOTION_API_TOKEN environment variable.")
+
+        self.client = Client(auth=api_token)
+        self.cache_dir = Path("./data/cache/notion_docs")
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+
+    def parse_notion_doc(self, notion_url: str) -> NotionTrackMetadata:
+        """
+        Parse complete Notion track document.
+
+        Args:
+            notion_url: URL to Notion page
+
+        Returns:
+            NotionTrackMetadata with all parsed data
+        """
+        logger.info(f"Parsing Notion doc: {notion_url}")
+
+        # Extract page ID from URL
+        page_id = self._extract_page_id(notion_url)
+
+        # Fetch content
+        page = self._fetch_page(page_id)
+        blocks = self._fetch_blocks(page_id)
+
+        # Convert to markdown for easier parsing
+        markdown = self._blocks_to_markdown(blocks)
+
+        # Cache raw content
+        self._cache_content(page_id, markdown)
+
+        # Parse sections
+        overview = self._parse_track_overview(markdown)
+        seo = self._parse_seo_section(markdown)
+        music = self._parse_music_arc_structure(markdown)
+
+        # Extract description
+        description = self._extract_description(markdown)
+
+        # Infer overall theme
+        overall_theme = self._infer_theme(
+            overview.get('title', ''),
+            description,
+            seo.get('visible_hashtags', [])
+        )
+
+        # Build NotionArc objects
+        notion_arcs = []
+        for arc_data in music['arcs']:
+            prompts = [
+                NotionPrompt(**prompt_data)
+                for prompt_data in arc_data['prompts']
+            ]
+
+            notion_arc = NotionArc(
+                arc_number=arc_data['arc_number'],
+                arc_name=arc_data['arc_name'],
+                description=arc_data.get('description'),
+                prompts=prompts,
+                target_duration_minutes=overview['duration_target_minutes'] // 4
+            )
+            notion_arcs.append(notion_arc)
+
+        # Build final metadata object
+        metadata = NotionTrackMetadata(
+            notion_url=notion_url,
+            title=overview['title'],
+            output_filename=overview['output_filename'],
+            upload_schedule=overview.get('upload_schedule'),
+            duration_target_minutes=overview['duration_target_minutes'],
+            overall_theme=overall_theme,
+            mood_arc=overview.get('mood_arc'),
+            vibe_description=description,
+            visible_hashtags=seo['visible_hashtags'],
+            hidden_tags=seo['hidden_tags'],
+            ctr_target=overview.get('ctr_target'),
+            retention_target=overview.get('retention_target'),
+            arcs=notion_arcs,
+            raw_notion_content={'markdown': markdown}
+        )
+
+        logger.info(f"Successfully parsed Notion doc: {metadata.title}")
+        return metadata
+
+    def _extract_page_id(self, notion_url: str) -> str:
+        """Extract page ID from Notion URL."""
+        # URL formats:
+        # https://www.notion.so/Page-Title-abc123def456
+        # https://notion.so/workspace/abc123def456?v=...
+
+        # Extract the UUID (32 hex chars with optional hyphens)
+        match = re.search(r'([a-f0-9]{32}|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})', notion_url, re.IGNORECASE)
+
+        if not match:
+            raise ValueError(f"Could not extract page ID from URL: {notion_url}")
+
+        page_id = match.group(1).replace('-', '')
+        logger.debug(f"Extracted page ID: {page_id}")
+        return page_id
+
+    def _fetch_page(self, page_id: str) -> Dict:
+        """Fetch page metadata from Notion API."""
+        try:
+            return self.client.pages.retrieve(page_id=page_id)
+        except APIResponseError as e:
+            logger.error(f"Error fetching page: {e}")
+            raise
+
+    def _fetch_blocks(self, page_id: str) -> List[Dict]:
+        """Fetch page blocks from Notion API."""
+        try:
+            blocks = []
+            has_more = True
+            start_cursor = None
+
+            while has_more:
+                response = self.client.blocks.children.list(
+                    block_id=page_id,
+                    start_cursor=start_cursor
+                )
+                blocks.extend(response['results'])
+                has_more = response['has_more']
+                start_cursor = response.get('next_cursor')
+
+            return blocks
+        except APIResponseError as e:
+            logger.error(f"Error fetching blocks: {e}")
+            raise
+
+    def _blocks_to_markdown(self, blocks: List[Dict]) -> str:
+        """Convert Notion blocks to markdown text."""
+        markdown_lines = []
+
+        for block in blocks:
+            block_type = block['type']
+
+            if block_type == 'heading_1':
+                text = self._extract_text(block['heading_1'])
+                markdown_lines.append(f"# {text}")
+
+            elif block_type == 'heading_2':
+                text = self._extract_text(block['heading_2'])
+                markdown_lines.append(f"## {text}")
+
+            elif block_type == 'heading_3':
+                text = self._extract_text(block['heading_3'])
+                markdown_lines.append(f"### {text}")
+
+            elif block_type == 'bulleted_list_item':
+                text = self._extract_text(block['bulleted_list_item'])
+                markdown_lines.append(f"- {text}")
+
+            elif block_type == 'to_do':
+                text = self._extract_text(block['to_do'])
+                checked = block['to_do'].get('checked', False)
+                checkbox = "[x]" if checked else "[ ]"
+                markdown_lines.append(f"- {checkbox} {text}")
+
+            elif block_type == 'paragraph':
+                text = self._extract_text(block['paragraph'])
+                markdown_lines.append(text)
+
+            elif block_type == 'table':
+                # Notion tables need to fetch child blocks (rows)
+                table_id = block['id']
+                table_markdown = self._convert_table_to_markdown(table_id)
+                markdown_lines.append(table_markdown)
+
+        return "\n".join(markdown_lines)
+
+    def _convert_table_to_markdown(self, table_id: str) -> str:
+        """Convert a Notion table to markdown format."""
+        try:
+            # Fetch table rows (child blocks of the table)
+            response = self.client.blocks.children.list(block_id=table_id)
+            rows = response['results']
+
+            if not rows:
+                return ""
+
+            markdown_rows = []
+            for row in rows:
+                if row['type'] == 'table_row':
+                    cells = row['table_row']['cells']
+                    # Extract text from each cell
+                    cell_texts = []
+                    for cell in cells:
+                        cell_text = "".join([text_obj.get('plain_text', '') for text_obj in cell])
+                        cell_texts.append(cell_text)
+                    # Create markdown table row: | cell1 | cell2 | cell3 |
+                    markdown_rows.append("| " + " | ".join(cell_texts) + " |")
+
+            return "\n".join(markdown_rows)
+
+        except Exception as e:
+            logger.warning(f"Could not convert table {table_id} to markdown: {e}")
+            return ""
+
+    def _extract_text(self, rich_text_block: Dict) -> str:
+        """Extract plain text from Notion rich text object."""
+        rich_text = rich_text_block.get('rich_text', [])
+        return "".join([text_obj.get('plain_text', '') for text_obj in rich_text])
+
+    def _parse_track_overview(self, markdown: str) -> Dict:
+        """Parse the TRACK OVERVIEW section (table format only)."""
+        result = {}
+
+        # Title: | Title | 3HR Coding Nebula — ... |
+        title_match = re.search(r'\|\s*Title\s*\|\s*(.+?)\s*\|', markdown, re.IGNORECASE)
+        result['title'] = title_match.group(1).strip() if title_match else "Untitled Track"
+
+        # Filename: | Filename | coding-nebula....mp4 |
+        filename_match = re.search(r'\|\s*Filename\s*\|\s*(.+?\.mp4)\s*\|', markdown, re.IGNORECASE)
+        result['output_filename'] = filename_match.group(1).strip() if filename_match else "output.mp4"
+
+        # Upload schedule: | Upload Schedule | Sunday @ 10 AM ET |
+        schedule_match = re.search(r'\|\s*Upload Schedule\s*\|\s*(.+?)\s*\|', markdown, re.IGNORECASE)
+        result['upload_schedule'] = schedule_match.group(1).strip() if schedule_match else None
+
+        # Duration: | Duration | 3 hours |
+        duration_match = re.search(r'\|\s*Duration\s*\|\s*(\d+)\s*hours?\s*\|', markdown, re.IGNORECASE)
+        duration_hours = int(duration_match.group(1)) if duration_match else 3
+        result['duration_target_minutes'] = duration_hours * 60
+
+        # Mood arc: | Mood Arc | Neon Quiet → Tech Pulse → ... |
+        mood_match = re.search(r'\|\s*Mood Arc\s*\|\s*(.+?)\s*\|', markdown, re.IGNORECASE)
+        result['mood_arc'] = mood_match.group(1).strip() if mood_match else None
+
+        # CTR target: | CTR Target | 2.8–4.0% |
+        ctr_match = re.search(r'\|\s*CTR Target\s*\|\s*(.+?)\s*\|', markdown, re.IGNORECASE)
+        result['ctr_target'] = ctr_match.group(1).strip() if ctr_match else None
+
+        # Retention target: | Retention Target | 28–38 min |
+        retention_match = re.search(r'\|\s*Retention Target\s*\|\s*(.+?)\s*\|', markdown, re.IGNORECASE)
+        result['retention_target'] = retention_match.group(1).strip() if retention_match else None
+
+        return result
+
+    def _parse_seo_section(self, markdown: str) -> Dict:
+        """Parse hashtags and tags (new format only)."""
+        result = {'visible_hashtags': [], 'hidden_tags': []}
+
+        # Visible hashtags: `#LoFi #Synthwave #CodingMusic`
+        hashtags_match = re.search(r'(?:Visible Hashtags|### Visible Hashtags)\s*[:\n]\s*`([^`]+)`', markdown, re.IGNORECASE)
+        if hashtags_match:
+            hashtags_text = hashtags_match.group(1)
+            tags = [tag.strip() for tag in hashtags_text.split('#') if tag.strip()]
+            result['visible_hashtags'] = [f"#{tag}" for tag in tags]
+
+        # Hidden tags: `lofistudy,lofimix,synthwave`
+        hidden_match = re.search(r'(?:Hidden Tags|### Hidden Tags).*?[:\n]\s*`([^`]+)`', markdown, re.IGNORECASE | re.DOTALL)
+        if hidden_match:
+            tags_text = hidden_match.group(1)
+            tags = [tag.strip() for tag in tags_text.replace('\n', '').split(',') if tag.strip()]
+            result['hidden_tags'] = tags
+
+        return result
+
+    def _parse_music_arc_structure(self, markdown: str) -> Dict:
+        """Parse the MUSIC ARC STRUCTURE section."""
+        # Extract anchor phrase (optional) - supports multiple formats
+        # Format 1: **⭐ Anchor Phrase:** `text`
+        # Format 2: **⭐ Anchor Phrase:** "text"
+        # Format 3: **Anchor Phrase:** text
+        anchor_match = re.search(r'\*\*⭐?\s*Anchor Phrase:\*\*\s*[`"]?(.+?)[`"]?$', markdown, re.IGNORECASE | re.MULTILINE)
+        if not anchor_match:
+            # Try without star emoji
+            anchor_match = re.search(r'\*\*Anchor Phrase:\*\*\s*[`"]?(.+?)[`"]?$', markdown, re.IGNORECASE | re.MULTILINE)
+        anchor_phrase = anchor_match.group(1).strip() if anchor_match else ""
+
+        # Find all arc sections - flexible pattern to match various formats
+        # Format 1: "### PHASE 1 – Arc Name (Description)"
+        # Format 2: "### Phase 1 - Arc Name (3 Prompts)"
+        # Format 3: "### 🌅 Phase 1 – Arc Name"
+        # Format 4: "## 🌇 **PHASE 1 — Arc Name**" (emoji-only with H2)
+        # Format 5: "## 🌇" (emoji-only H2, extract from context)
+
+        # Try format with explicit PHASE text first
+        arc_pattern = r'###? (?:🌅|💫|🌤|🌙|⭐|🌇|🚦|🌃|🌌)?\s*(?:\*\*)?\s*(?:PHASE|Phase) (\d+) [–—-] (.+?)(?:\((.+?)\))?\s*(?:\*\*)?$'
+        arc_matches = list(re.finditer(arc_pattern, markdown, re.IGNORECASE | re.MULTILINE))
+
+        # If no matches, try emoji-only H2 format: ## 🌇 or ## 🚦 etc.
+        if not arc_matches:
+            emoji_pattern = r'^## (🌇|🚦|🌃|🌌|🌅|💫|🌤|🌙)\s*(?:\*\*)?\s*(.*)$'
+            emoji_matches = list(re.finditer(emoji_pattern, markdown, re.MULTILINE))
+
+            # Map emojis to arc numbers if we find them
+            emoji_to_arc = {
+                '🌇': (1, 'Rain Ambience'),      # Sunset/dusk
+                '🚦': (2, 'Steady Focus Flow'),   # Traffic light
+                '🌃': (3, 'Midnight Clarity'),    # Night cityscape
+                '🌌': (4, 'Vaporwave Fadeout')    # Milky way/stars
+            }
+
+            # Convert emoji matches to arc pattern format
+            for emoji_match in emoji_matches:
+                emoji = emoji_match.group(1)
+                extra_text = emoji_match.group(2).strip()
+
+                if emoji in emoji_to_arc:
+                    arc_num, default_name = emoji_to_arc[emoji]
+                    arc_name = extra_text if extra_text else default_name
+
+                    # Create a synthetic match object
+                    class SyntheticMatch:
+                        def __init__(self, arc_num, arc_name, start, end):
+                            self.arc_num = arc_num
+                            self.arc_name = arc_name
+                            self._start = start
+                            self._end = end
+                        def group(self, n):
+                            if n == 1: return str(self.arc_num)
+                            if n == 2: return self.arc_name
+                            return None
+                        def start(self): return self._start
+                        def end(self): return self._end
+
+                    arc_matches.append(SyntheticMatch(
+                        arc_num, arc_name,
+                        emoji_match.start(), emoji_match.end()
+                    ))
+
+            # Sort by position in document
+            arc_matches = sorted(arc_matches, key=lambda m: m.start())
+
+        arc_matches = list(arc_matches)
+
+        arcs = []
+
+        for i, match in enumerate(arc_matches):
+            arc_number = int(match.group(1))
+            arc_name = match.group(2).strip()
+
+            # Find section bounds
+            start_pos = match.end()
+            end_pos = arc_matches[i + 1].start() if i + 1 < len(arc_matches) else len(markdown)
+            arc_section = markdown[start_pos:end_pos]
+
+            # Debug: show what section we're parsing
+            logger.debug(f"Arc {arc_number} section (first 300 chars):\n{arc_section[:300]}")
+
+            # Parse prompts
+            prompts = self._parse_prompts_from_section(arc_section, anchor_phrase)
+
+            arcs.append({
+                'arc_number': arc_number,
+                'arc_name': arc_name,
+                'prompts': prompts
+            })
+
+        return {'anchor_phrase': anchor_phrase, 'arcs': arcs}
+
+    def _parse_prompts_from_section(self, section: str, anchor_phrase: str) -> List[Dict]:
+        """Parse individual prompts from an arc section."""
+        prompts = []
+
+        # Debug logging
+        logger.debug(f"Parsing section (first 200 chars): {section[:200]}")
+        logger.debug(f"Anchor phrase: '{anchor_phrase}'")
+
+        # Try multiple patterns to support different Notion formats
+
+        # Pattern 1: New format - "X 1. text..." or "✓ 1. text..."
+        # Captures everything on the line, then strips quotes later
+        pattern1 = r'^\s*[X✓x]\s+(\d+)\.\s*(.+?)$'
+        matches1 = list(re.finditer(pattern1, section, re.IGNORECASE | re.MULTILINE))
+        logger.debug(f"Pattern1 found {len(matches1)} matches")
+
+        # Pattern 2: Format with checkbox and number - "- [x] 1. text"
+        pattern2 = r'^\s*-\s*\[([ xX])\]\s*(\d+)\.\s*(.+?)$'
+        matches2 = list(re.finditer(pattern2, section, re.IGNORECASE | re.MULTILINE))
+        logger.debug(f"Pattern2 found {len(matches2)} matches")
+
+        # Pattern 3: Old format - "- [x] text anchor_phrase" (no number)
+        if anchor_phrase:
+            pattern3 = r'-\s*\[([ xX])\]\s*(.+?)' + re.escape(anchor_phrase)
+        else:
+            pattern3 = r'-\s*\[([ xX])\]\s*(.+?)(?:\n|$)'
+        matches3 = list(re.finditer(pattern3, section, re.IGNORECASE | re.MULTILINE))
+        logger.debug(f"Pattern3 found {len(matches3)} matches")
+
+        # Use whichever pattern found matches
+        if matches1:
+            for match in matches1:
+                prompt_num = int(match.group(1))
+                prompt_text = match.group(2).strip()
+
+                # Strip quotes (both regular and smart quotes)
+                prompt_text = prompt_text.strip('""\'"\'')
+
+                # Clean up markdown formatting
+                prompt_text = re.sub(r'\*\*', '', prompt_text)
+                prompt_text = prompt_text.strip()
+
+                # Extract characteristics
+                tempo_hints = self._extract_tempo_hints(prompt_text)
+                instrument_hints = self._extract_instrument_hints(prompt_text)
+                vibe_hints = self._extract_vibe_hints(prompt_text)
+
+                prompts.append({
+                    'prompt_number': prompt_num,
+                    'prompt_text': prompt_text,
+                    'anchor_phrase': anchor_phrase,
+                    'completed': True,  # X or ✓ means completed
+                    'tempo_hints': tempo_hints,
+                    'instrument_hints': instrument_hints,
+                    'vibe_hints': vibe_hints
+                })
+
+        elif matches2:
+            # Pattern 2: "- [x] 1. text"
+            for match in matches2:
+                checked = match.group(1).strip().lower() == 'x'
+                prompt_num = int(match.group(2))
+                prompt_text = match.group(3).strip()
+
+                # Strip quotes
+                prompt_text = prompt_text.strip('""\'"\'')
+
+                # Clean up markdown formatting
+                prompt_text = re.sub(r'\*\*', '', prompt_text)
+                prompt_text = prompt_text.strip()
+
+                # Extract characteristics
+                tempo_hints = self._extract_tempo_hints(prompt_text)
+                instrument_hints = self._extract_instrument_hints(prompt_text)
+                vibe_hints = self._extract_vibe_hints(prompt_text)
+
+                prompts.append({
+                    'prompt_number': prompt_num,
+                    'prompt_text': prompt_text,
+                    'anchor_phrase': anchor_phrase,
+                    'completed': checked,
+                    'tempo_hints': tempo_hints,
+                    'instrument_hints': instrument_hints,
+                    'vibe_hints': vibe_hints
+                })
+
+        elif matches3:
+            # Pattern 3: "- [x] text" (no number)
+            prompt_number = 1
+            for match in matches3:
+                checked = match.group(1).strip().lower() == 'x'
+                prompt_text = match.group(2).strip()
+
+                # Strip quotes
+                prompt_text = prompt_text.strip('""\'"\'')
+
+                # Clean up markdown formatting
+                prompt_text = re.sub(r'\*\*', '', prompt_text)
+                prompt_text = prompt_text.strip()
+
+                # Extract characteristics
+                tempo_hints = self._extract_tempo_hints(prompt_text)
+                instrument_hints = self._extract_instrument_hints(prompt_text)
+                vibe_hints = self._extract_vibe_hints(prompt_text)
+
+                prompts.append({
+                    'prompt_number': prompt_number,
+                    'prompt_text': prompt_text,
+                    'anchor_phrase': anchor_phrase,
+                    'completed': checked,
+                    'tempo_hints': tempo_hints,
+                    'instrument_hints': instrument_hints,
+                    'vibe_hints': vibe_hints
+                })
+
+                prompt_number += 1
+
+        return prompts
+
+    def _extract_tempo_hints(self, text: str) -> List[str]:
+        """Extract tempo-related keywords."""
+        hints = []
+        text_lower = text.lower()
+
+        tempo_map = {
+            'very slow': 'very_slow',
+            'extremely slow': 'very_slow',
+            'slow tempo': 'slow',
+            'slow': 'slow',
+            'downtempo': 'slow',
+            'mid-tempo': 'mid_tempo',
+            'mid tempo': 'mid_tempo',
+            'moderate': 'mid_tempo',
+            'upbeat': 'upbeat',
+            'energetic': 'upbeat',
+            'fast': 'fast',
+            'rapid': 'fast'
+        }
+
+        for keyword, category in tempo_map.items():
+            if keyword in text_lower:
+                if category not in hints:
+                    hints.append(category)
+
+        return hints
+
+    def _extract_instrument_hints(self, text: str) -> List[str]:
+        """Extract instrument/sound keywords."""
+        instruments = [
+            'synth', 'synthesizer', 'piano', 'guitar', 'bass',
+            'drum machine', 'percussion', 'drums', 'hi-hat', 'hihat',
+            'pad', 'arp', 'arpeggiat', 'organ', 'strings',
+            'tape', 'vinyl', 'analog', 'analogue', 'digital'
+        ]
+
+        hints = []
+        text_lower = text.lower()
+
+        for instrument in instruments:
+            if instrument in text_lower:
+                hints.append(instrument)
+
+        return list(set(hints))
+
+    def _extract_vibe_hints(self, text: str) -> List[str]:
+        """Extract vibe/mood keywords."""
+        vibes = [
+            'ambient', 'atmospheric', 'nostalgic', 'dreamy',
+            'focused', 'focus', 'calm', 'relaxing', 'energetic',
+            'melancholic', 'uplifting', 'dark', 'bright',
+            'hazy', 'clear', 'minimal', 'rhythmic',
+            'hypnotic', 'smooth', 'warm', 'cold', 'static'
+        ]
+
+        hints = []
+        text_lower = text.lower()
+
+        for vibe in vibes:
+            if vibe in text_lower:
+                hints.append(vibe)
+
+        return hints
+
+    def _extract_description(self, markdown: str) -> Optional[str]:
+        """Extract description section."""
+        desc_match = re.search(
+            r'### 📝 3\. DESCRIPTION.*?\n\n(.+?)(?:\n### |$)',
+            markdown,
+            re.IGNORECASE | re.DOTALL
+        )
+        return desc_match.group(1).strip() if desc_match else None
+
+    def _infer_theme(self, title: str, description: Optional[str], hashtags: List[str]) -> str:
+        """Infer overall theme from available text."""
+        parts = [title]
+        if description:
+            parts.append(description[:200])
+        parts.extend(hashtags)
+
+        combined = " ".join(parts).lower()
+
+        if any(word in combined for word in ['vaporwave', 'vapor', 'aesthetic']):
+            if 'lofi' in combined or 'lo-fi' in combined:
+                return "Vaporwave/LoFi fusion"
+            return "Vaporwave"
+
+        if 'lofi' in combined or 'lo-fi' in combined:
+            if 'study' in combined:
+                return "LoFi Study"
+            if 'chill' in combined or 'relax' in combined:
+                return "LoFi Chill"
+            if 'rain' in combined:
+                return "LoFi Rainy"
+            return "LoFi"
+
+        if 'synthwave' in combined or 'retrowave' in combined:
+            return "Synthwave/Retrowave"
+
+        return title.split('|')[0].strip()
+
+    def _cache_content(self, page_id: str, content: str):
+        """Cache parsed content to file."""
+        cache_file = self.cache_dir / f"{page_id}.md"
+        cache_file.write_text(content, encoding='utf-8')
+        logger.debug(f"Cached content to {cache_file}")
+
+
+def parse_notion_doc(notion_url: str, api_token: Optional[str] = None) -> NotionTrackMetadata:
+    """Convenience function to parse Notion document."""
+    parser = NotionParser(api_token)
+    return parser.parse_notion_doc(notion_url)
