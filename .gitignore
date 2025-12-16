@@ -32,6 +32,9 @@ Images/
 # Rendered Output (DO NOT commit - very large files)
 Rendered/
 
+# YouTube Resources (local only)
+YOUTUBE_RECOURCES/
+
 # Database (contains local data)
 *.db
 *.db-shm
@@ -51,6 +54,12 @@ ENV/
 *.egg-info/
 dist/
 build/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+.jupyter/
+jupyter_notebook_config.py
 
 # Output files
 output/
@@ -84,6 +93,12 @@ temp/
 
 # Node modules (if any)
 node_modules/
+
+# Environment variables and secrets (NEVER commit!)
+.env
+.env.local
+.env.*.local
+*.env
 
 # Config (if contains secrets)
 # Uncomment if you have API keys in config
