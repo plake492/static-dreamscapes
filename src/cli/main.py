@@ -588,31 +588,45 @@ def track_duration(
 
         console.print(f"Scanning: {songs_path}\n")
 
-        # Find all audio files
-        parser = FilenameParser()
-        audio_files = parser.scan_directory(songs_path)
+        # Find all audio files recursively (mp3 and wav)
+        audio_files = []
+        audio_files.extend(songs_path.glob('**/*.mp3'))
+        audio_files.extend(songs_path.glob('**/*.wav'))
 
         if not audio_files:
-            console.print("[yellow]No valid audio files found[/yellow]\n")
+            console.print("[yellow]No audio files found (.mp3, .wav)[/yellow]\n")
             return
 
         console.print(f"Found {len(audio_files)} songs\n")
+        console.print("[cyan]Analyzing audio files...[/cyan]")
+        console.print("─" * 70)
 
         # Analyze durations
         analyzer = AudioAnalyzer()
+        parser = FilenameParser()
         arc_durations = {}
         total_duration = 0
+        file_details = []
 
-        with console.status("[bold green]Analyzing audio files...") as status:
-            for file_path in audio_files:
-                status.update(f"[bold green]Analyzing: {file_path.name}")
+        for file_path in sorted(audio_files):
+            # Get duration
+            analysis = analyzer.analyze(file_path)
+            duration = analysis.duration_seconds or 0
+            total_duration += duration
 
-                # Get duration
-                analysis = analyzer.analyze(file_path)
-                duration = analysis.duration_seconds or 0
-                total_duration += duration
+            # Format duration as MM:SS
+            minutes = int(duration // 60)
+            seconds = int(duration % 60)
 
-                # Parse filename
+            # Store file details
+            file_details.append({
+                'filename': file_path.name,
+                'duration': duration,
+                'formatted': f"{minutes:3d}:{seconds:02d}"
+            })
+
+            # Parse filename for arc grouping (optional)
+            try:
                 components = parser.parse(file_path.name)
                 if components:
                     arc = components.arc_number
@@ -620,34 +634,54 @@ def track_duration(
                         arc_durations[arc] = {'count': 0, 'duration': 0}
                     arc_durations[arc]['count'] += 1
                     arc_durations[arc]['duration'] += duration
+            except:
+                # Skip arc parsing if filename doesn't match pattern
+                pass
 
-        # Display results
-        table = Table(title="Duration Summary")
-        table.add_column("Arc", style="cyan")
-        table.add_column("Songs", style="green")
-        table.add_column("Duration", style="yellow")
-        table.add_column("Minutes", style="magenta")
+        # Display individual files
+        for file_info in file_details:
+            console.print(f"{file_info['filename']:<50} {file_info['formatted']}")
 
-        for arc in sorted(arc_durations.keys()):
-            data = arc_durations[arc]
-            minutes = data['duration'] / 60
-            table.add_row(
-                f"Arc {arc}",
-                str(data['count']),
-                f"{int(data['duration'])}s",
-                f"{minutes:.1f}m"
-            )
+        console.print("─" * 70)
 
-        console.print(table)
+        # Display arc summary
+        if arc_durations:
+            console.print()
+            table = Table(title="Duration by Arc", show_header=True, header_style="bold cyan")
+            table.add_column("Arc", style="cyan")
+            table.add_column("Songs", justify="right", style="green")
+            table.add_column("Duration", justify="right", style="yellow")
 
-        # Total
-        total_minutes = total_duration / 60
-        total_hours = total_minutes / 60
+            for arc in sorted(arc_durations.keys()):
+                data = arc_durations[arc]
+                minutes = int(data['duration'] // 60)
+                seconds = int(data['duration'] % 60)
+                table.add_row(
+                    f"Arc {arc}",
+                    str(data['count']),
+                    f"{minutes}m {seconds}s"
+                )
 
-        console.print(f"\n[bold]Total Duration:[/bold]")
-        console.print(f"  • {int(total_duration)} seconds")
-        console.print(f"  • {total_minutes:.1f} minutes")
-        console.print(f"  • {total_hours:.2f} hours\n")
+            console.print(table)
+
+        # Total duration
+        console.print(f"\n[bold cyan]Total files:[/bold cyan] {len(audio_files)}")
+
+        total_hours = int(total_duration // 3600)
+        total_minutes = int((total_duration % 3600) // 60)
+        total_seconds = int(total_duration % 60)
+
+        console.print(f"[bold cyan]Total duration:[/bold cyan] {total_hours}h {total_minutes}m {total_seconds}s")
+        console.print(f"[bold cyan]Total seconds:[/bold cyan] {int(total_duration)}s")
+
+        # Loop calculations
+        console.print(f"\n[bold yellow]Loop calculations:[/bold yellow]")
+        console.print(f"  • For 15 min video: need {int((900 / total_duration) + 1)} loops")
+        console.print(f"  • For 30 min video: need {int((1800 / total_duration) + 1)} loops")
+        console.print(f"  • For 60 min video: need {int((3600 / total_duration) + 1)} loops")
+        console.print(f"  • For 90 min video: need {int((5400 / total_duration) + 1)} loops")
+        console.print(f"  • For 180 min video: need {int((10800 / total_duration) + 1)} loops")
+        console.print()
 
     except Exception as e:
         console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
@@ -660,6 +694,7 @@ def prepare_render(
     track: int = typer.Option(..., "--track", "-t", help="Track number"),
     playlist: str = typer.Option(..., "--playlist", "-p", help="Path to playlist JSON file"),
     copy: bool = typer.Option(True, "--copy/--move", help="Copy files (default) or move them"),
+    target_duration: int = typer.Option(None, "--duration", "-d", help="Target duration in minutes (auto-selects songs)"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
     """Prepare track for rendering by organizing matched songs into track folder."""
@@ -697,24 +732,86 @@ def prepare_render(
 
         # Collect all matched songs
         songs_to_copy = []
-        for arc_name, prompts in data.get('results', {}).items():
-            for prompt_data in prompts:
-                prompt_num = prompt_data.get('prompt_number')
-                matches = prompt_data.get('matches', [])
 
-                if matches:
-                    # Take the best match
-                    best_match = matches[0]
-                    filename = best_match['filename']
+        if target_duration:
+            # Duration-aware selection: intelligently select songs to fill target duration
+            console.print(f"[cyan]Target duration: {target_duration} minutes ({target_duration * 60} seconds)[/cyan]")
+
+            target_seconds = target_duration * 60
+            current_duration = 0
+
+            # Organize matches by arc for balanced selection
+            arc_matches = {}
+            for arc_name, prompts in data.get('results', {}).items():
+                arc_matches[arc_name] = []
+                for prompt_data in prompts:
+                    prompt_num = prompt_data.get('prompt_number')
+                    matches = prompt_data.get('matches', [])
+                    if matches:
+                        # Add all matches with metadata
+                        for match in matches:
+                            arc_matches[arc_name].append({
+                                'match': match,
+                                'prompt_num': prompt_num,
+                                'arc_name': arc_name
+                            })
+
+            # Calculate how much duration per arc (equal distribution)
+            num_arcs = len(arc_matches)
+            duration_per_arc = target_seconds / num_arcs if num_arcs > 0 else target_seconds
+
+            console.print(f"[cyan]Distributing ~{duration_per_arc / 60:.1f} minutes per arc[/cyan]\n")
+
+            # Select songs for each arc
+            for arc_name, matches in arc_matches.items():
+                arc_duration = 0
+                match_index = 0
+
+                # Keep adding songs until we hit the arc's duration target
+                while arc_duration < duration_per_arc and match_index < len(matches):
+                    match_data = matches[match_index]
+                    match = match_data['match']
+                    prompt_num = match_data['prompt_num']
+
+                    filename = match['filename']
+                    duration = match.get('duration', 180)  # Default 3 min if unknown
 
                     # Find the song in database to get file path
                     song = db.get_song_by_filename(filename)
                     if song and song.file_path:
                         source_path = Path(song.file_path)
                         if source_path.exists():
-                            songs_to_copy.append((source_path, filename, prompt_num, arc_name))
+                            songs_to_copy.append((source_path, filename, prompt_num, arc_name, duration))
+                            arc_duration += duration
+                            current_duration += duration
                         else:
                             console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
+
+                    match_index += 1
+
+            console.print(f"[cyan]Selected {len(songs_to_copy)} songs totaling {current_duration / 60:.1f} minutes[/cyan]\n")
+
+        else:
+            # Original behavior: take best match per prompt
+            for arc_name, prompts in data.get('results', {}).items():
+                for prompt_data in prompts:
+                    prompt_num = prompt_data.get('prompt_number')
+                    matches = prompt_data.get('matches', [])
+
+                    if matches:
+                        # Take the best match
+                        best_match = matches[0]
+                        filename = best_match['filename']
+                        duration = best_match.get('duration', 180)
+
+                        # Find the song in database to get file path
+                        song = db.get_song_by_filename(filename)
+                        if song and song.file_path:
+                            source_path = Path(song.file_path)
+                            if source_path.exists():
+                                songs_to_copy.append((source_path, filename, prompt_num, arc_name, duration))
+                            else:
+                                console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
 
         if not songs_to_copy:
             console.print("[yellow]No songs to copy. All prompts need new generation.[/yellow]\n")
@@ -726,7 +823,7 @@ def prepare_render(
         copied_count = 0
         operation = "Copying" if copy else "Moving"
 
-        for source_path, filename, prompt_num, arc_name in songs_to_copy:
+        for source_path, filename, prompt_num, arc_name, duration in songs_to_copy:
             dest_path = songs_dir / filename
 
             try:
@@ -747,24 +844,275 @@ def prepare_render(
         # Show summary by arc
         from collections import defaultdict
         arc_counts = defaultdict(int)
-        for _, _, _, arc_name in songs_to_copy:
+        arc_durations = defaultdict(float)
+        for _, _, _, arc_name, duration in songs_to_copy:
             arc_counts[arc_name] += 1
+            arc_durations[arc_name] += duration
 
         summary_table = Table(title="Songs by Arc", show_header=True, header_style="bold cyan")
         summary_table.add_column("Arc", style="white")
         summary_table.add_column("Songs", justify="right", style="cyan")
+        summary_table.add_column("Duration (min)", justify="right", style="green")
 
         for arc_name in sorted(arc_counts.keys()):
-            summary_table.add_row(arc_name, str(arc_counts[arc_name]))
+            duration_min = arc_durations[arc_name] / 60
+            summary_table.add_row(arc_name, str(arc_counts[arc_name]), f"{duration_min:.1f}")
 
         console.print(summary_table)
         console.print()
+
+        # Generate markdown file with remaining prompts
+        console.print("[cyan]Generating remaining prompts document...[/cyan]")
+
+        # Track which prompts were used
+        used_prompts = set()
+        for _, _, prompt_num, arc_name, _ in songs_to_copy:
+            used_prompts.add((arc_name, prompt_num))
+
+        # Build markdown content
+        md_lines = [
+            f"# Track {track} - Remaining Prompts",
+            f"\n**Track:** {data.get('track_title', f'Track {track}')}",
+            f"\n**Songs Selected:** {len(songs_to_copy)}",
+            f"\n---\n"
+        ]
+
+        # Get all prompts and identify gaps
+        remaining_count = 0
+        for arc_name, prompts in data.get('results', {}).items():
+            arc_num = arc_name.replace('arc_', '')
+            arc_has_gaps = False
+            arc_prompts = []
+
+            for prompt_data in prompts:
+                prompt_num = prompt_data.get('prompt_number')
+                prompt_text = prompt_data.get('prompt_text', '')
+                matches = prompt_data.get('matches', [])
+
+                # Check if this prompt was used
+                if (arc_name, prompt_num) not in used_prompts:
+                    if not arc_has_gaps:
+                        arc_prompts.append(f"\n## Arc {arc_num}\n")
+                        arc_has_gaps = True
+
+                    # Show prompt number and text
+                    arc_prompts.append(f"### Prompt {prompt_num}")
+                    arc_prompts.append(f"{prompt_text}\n")
+                    remaining_count += 1
+
+            if arc_has_gaps:
+                md_lines.extend(arc_prompts)
+
+        if remaining_count == 0:
+            md_lines.append("\n✅ **All prompts have been filled!**\n")
+        else:
+            md_lines.insert(3, f"**Prompts Remaining:** {remaining_count}\n")
+
+        # Write markdown file
+        md_path = track_dir / "remaining-prompts.md"
+        md_path.write_text('\n'.join(md_lines))
+
+        console.print(f"[green]✓[/green] Created: {md_path}")
+        console.print(f"[yellow]{remaining_count} prompts remaining[/yellow]\n")
 
         db.close()
 
     except Exception as e:
         console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
         logger.exception("Error preparing render")
+        raise typer.Exit(1)
+
+
+@app.command()
+def render(
+    track: int = typer.Option(..., "--track", "-t", help="Track number"),
+    duration: str = typer.Option("auto", "--duration", "-d", help="Duration: 'auto', 'test' (5min), or hours (e.g., '1', '0.5', '3')"),
+    volume_boost: float = typer.Option(1.75, "--volume", "-v", help="Volume multiplier"),
+    crossfade_duration: int = typer.Option(5, "--crossfade", help="Crossfade duration in seconds"),
+    config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
+):
+    """Render track by concatenating songs with crossfades over looping background video."""
+    try:
+        from pathlib import Path
+        from datetime import datetime
+        import subprocess
+
+        console.print(f"\n[bold blue]🎬 Rendering Track {track}[/bold blue]\n")
+
+        # Setup paths
+        track_dir = Path(f"Tracks/{track}")
+        bg_video = track_dir / "Video" / f"{track}.mp4"
+        songs_dir = track_dir / "Songs"
+
+        # Create timestamped output directory
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_dir = Path(f"Rendered/{track}/output_{timestamp}")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_file = output_dir / "output.mp4"
+
+        # Validate inputs
+        if not bg_video.exists():
+            console.print(f"[red]❌ Background video not found: {bg_video}[/red]\n")
+            raise typer.Exit(1)
+
+        if not songs_dir.exists():
+            console.print(f"[red]❌ Songs directory not found: {songs_dir}[/red]\n")
+            raise typer.Exit(1)
+
+        # Find all MP3 files
+        mp3_files = sorted(songs_dir.glob("*.mp3"))
+
+        if not mp3_files:
+            console.print(f"[yellow]No MP3 files found in {songs_dir}[/yellow]\n")
+            raise typer.Exit(1)
+
+        console.print(f"[cyan]Background video:[/cyan] {bg_video}")
+        console.print(f"[cyan]Songs directory:[/cyan] {songs_dir}")
+        console.print(f"[cyan]Found {len(mp3_files)} songs[/cyan]\n")
+
+        # Get duration of each song using ffprobe
+        console.print("[cyan]Analyzing song durations...[/cyan]")
+        song_durations = []
+        total_songs_duration = 0
+
+        for song_file in mp3_files:
+            result = subprocess.run(
+                ['ffprobe', '-v', 'error', '-show_entries', 'format=duration',
+                 '-of', 'default=noprint_wrappers=1:nokey=1', str(song_file)],
+                capture_output=True,
+                text=True
+            )
+            dur = float(result.stdout.strip())
+            dur_int = int(dur)
+            song_durations.append(dur_int)
+            total_songs_duration += dur_int
+
+        # Calculate target duration
+        if duration == "test":
+            target_duration = 300  # 5 minutes
+            console.print(f"[green]Duration: 5 minutes (test mode)[/green]")
+        elif duration == "auto":
+            target_duration = total_songs_duration
+            hours = target_duration // 3600
+            minutes = (target_duration % 3600) // 60
+            seconds = target_duration % 60
+            console.print(f"[green]Duration: {hours}h {minutes}m {seconds}s (total songs duration)[/green]")
+        else:
+            try:
+                hours_float = float(duration)
+                target_duration = int(hours_float * 3600)
+                console.print(f"[green]Duration: {hours_float} hours ({target_duration} seconds)[/green]")
+            except ValueError:
+                console.print(f"[red]❌ Invalid duration: {duration}[/red]")
+                console.print("Use 'auto', 'test', or a number (hours)")
+                raise typer.Exit(1)
+
+        # Calculate sequence duration and repeats
+        total_sequence_duration = sum(song_durations) - (len(song_durations) - 1) * crossfade_duration
+        num_repeats = (target_duration // total_sequence_duration) + 2
+
+        console.print(f"[cyan]Sequence duration: {total_sequence_duration}s[/cyan]")
+        console.print(f"[cyan]Repeating sequence {num_repeats} times[/cyan]\n")
+
+        # Build ffmpeg command
+        console.print("[cyan]Building ffmpeg command...[/cyan]")
+
+        ffmpeg_args = [
+            'ffmpeg', '-y',
+            '-stream_loop', '-1',
+            '-i', str(bg_video)
+        ]
+
+        # Add each song as input
+        for song in mp3_files:
+            ffmpeg_args.extend(['-i', str(song)])
+
+        # Build filter_complex
+        filter_parts = []
+
+        # Apply volume boost to all songs for all repeats
+        for repeat in range(num_repeats):
+            for i, song in enumerate(mp3_files):
+                stream_index = i + 1
+                filter_parts.append(
+                    f"[{stream_index}:a]volume={volume_boost},"
+                    f"aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo"
+                    f"[a{stream_index}_r{repeat}]"
+                )
+
+        # Chain crossfades
+        previous_label = "a1_r0"
+        segment_count = 0
+
+        for repeat in range(num_repeats):
+            for i in range(len(mp3_files)):
+                stream_index = i + 1
+
+                if segment_count == 0:
+                    segment_count += 1
+                    continue
+
+                current_input = f"a{stream_index}_r{repeat}"
+                crossfade_label = f"xf{segment_count}"
+
+                filter_parts.append(
+                    f"[{previous_label}][{current_input}]"
+                    f"acrossfade=d={crossfade_duration}:c1=tri:c2=tri"
+                    f"[{crossfade_label}]"
+                )
+
+                previous_label = crossfade_label
+                segment_count += 1
+
+        # Final trim and fades
+        fadeout_start = target_duration - 10
+        filter_parts.append(
+            f"[{previous_label}]atrim=0:{target_duration},"
+            f"afade=t=in:st=0:d=3,"
+            f"afade=t=out:st={fadeout_start}:d=10"
+            f"[a]"
+        )
+
+        # Video scaling
+        filter_parts.append(
+            "[0:v]scale=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p[v]"
+        )
+
+        filter_complex = ";".join(filter_parts)
+
+        ffmpeg_args.extend([
+            '-filter_complex', filter_complex,
+            '-map', '[v]',
+            '-map', '[a]',
+            '-c:v', 'libx264',
+            '-c:a', 'aac',
+            '-b:a', '192k',
+            '-t', str(target_duration),
+            str(output_file)
+        ])
+
+        # Save command and filter for debugging
+        (output_dir / "ffmpeg_command.txt").write_text(' '.join(ffmpeg_args))
+        (output_dir / "filter_complex.txt").write_text(filter_complex)
+
+        console.print(f"[green]✓[/green] Saved ffmpeg command to {output_dir}/ffmpeg_command.txt")
+        console.print(f"[green]✓[/green] Saved filter_complex to {output_dir}/filter_complex.txt\n")
+
+        # Execute ffmpeg
+        console.print("[bold yellow]🎥 Rendering... (this may take a while)[/bold yellow]\n")
+
+        result = subprocess.run(ffmpeg_args, capture_output=False)
+
+        if result.returncode == 0:
+            console.print(f"\n[bold green]✅ Render complete![/bold green]")
+            console.print(f"[cyan]Output:[/cyan] {output_file}\n")
+        else:
+            console.print(f"\n[bold red]❌ Render failed with exit code {result.returncode}[/bold red]\n")
+            raise typer.Exit(1)
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error rendering track")
         raise typer.Exit(1)
 
 

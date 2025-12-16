@@ -19,6 +19,7 @@
     "scaffold-track": "source venv/bin/activate && python3 -m src.cli.main scaffold-track",
     "track-duration": "source venv/bin/activate && python3 -m src.cli.main track-duration",
     "prepare-render": "source venv/bin/activate && python3 -m src.cli.main prepare-render",
+    "render": "source venv/bin/activate && python3 -m src.cli.main render",
     "post-render": "source venv/bin/activate && python3 -m src.cli.main post-render",
     "publish": "source venv/bin/activate && python3 -m src.cli.main mark-published",
     "version": "source venv/bin/activate && python3 -m src.cli.main version",

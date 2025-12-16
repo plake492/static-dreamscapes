@@ -1,9 +1,90 @@
-.claude
-.agent-docs
+# Claude Code
+.claude/
+.agent-docs/
 
-https://www.notion.so/Track-17-2a8433e57885800ab456d6dd739b5d36
+# Audio Files (DO NOT commit - too large)
+*.mp3
+*.wav
+*.flac
+*.aac
+*.ogg
 
-  yarn query \
-    --notion-url "https://www.notion.so/Track-17-2a8433e57885800ab456d6dd739b5d36" \
-    --output "./output/playlists/track-17-matches.json" \
-    --top-k 5
+# Video Files (DO NOT commit - too large)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+
+# Image Files (DO NOT commit - too large)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.svg
+*.ico
+*.webp
+Image/
+Images/
+
+# Rendered Output (DO NOT commit - very large files)
+Rendered/
+
+# Database (contains local data)
+*.db
+*.db-shm
+*.db-wal
+data/tracks.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Output files
+output/
+*.json
+
+# Logs
+*.log
+logs/
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Node modules (if any)
+node_modules/
+
+# Config (if contains secrets)
+# Uncomment if you have API keys in config
+# config/settings.yaml
