@@ -168,18 +168,31 @@ Examples:
 
 ---
 
-### Step 6: Render in Your DAW
+### Step 6: Render Video with FFmpeg
 
-**Manual step:** Arrange, mix, and render
+**Automated rendering:** The system uses FFmpeg to create professional video renders
 
-1. Import all songs from `Tracks/20/Songs/` into your DAW
-2. Arrange them according to your Notion plan
-3. Mix and master the track
-4. Render final versions to `Tracks/20/Rendered/`
+```bash
+# Test render (5 minutes)
+yarn render --track 20 --duration test
 
-**Typical renders:**
-- `A_Track_20_Full_Mix.mp3` - Full track
-- Individual song renders with prefix (A_, B_ for variants)
+# Full 3-hour render
+yarn render --track 20 --duration 3
+
+# Auto duration (uses all songs)
+yarn render --track 20 --duration auto
+
+# Custom settings
+yarn render --track 20 --duration 3 --volume 2.0 --crossfade 8
+```
+
+**Output location:** `Rendered/20/output_{timestamp}/output.mp4`
+
+**Features:**
+- Automatic crossfades between songs
+- Looping background video
+- Volume boost and fades
+- Debug files (ffmpeg_command.txt, filter_complex.txt)
 
 ---
 

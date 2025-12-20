@@ -581,7 +581,8 @@ def track_duration(
         if songs_dir:
             songs_path = Path(songs_dir)
         elif track:
-            songs_path = Path(f"./Tracks/{track}/Songs")
+            # Search entire track directory for all MP3 files
+            songs_path = Path(f"./Tracks/{track}")
         else:
             console.print("[red]Error: Provide either --track or --songs-dir[/red]\n")
             raise typer.Exit(1)
@@ -590,7 +591,7 @@ def track_duration(
             console.print(f"[red]Error: Directory not found: {songs_path}[/red]\n")
             raise typer.Exit(1)
 
-        console.print(f"Scanning: {songs_path}\n")
+        console.print(f"Scanning: {songs_path}/**/*.mp3\n")
 
         # Find all audio files recursively (mp3 and wav)
         audio_files = []
@@ -1044,10 +1045,26 @@ def render(
         console.print(f"[cyan]Songs directory:[/cyan] {songs_dir}")
         console.print(f"[cyan]Found {len(mp3_files)} songs[/cyan]\n")
 
-        # Get duration of each song using ffprobe
-        console.print("[cyan]Analyzing song durations...[/cyan]")
+        # Get arc names from database
+        arc_names = {}
+        try:
+            db_temp = Database()
+            songs = db_temp.get_all_songs()
+            for song in songs:
+                if song.arc_number and song.arc_name:
+                    arc_names[song.arc_number] = song.arc_name
+            db_temp.close()
+        except Exception as e:
+            logger.warning(f"Could not load arc names: {e}")
+
+        # Get duration of each song using ffprobe and track chapters
+        console.print("[cyan]Analyzing song durations and generating chapters...[/cyan]")
         song_durations = []
         total_songs_duration = 0
+        chapters = []  # List of (timestamp, arc_num, arc_name, group) tuples
+        current_time = 0
+        last_arc = None
+        last_group = None
 
         for song_file in mp3_files:
             result = subprocess.run(
@@ -1060,6 +1077,44 @@ def render(
             dur_int = int(dur)
             song_durations.append(dur_int)
             total_songs_duration += dur_int
+
+            # Parse filename to extract arc info
+            # Format: [A/B]_[arc]_[prompt]_[track][variant].mp3
+            filename = song_file.name
+
+            # Determine group (A_, B_, or neither)
+            if filename.startswith('A_'):
+                group = 'Group 1'
+                parts = filename[2:].split('_')  # Remove A_ prefix
+            elif filename.startswith('B_'):
+                group = 'Group 2'
+                parts = filename[2:].split('_')  # Remove B_ prefix
+            else:
+                group = None
+                parts = filename.split('_')
+
+            # Try to extract arc number (second element after splitting)
+            try:
+                arc_num = int(parts[0]) if parts else None
+            except (ValueError, IndexError):
+                arc_num = None
+
+            # Add chapter marker when group or arc changes
+            if group and group != last_group:
+                chapters.append((current_time, None, None, group))
+                last_group = group
+                last_arc = None  # Reset arc tracking for new group
+
+            if arc_num is not None and arc_num != last_arc:
+                arc_name = arc_names.get(arc_num, f"Arc {arc_num}")
+                chapters.append((current_time, arc_num, arc_name, group))
+                last_arc = arc_num
+
+            # Update current time (with crossfade adjustment after first song)
+            if len(song_durations) > 1:
+                current_time += dur_int - crossfade_duration
+            else:
+                current_time += dur_int
 
         # Calculate target duration
         if duration == "test":
@@ -1192,6 +1247,75 @@ def render(
                     console.print(f"[yellow]⚠[/yellow] Could not copy Image folder: {e}")
             else:
                 console.print(f"[yellow]⚠[/yellow] No Image folder found at {image_dir}")
+
+            # Generate chapters file with multiple timestamp formats
+            if chapters:
+                def format_hms(seconds):
+                    """Format as HH:MM:SS"""
+                    hours = seconds // 3600
+                    minutes = (seconds % 3600) // 60
+                    secs = seconds % 60
+                    return f"{hours:02d}:{minutes:02d}:{secs:02d}"
+
+                def format_ms(seconds):
+                    """Format as MM:SS"""
+                    minutes = seconds // 60
+                    secs = seconds % 60
+                    return f"{minutes:02d}:{secs:02d}"
+
+                def format_youtube(seconds):
+                    """Format for YouTube (HH:MM:SS or MM:SS)"""
+                    if seconds >= 3600:
+                        return format_hms(seconds)
+                    else:
+                        return format_ms(seconds)
+
+                chapters_file = output_dir / "chapters.txt"
+                with open(chapters_file, 'w') as f:
+                    f.write("# Track Chapters and Timestamps\n")
+                    f.write("# Multiple formats for convenience\n\n")
+
+                    f.write("=" * 80 + "\n")
+                    f.write("YOUTUBE FORMAT (Copy to video description)\n")
+                    f.write("=" * 80 + "\n")
+                    for timestamp, arc_num, arc_name, group in chapters:
+                        if arc_num is not None and arc_name:
+                            label = f"Arc {arc_num}: {arc_name}"
+                            if group:
+                                label = f"{group} - {label}"
+                        elif group:
+                            label = group
+                        else:
+                            continue
+                        f.write(f"{format_youtube(timestamp)} {label}\n")
+
+                    f.write("\n" + "=" * 80 + "\n")
+                    f.write("DETAILED FORMAT\n")
+                    f.write("=" * 80 + "\n")
+                    f.write(f"{'Arc #':<8} {'Arc Name':<30} {'HH:MM:SS':<12} {'MM:SS':<10} {'Seconds':<10} {'Group'}\n")
+                    f.write("-" * 80 + "\n")
+                    for timestamp, arc_num, arc_name, group in chapters:
+                        if arc_num is not None:
+                            arc_display = str(arc_num)
+                            name_display = arc_name or ""
+                            group_display = group or ""
+                            f.write(f"{arc_display:<8} {name_display:<30} {format_hms(timestamp):<12} {format_ms(timestamp):<10} {timestamp:<10} {group_display}\n")
+
+                console.print(f"[green]✓[/green] Generated chapters file: {chapters_file}")
+                console.print(f"[cyan]Preview (YouTube format):[/cyan]")
+                count = 0
+                for timestamp, arc_num, arc_name, group in chapters:
+                    if arc_num is not None and count < 10:
+                        label = f"Arc {arc_num}: {arc_name}" if arc_name else f"Arc {arc_num}"
+                        if group:
+                            label = f"{group} - {label}"
+                        console.print(f"  {format_youtube(timestamp)} {label}")
+                        count += 1
+                if count < len([c for c in chapters if c[1] is not None]):
+                    remaining = len([c for c in chapters if c[1] is not None]) - count
+                    console.print(f"  ... and {remaining} more")
+            else:
+                console.print(f"[yellow]⚠[/yellow] No chapters generated")
         else:
             console.print(f"\n[bold red]❌ Render failed with exit code {result.returncode}[/bold red]\n")
             raise typer.Exit(1)

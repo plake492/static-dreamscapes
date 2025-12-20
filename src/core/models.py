@@ -181,7 +181,9 @@ class Song(BaseModel):
 
         parts = []
         if self.prompt_text:
-            parts.append(self.prompt_text)
+            # Strip surrounding quotes for consistent embeddings
+            clean_prompt = self.prompt_text.strip().strip('"').strip("'")
+            parts.append(clean_prompt)
         if self.arc_name:
             parts.append(f"Arc: {self.arc_name}")
         if self.track_title:

@@ -126,10 +126,11 @@ yarn scaffold-track --track-number 20 --notion-url "https://notion.so/new-track"
 # Step 4: Prepare for rendering
 yarn prepare-render --track 20 --playlist "./output/playlists/track-20-matches.json"
 
-# Step 5: Generate missing songs (manual)
+# Step 5: Generate missing songs (if needed)
 # Use AI generator for gaps identified in Step 2
 
-# Step 6: Render in your DAW (manual)
+# Step 6: Render video with automated FFmpeg
+yarn render --track 20 --duration 3  # 3-hour render
 
 # Step 7: Import rendered songs
 yarn post-render --track 20

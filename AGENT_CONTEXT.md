@@ -128,6 +128,12 @@ static-dreamwaves/
 │       ├── embedding_service.py # AI embeddings
 │       └── query_service.py     # Semantic search
 │
+├── scripts/                      # Utility scripts
+│   ├── consolidate_songs.py     # Copy songs from subdirectories
+│   ├── import_all_tracks.py     # Batch import all tracks
+│   ├── prepend_text.py          # Add prefix to filenames
+│   └── remove_prefix.py         # Remove prefix from filenames
+│
 └── config/
     └── settings.yaml            # Configuration
 ```
@@ -400,6 +406,20 @@ Successfully imported tracks: 22, 23, 24, and others from batch import
 - Supports both .mp3 and .wav files
 - Optional arc parsing (won't fail on unusual filenames)
 
+### 6. Embedding Quote Normalization (Bug Fix)
+- Fixed inconsistent quote handling in prompt embeddings
+- Some Notion prompts had quotes (`"text"`), others didn't
+- Quotes were being included in embeddings, affecting semantic similarity
+- Solution: Strip surrounding quotes in `embedding_text` property (models.py:184-186)
+- Result: Consistent embeddings regardless of quote formatting in source documents
+
+### 7. Utility Scripts
+- **consolidate_songs.py**: Copy songs from `Tracks/*/1` and `Tracks/*/2` into `Tracks/*/Songs`
+- **import_all_tracks.py**: Batch import all tracks with Notion URLs and songs
+- **prepend_text.py**: Add prefix to filenames (e.g., for organizing song variants)
+- **remove_prefix.py**: Remove prefix from filenames
+- All scripts support `--dry-run` for safe previewing
+
 ---
 
 ## Development Notes
@@ -444,20 +464,247 @@ ffmpeg-python  # Not used (subprocess instead)
 
 ## Workflows & Use Cases
 
-### Creating a New 3-Hour Track
+### Complete Workflow: Scaffold → Render
 
-1. **Create Notion document** with track title and 4 arcs with prompts
-2. **Import to database**: `yarn import-songs --notion-url "..." --songs-dir "./Tracks/N/Songs"`
-3. **Generate embeddings**: `yarn generate-embeddings`
-4. **Query for matches**: `yarn query --track N --duration 180 --output results.json`
-5. **Prepare track**: `yarn prepare-render --results results.json --track N`
-6. **Review**: Check `remaining-prompts.md` for prompts needing songs
-7. **Generate missing**: Use Suno to generate songs for remaining prompts
-8. **Add songs**: Copy new songs to `Tracks/N/Songs/` with naming convention
-9. **Re-import**: `yarn import:force --notion-url "..." --songs-dir "./Tracks/N/Songs"`
-10. **Prepare background**: Add `Tracks/N/Video/N.mp4` (looping background video)
-11. **Test render**: `yarn render --track N --duration test`
-12. **Full render**: `yarn render --track N --duration 3`
+This is the complete process from creating a new track to final rendered video.
+
+---
+
+#### **Step 1: Create Notion Document**
+
+Create a Notion document with:
+- Track title
+- 4 arcs with mood descriptions
+- Prompts for each arc (typically 3-4 prompts per arc)
+
+---
+
+#### **Step 2: Scaffold Track Folder (Optional but Recommended)**
+
+Creates folder structure without committing to song matches yet.
+
+```bash
+yarn scaffold-track --track-number 24 --notion-url "https://notion.so/Track-24-..."
+```
+
+**Creates:**
+- `Tracks/24/` with subdirectories: Songs, Video, Rendered, metadata, etc.
+- `metadata/track_info.json` (snapshot of track info)
+- `README.md` (track overview)
+
+**Note:** This is just a snapshot. Later commands fetch fresh data from Notion.
+
+---
+
+#### **Step 3: Query for Matching Songs**
+
+Find songs from your library that match the track's prompts.
+
+**Scenario A: Target Specific Duration (e.g., 3 hours)**
+```bash
+yarn query \
+  --notion-url "https://notion.so/Track-24-..." \
+  --duration 180 \
+  --output track-24-matches.json
+```
+- `--duration 180` = 180 minutes (3 hours)
+- System distributes duration evenly across arcs
+- Selects multiple songs per prompt to fill the target duration
+
+**Scenario B: Fixed Number of Songs per Prompt**
+```bash
+yarn query \
+  --notion-url "https://notion.so/Track-24-..." \
+  --top-k 3 \
+  --output track-24-matches.json
+```
+- `--top-k 3` = Get exactly 3 best matches for each prompt
+- Default is 5 matches per prompt
+- Total songs = (number of prompts) × (top-k)
+
+**Scenario C: Custom Duration + Quality Threshold**
+```bash
+yarn query \
+  --notion-url "https://notion.so/Track-24-..." \
+  --duration 60 \
+  --min-similarity 0.7 \
+  --output track-24-matches.json
+```
+- `--duration 60` = 1 hour (60 minutes)
+- `--min-similarity 0.7` = Only include songs with 70%+ similarity
+- Higher threshold = better matches but potentially fewer songs
+
+**Output:** `track-24-matches.json` with all matched songs
+
+---
+
+#### **Step 4: Analyze Gaps (Optional)**
+
+See which prompts didn't get enough matches.
+
+```bash
+yarn gaps track-24-matches.json
+```
+
+**Shows:**
+- Prompts with no matches
+- Prompts with low similarity matches
+- How many new songs you need to generate
+
+---
+
+#### **Step 5: Copy Matched Songs to Track Folder**
+
+```bash
+yarn prepare-render --results track-24-matches.json --track 24
+```
+
+**What it does:**
+- Copies matched songs to `Tracks/24/Songs/`
+- Generates `Tracks/24/remaining-prompts.md` (prompts still needing songs)
+- Organizes songs by arc and prompt
+
+**Check:** `Tracks/24/remaining-prompts.md` to see what's missing
+
+---
+
+#### **Step 6: Generate Missing Songs (If Needed)**
+
+If gaps analysis showed missing prompts:
+
+1. Open `Tracks/24/remaining-prompts.md`
+2. Copy prompts to Suno or your AI music generator
+3. Generate songs for missing prompts
+4. Save songs to `Tracks/24/Songs/` with naming convention:
+   - `A_1_1_24a.mp3` (Arc 1, prompt 1, variant 24a)
+   - `B_2_4_24b.mp3` (Arc 2, prompt 4, variant 24b)
+
+---
+
+#### **Step 7: Import Track to Database**
+
+Import the track with all songs (matched + newly generated).
+
+```bash
+yarn import-songs \
+  --notion-url "https://notion.so/Track-24-..." \
+  --songs-dir "./Tracks/24/Songs"
+```
+
+**What it does:**
+- Imports all songs from Tracks/24/Songs/
+- Extracts BPM, key, duration from audio files
+- Links songs to prompts from Notion doc
+- Stores in database
+
+**Then regenerate embeddings:**
+```bash
+yarn generate-embeddings
+```
+
+---
+
+#### **Step 8: Add Background Video**
+
+Place a looping background video at:
+```
+Tracks/24/Video/24.mp4
+```
+
+**Requirements:**
+- MP4 format
+- Should loop seamlessly
+- Recommended: 1920×1080 or higher
+
+---
+
+#### **Step 9: Test Render**
+
+Quick 5-minute test to verify everything works.
+
+```bash
+yarn render --track 24 --duration test
+```
+
+**Output:** `Rendered/24/output_{timestamp}/output.mp4`
+
+**Check:**
+- Audio crossfades working
+- Video loops properly
+- No errors in console
+
+---
+
+#### **Step 10: Full Render**
+
+Render the complete track.
+
+**For 3-hour track:**
+```bash
+yarn render --track 24 --duration 3
+```
+
+**For auto duration (uses all songs):**
+```bash
+yarn render --track 24 --duration auto
+```
+
+**Custom settings:**
+```bash
+yarn render --track 24 --duration 3 --volume 2.0 --crossfade 8
+```
+
+**Output:** `Rendered/24/output_{timestamp}/output.mp4`
+
+---
+
+### Duration Examples
+
+#### **30-Minute Mix** (e.g., focus session)
+```bash
+# Query for 30 minutes of songs
+yarn query --notion-url "URL" --duration 30 --output track-24-matches.json
+yarn prepare-render --results track-24-matches.json --track 24
+yarn render --track 24 --duration 0.5  # 0.5 hours = 30 min
+```
+
+#### **1-Hour Mix** (e.g., study session)
+```bash
+yarn query --notion-url "URL" --duration 60 --output track-24-matches.json
+yarn prepare-render --results track-24-matches.json --track 24
+yarn render --track 24 --duration 1
+```
+
+#### **3-Hour Mix** (e.g., deep work / YouTube upload)
+```bash
+yarn query --notion-url "URL" --duration 180 --output track-24-matches.json
+yarn prepare-render --results track-24-matches.json --track 24
+yarn render --track 24 --duration 3
+```
+
+#### **Custom: Get Exactly 48 Songs** (4 per prompt, 12 prompts)
+```bash
+yarn query --notion-url "URL" --top-k 4 --output track-24-matches.json
+yarn prepare-render --results track-24-matches.json --track 24
+yarn render --track 24 --duration auto  # Uses all 48 songs
+```
+
+---
+
+### Quick Reference: Key Parameters
+
+**Query Command:**
+- `--duration N` - Target N minutes of total songs (distributed across arcs)
+- `--top-k N` - Get N best matches per prompt (default: 5)
+- `--min-similarity N` - Only include songs with similarity ≥ N (default: 0.6)
+- `--output FILE` - Save results to FILE
+
+**Render Command:**
+- `--duration test` - 5-minute test render
+- `--duration auto` - Use all songs in Tracks/{N}/Songs/
+- `--duration N` - Render N hours (e.g., 3 = 3 hours)
+- `--volume N` - Volume boost (default: 1.75)
+- `--crossfade N` - Crossfade duration in seconds (default: 5)
 
 ### Song Naming Convention
 
@@ -529,6 +776,32 @@ ls -R Tracks/24/
 cat Rendered/24/output_{timestamp}/ffmpeg_command.txt
 cat Rendered/24/output_{timestamp}/filter_complex.txt
 ```
+
+### Utility Scripts
+
+The `scripts/` directory contains helpful utilities for managing song files and batch operations:
+
+```bash
+# Consolidate songs from subdirectories into main Songs folder
+python scripts/consolidate_songs.py --base-dir ./Tracks --dry-run
+python scripts/consolidate_songs.py --base-dir ./Tracks  # Actually copy
+python scripts/consolidate_songs.py --base-dir ./Tracks --track-id 123456  # Specific track
+
+# Batch import all tracks with songs and Notion URLs
+python scripts/import_all_tracks.py --dry-run
+python scripts/import_all_tracks.py  # Interactive confirmation
+python scripts/import_all_tracks.py --tracks "10,11,12"  # Specific tracks
+
+# Add prefix to filenames (useful for organizing variants)
+python scripts/prepend_text.py --folder ./Tracks/24/Songs --prefix "A_" --dry-run
+python scripts/prepend_text.py --folder ./Tracks/24/Songs --prefix "A_"
+
+# Remove prefix from filenames
+python scripts/remove_prefix.py --folder ./Tracks/24/Songs --prefix "A_" --dry-run
+python scripts/remove_prefix.py --folder ./Tracks/24/Songs --prefix "A_"
+```
+
+**Pro tip:** Always use `--dry-run` first to preview changes before executing!
 
 ---
 
