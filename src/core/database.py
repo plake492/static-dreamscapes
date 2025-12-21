@@ -240,6 +240,39 @@ class Database:
         cursor.execute(query, params)
         return [self._row_to_song(row) for row in cursor.fetchall()]
 
+    def update_song(self, song: Song) -> bool:
+        """Update an existing song in the database."""
+        try:
+            import json
+            cursor = self.conn.cursor()
+
+            cursor.execute("""
+                UPDATE songs SET
+                    file_path = ?, arc_number = ?, prompt_number = ?,
+                    song_number = ?, order_marker = ?, track_id = ?,
+                    track_title = ?, arc_name = ?, arc_phase = ?,
+                    prompt_text = ?, anchor_phrase = ?,
+                    duration_seconds = ?, bpm = ?, key = ?,
+                    energy_level = ?, tempo_category = ?,
+                    vibe_tags = ?, mood_keywords = ?, combined_text = ?,
+                    updated_at = ?
+                WHERE id = ?
+            """, (
+                song.file_path, song.arc_number, song.prompt_number,
+                song.song_number, song.order_marker, song.track_id,
+                song.track_title, song.arc_name, song.arc_phase,
+                song.prompt_text, song.anchor_phrase,
+                song.duration_seconds, song.bpm, song.key,
+                song.energy_level, song.tempo_category.value if song.tempo_category else None,
+                json.dumps(song.vibe_tags), json.dumps(song.mood_keywords), song.combined_text,
+                datetime.now(), song.id
+            ))
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logger.error(f"Failed to update song {song.filename}: {e}")
+            return False
+
     def update_song_usage(self, song_id: str):
         """Increment the times_used counter for a song."""
         cursor = self.conn.cursor()

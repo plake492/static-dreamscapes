@@ -5,8 +5,8 @@ This document tracks planned and implemented improvements to the static-dreamwav
 ## Implementation Status
 
 - ✅ **#1: Fix Auto File Naming on Render** - Completed
-- ⏳ **#2: Query Output Default Location** - Pending
-- ⏳ **#3: Illegal Phrase Detection** - Pending
+- ✅ **#2: Query Output Default Location** - Completed
+- ✅ **#3: Illegal Phrase Detection** - Completed
 - ⏳ **#4: Fix Prerender Script** - Pending
 - ⏳ **#5: Standardize Track Parameter** - Pending
 - ⏳ **#6: Auto-Resolve Track Paths** - Pending
@@ -110,7 +110,7 @@ yarn render --track 25 --output ./my-videos/custom-name.mp4
 
 ---
 
-## 2. Query Output Default Location
+## 2. Query Output Default Location ✅ COMPLETED
 
 **Issue**: Query results are saved to the project root by default, which clutters the directory.
 
@@ -134,9 +134,47 @@ yarn query --notion-url "..." --output output/track-25-matches.json
 **Files to Modify**:
 - `src/cli/main.py` - Update query command default output path
 
+### Implementation Summary
+
+**Completed:** 2025-12-21
+
+**Changes Made:**
+1. ✅ Added `--track` parameter to query command
+   - Auto-generates output filename: `./output/track-{number}-matches.json`
+   - Makes --output parameter optional
+
+2. ✅ Updated default output behavior:
+   - With `--track`: saves to `./output/track-{number}-matches.json`
+   - Without `--track`: saves to `./output/query-results.json`
+   - Custom `--output` still works and overrides defaults
+   - Auto-creates output directory if it doesn't exist
+
+3. ✅ Consistent with import-songs and render commands:
+   - All commands now support `--track` parameter
+   - All commands auto-resolve paths from track number
+   - All commands allow explicit path overrides
+
+**Result:**
+```bash
+# Before:
+yarn query --notion-url "..." --output track-25-matches.json
+# Output: ./track-25-matches.json (clutters root)
+
+# After (simplified with --track):
+yarn query --track 25 --notion-url "..."
+# Output: ./output/track-25-matches.json
+
+# After (without --track):
+yarn query --notion-url "..."
+# Output: ./output/query-results.json
+
+# Custom output still works:
+yarn query --track 25 --notion-url "..." --output ./custom/my-query.json
+```
+
 ---
 
-## 3. Illegal Phrase Detection After Import
+## 3. Illegal Phrase Detection After Import ✅ COMPLETED
 
 **Issue**: When tracks are imported with forbidden technical phrases (e.g., "slow attack and long release", "low-pass filtered"), there's no immediate feedback. The issue only becomes apparent during query when matches are poor.
 
@@ -165,6 +203,66 @@ yarn import-songs --notion-url "..." --songs-dir "..."
 **Files to Modify**:
 - `src/cli/main.py` - Add post-import validation step
 - `src/ingest/prompt_validator.py` (NEW) - Create validator with forbidden terms list
+
+### Implementation Summary
+
+**Completed:** 2025-12-21
+
+**Changes Made:**
+1. ✅ Created `src/ingest/prompt_validator.py` with:
+   - `FORBIDDEN_PHRASES` - List of 40+ forbidden technical terms from PROMPT_CRAFTING_GUIDE.md
+   - `FORBIDDEN_PATTERNS` - Regex patterns to catch variations (e.g., "no percussion", "zero drums")
+   - `check_prompt_for_violations()` - Scans single prompt for forbidden phrases
+   - `validate_track_prompts()` - Validates all prompts for a track from database
+   - `format_violation_report()` - Formats violations as Rich-styled warning table
+   - `PromptViolation` dataclass - Structured violation data
+
+2. ✅ Updated `src/cli/main.py` import-songs command:
+   - Added validator call after successful import (line 139-145)
+   - Displays violations with arc/prompt location
+   - Shows summary with violation counts
+   - Links to PROMPT_CRAFTING_GUIDE.md
+
+3. ✅ Forbidden phrase categories detected:
+   - Production/mixing terms: "slow attack and long release", "low-pass filtered", "sidechain"
+   - Negative phrasing: "no percussion", "no drums", "beatless", "zero rhythmic"
+   - Technical density: "event density", "extremely low event density"
+   - Overly specific: "chord cycling every 8 bars", "vocal pads in upper register"
+
+**Result:**
+```bash
+# Before:
+yarn import-songs --track 10 --notion-url "..."
+✅ Import completed successfully!
+Songs imported: 45
+# (No feedback on prompt quality)
+
+# After:
+yarn import-songs --track 10 --notion-url "..."
+✅ Import completed successfully!
+Songs imported: 45
+
+⚠️  WARNING: Found forbidden technical phrases in prompts:
+
+  • Arc 1 - Prompt 1: "slow attack and long release", "slow attack", "long release", "no drums"
+  • Arc 1 - Prompt 2: "no rhythm"
+  • Arc 2 - Prompt 5: "sidechain", "sidechained"
+  • Arc 4 - Prompt 12: "beatless"
+  • Arc 4 - Prompt 13: "long release"
+
+📖 See PROMPT_CRAFTING_GUIDE.md for approved evocative vocabulary
+
+Summary:
+  • 5 prompt(s) with violations
+  • 8 unique forbidden phrase(s)
+```
+
+**Benefits:**
+- Immediate feedback on prompt quality during import
+- Clear identification of which prompts need revision
+- Links to approved vocabulary guide
+- Helps maintain semantic consistency across track library
+- Prevents poor query matches due to technical language
 
 ---
 
@@ -325,4 +423,4 @@ Not yet prioritized - this is a backlog of improvements to be scheduled later.
 
 ---
 
-**Last Updated**: 2025-12-20
+**Last Updated**: 2025-12-21

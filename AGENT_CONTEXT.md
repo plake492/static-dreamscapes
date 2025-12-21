@@ -146,14 +146,15 @@ static-dreamwaves/
 ### Complete Workflow: Notion → Rendered Track
 
 ```bash
-# 1. Import track from Notion
-yarn import-songs --notion-url "https://notion.so/..." --songs-dir "./Tracks/24/Songs"
+# 1. Import track from Notion (simplified with --track)
+yarn import-songs --track 24 --notion-url "https://notion.so/..."
 
 # 2. Generate embeddings for semantic search
 yarn generate-embeddings
 
-# 3. Find matching songs for prompts (with duration targeting)
-yarn query --track 24 --duration 180 --output track-24-matches.json
+# 3. Find matching songs for prompts (simplified with --track)
+yarn query --track 24 --notion-url "https://notion.so/..." --duration 180
+# Auto-saves to: ./output/track-24-matches.json
 
 # 4. Copy matched songs to track folder and generate remaining prompts doc
 yarn prepare-render --results track-24-matches.json --track 24
@@ -174,11 +175,14 @@ yarn stats:tracks         # Track statistics only
 
 #### Importing & Indexing
 ```bash
-# Import single track from Notion
-yarn import-songs --notion-url "<url>" --songs-dir "./Tracks/{N}/Songs"
+# Import single track from Notion (simplified with --track)
+yarn import-songs --track N --notion-url "<url>"
 
 # Force reimport (overwrite existing)
-yarn import:force --notion-url "<url>" --songs-dir "./Tracks/{N}/Songs"
+yarn import:force --track N --notion-url "<url>"
+
+# Old syntax still works (explicit --songs-dir)
+yarn import-songs --notion-url "<url>" --songs-dir "./Tracks/{N}/Songs"
 
 # Batch import from Notion folder
 yarn batch-import --folder-id "<notion-folder-id>" -y
@@ -189,11 +193,16 @@ yarn generate-embeddings
 
 #### Searching & Querying
 ```bash
-# Interactive semantic search
-yarn query --track 24 --duration 180
+# Semantic search (simplified with --track)
+yarn query --track 24 --notion-url "<url>" --duration 180
+# Auto-saves to: ./output/track-24-matches.json
 
-# Output to JSON file
-yarn query --track 24 --duration 180 --output results.json
+# Custom output location
+yarn query --track 24 --notion-url "<url>" --duration 180 --output custom.json
+
+# Without --track (generic output)
+yarn query --notion-url "<url>" --duration 180
+# Auto-saves to: ./output/query-results.json
 
 # Check for missing prompts
 yarn gaps --track 24
@@ -504,9 +513,10 @@ Find songs from your library that match the track's prompts.
 **Scenario A: Target Specific Duration (e.g., 3 hours)**
 ```bash
 yarn query \
+  --track 24 \
   --notion-url "https://notion.so/Track-24-..." \
-  --duration 180 \
-  --output track-24-matches.json
+  --duration 180
+# Auto-saves to: ./output/track-24-matches.json
 ```
 - `--duration 180` = 180 minutes (3 hours)
 - System distributes duration evenly across arcs
@@ -515,9 +525,9 @@ yarn query \
 **Scenario B: Fixed Number of Songs per Prompt**
 ```bash
 yarn query \
+  --track 24 \
   --notion-url "https://notion.so/Track-24-..." \
-  --top-k 3 \
-  --output track-24-matches.json
+  --top-k 3
 ```
 - `--top-k 3` = Get exactly 3 best matches for each prompt
 - Default is 5 matches per prompt
@@ -526,10 +536,10 @@ yarn query \
 **Scenario C: Custom Duration + Quality Threshold**
 ```bash
 yarn query \
+  --track 24 \
   --notion-url "https://notion.so/Track-24-..." \
   --duration 60 \
-  --min-similarity 0.7 \
-  --output track-24-matches.json
+  --min-similarity 0.7
 ```
 - `--duration 60` = 1 hour (60 minutes)
 - `--min-similarity 0.7` = Only include songs with 70%+ similarity
@@ -587,9 +597,11 @@ If gaps analysis showed missing prompts:
 Import the track with all songs (matched + newly generated).
 
 ```bash
+# Simplified with --track
 yarn import-songs \
-  --notion-url "https://notion.so/Track-24-..." \
-  --songs-dir "./Tracks/24/Songs"
+  --track 24 \
+  --notion-url "https://notion.so/Track-24-..."
+# Auto-resolves songs directory to: ./Tracks/24/Songs
 ```
 
 **What it does:**
@@ -664,29 +676,29 @@ yarn render --track 24 --duration 3 --volume 2.0 --crossfade 8
 #### **30-Minute Mix** (e.g., focus session)
 ```bash
 # Query for 30 minutes of songs
-yarn query --notion-url "URL" --duration 30 --output track-24-matches.json
-yarn prepare-render --results track-24-matches.json --track 24
+yarn query --track 24 --notion-url "URL" --duration 30
+yarn prepare-render --results ./output/track-24-matches.json --track 24
 yarn render --track 24 --duration 0.5  # 0.5 hours = 30 min
 ```
 
 #### **1-Hour Mix** (e.g., study session)
 ```bash
-yarn query --notion-url "URL" --duration 60 --output track-24-matches.json
-yarn prepare-render --results track-24-matches.json --track 24
+yarn query --track 24 --notion-url "URL" --duration 60
+yarn prepare-render --results ./output/track-24-matches.json --track 24
 yarn render --track 24 --duration 1
 ```
 
 #### **3-Hour Mix** (e.g., deep work / YouTube upload)
 ```bash
-yarn query --notion-url "URL" --duration 180 --output track-24-matches.json
-yarn prepare-render --results track-24-matches.json --track 24
+yarn query --track 24 --notion-url "URL" --duration 180
+yarn prepare-render --results ./output/track-24-matches.json --track 24
 yarn render --track 24 --duration 3
 ```
 
 #### **Custom: Get Exactly 48 Songs** (4 per prompt, 12 prompts)
 ```bash
-yarn query --notion-url "URL" --top-k 4 --output track-24-matches.json
-yarn prepare-render --results track-24-matches.json --track 24
+yarn query --track 24 --notion-url "URL" --top-k 4
+yarn prepare-render --results ./output/track-24-matches.json --track 24
 yarn render --track 24 --duration auto  # Uses all 48 songs
 ```
 
@@ -695,10 +707,11 @@ yarn render --track 24 --duration auto  # Uses all 48 songs
 ### Quick Reference: Key Parameters
 
 **Query Command:**
+- `--track N` - Track number (auto-generates output: `./output/track-N-matches.json`)
 - `--duration N` - Target N minutes of total songs (distributed across arcs)
 - `--top-k N` - Get N best matches per prompt (default: 5)
 - `--min-similarity N` - Only include songs with similarity ≥ N (default: 0.6)
-- `--output FILE` - Save results to FILE
+- `--output FILE` - Custom output path (optional if --track is provided)
 
 **Render Command:**
 - `--duration test` - 5-minute test render
@@ -865,13 +878,13 @@ python scripts/remove_prefix.py --folder ./Tracks/24/Songs --prefix "A_"
 # Check status
 yarn stats
 
-# Import new track
-yarn import-songs --notion-url "<url>" --songs-dir "./Tracks/N/Songs"
+# Import new track (simplified)
+yarn import-songs --track N --notion-url "<url>"
 yarn generate-embeddings
 
-# Prepare track for rendering
-yarn query --track N --duration 180 --output results.json
-yarn prepare-render --results results.json --track N
+# Prepare track for rendering (simplified)
+yarn query --track N --notion-url "<url>" --duration 180
+yarn prepare-render --results ./output/track-N-matches.json --track N
 
 # Render
 yarn render --track N --duration test    # Quick test

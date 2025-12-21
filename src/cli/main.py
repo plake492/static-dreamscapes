@@ -136,6 +136,14 @@ def import_songs(
             if len(songs) > 10:
                 console.print(f"\n... and {len(songs) - 10} more songs\n")
 
+        # Validate prompts for forbidden technical phrases
+        from ..ingest.prompt_validator import validate_track_prompts, format_violation_report
+
+        violations = validate_track_prompts(db, track.id)
+        if violations:
+            violation_report = format_violation_report(violations, track.track_number)
+            console.print(violation_report)
+
         db.close()
 
     except Exception as e:
@@ -228,7 +236,8 @@ def generate_embeddings(
 @app.command()
 def query(
     notion_url: str = typer.Option(..., "--notion-url", "-n", help="Notion document URL for new track"),
-    output: str = typer.Option("./output/playlists/playlist.json", "--output", "-o", help="Output JSON file"),
+    track: Optional[int] = typer.Option(None, "--track", "-t", help="Track number (auto-generates output filename)"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output JSON file (optional if --track is provided)"),
     target_duration: int = typer.Option(180, "--duration", "-d", help="Target duration in minutes"),
     songs_per_arc: int = typer.Option(11, "--songs-per-arc", help="Songs per arc"),
     min_similarity: float = typer.Option(0.6, "--min-similarity", help="Minimum similarity score"),
@@ -244,6 +253,19 @@ def query(
         from ..query.filters import SearchFilters
         from pathlib import Path
         import json
+
+        # Auto-generate output filename from track number if not provided
+        if output is None:
+            if track is not None:
+                output = f"./output/track-{track}-matches.json"
+                console.print(f"[dim]Auto-generated output: {output}[/dim]\n")
+            else:
+                output = "./output/query-results.json"
+                console.print(f"[dim]Using default output: {output}[/dim]\n")
+
+        # Ensure output directory exists
+        output_path = Path(output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
 
         config = get_config(config_path)
         db = Database(config.database_path)
@@ -350,6 +372,67 @@ def query(
         console.print(f"[bold green]✅ Query complete![/bold green]")
         console.print(f"Total matches: {total_matches}")
         console.print(f"Results saved to: {output}\n")
+
+        # Aggregate songs by source track
+        from collections import defaultdict
+        from rich.table import Table
+
+        track_contributions = defaultdict(set)
+
+        # Parse all matched filenames to find contributing tracks
+        for arc_key, arc_data in results.items():
+            for prompt_data in arc_data:
+                for match in prompt_data['matches']:
+                    filename = match['filename']
+                    # Extract track number from filename (e.g., A_1_1_22a.mp3 -> 22)
+                    parts = filename.replace('.mp3', '').split('_')
+                    if len(parts) >= 4:
+                        track_part = parts[3]
+                        # Extract numeric portion (e.g., "22a" -> "22", "999d" -> "999")
+                        track_num = ''.join(c for c in track_part if c.isdigit())
+                        if track_num:
+                            track_contributions[track_num].add(filename)
+
+        if track_contributions:
+            # Get track titles from database
+            track_info = {}
+            cursor = db.conn.cursor()
+            for track_num in track_contributions.keys():
+                cursor.execute(
+                    "SELECT title FROM tracks WHERE track_number = ? OR id = ?",
+                    (int(track_num) if track_num.isdigit() else track_num, track_num)
+                )
+                result = cursor.fetchone()
+                title = result[0] if result else "Unknown Track"
+                # Truncate long titles
+                if len(title) > 40:
+                    title = title[:37] + "..."
+                track_info[track_num] = title
+
+            # Create and display table
+            table = Table(title="Contributing Tracks", show_header=True, header_style="bold cyan")
+            table.add_column("Track", style="yellow", width=10)
+            table.add_column("Title", style="white", width=42)
+            table.add_column("Songs", justify="right", style="green", width=8)
+
+            # Sort by song count (descending)
+            sorted_tracks = sorted(
+                track_contributions.items(),
+                key=lambda x: len(x[1]),
+                reverse=True
+            )
+
+            for track_num, filenames in sorted_tracks:
+                title = track_info.get(track_num, "Unknown Track")
+                song_count = len(filenames)
+                table.add_row(
+                    f"Track {track_num}",
+                    title,
+                    str(song_count)
+                )
+
+            console.print(table)
+            console.print()
 
         db.close()
 

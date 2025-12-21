@@ -234,12 +234,15 @@ class MetadataExtractor:
             combined_text=combined_text
         )
 
-        # Insert into database
+        # Insert or update in database
         if existing_song:
-            # Update existing
+            # Update existing song with fresh data from Notion
             logger.info(f"Updating existing song: {song.filename}")
-            # Note: We should implement an update method, but for now just log
+            song.id = existing_song.id  # Keep the same ID
+            song.times_used = existing_song.times_used  # Preserve usage count
+            self.db.update_song(song)
         else:
+            # Insert new song
             self.db.insert_song(song)
             logger.debug(f"Inserted song: {song.filename}")
 
