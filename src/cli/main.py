@@ -68,7 +68,8 @@ def init_db(
 @app.command()
 def import_songs(
     notion_url: str = typer.Option(..., "--notion-url", "-n", help="Notion document URL"),
-    songs_dir: str = typer.Option(..., "--songs-dir", "-s", help="Directory containing audio files"),
+    track: Optional[int] = typer.Option(None, "--track", "-t", help="Track number (auto-resolves to ./Tracks/{track}/Songs)"),
+    songs_dir: Optional[str] = typer.Option(None, "--songs-dir", "-s", help="Directory containing audio files (optional if --track is provided)"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file"),
     force_reanalyze: bool = typer.Option(False, "--force", help="Force re-analysis of existing songs")
 ):
@@ -78,6 +79,15 @@ def import_songs(
         from ..ingest.notion_parser import NotionParser
         from ..ingest.audio_analyzer import AudioAnalyzer
         from pathlib import Path
+
+        # Resolve songs_dir from track if not provided
+        if songs_dir is None and track is None:
+            console.print("[red]❌ Error: Either --track or --songs-dir must be provided[/red]\n")
+            raise typer.Exit(1)
+
+        if songs_dir is None:
+            songs_dir = f"./Tracks/{track}/Songs"
+            console.print(f"[dim]Auto-resolved songs directory from --track {track}[/dim]\n")
 
         config = get_config(config_path)
         db = Database(config.database_path)
@@ -934,6 +944,7 @@ def render(
     duration: str = typer.Option("auto", "--duration", "-d", help="Duration: 'auto', 'test' (5min), or hours (e.g., '1', '0.5', '3')"),
     volume_boost: float = typer.Option(1.75, "--volume", "-v", help="Volume multiplier"),
     crossfade_duration: int = typer.Option(5, "--crossfade", help="Crossfade duration in seconds"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Custom output path (default: auto-generated in ./output/)"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
     """Render track by concatenating songs with crossfades over looping background video."""
@@ -980,20 +991,27 @@ def render(
         output_dir = Path(f"Rendered/{track}/output_{timestamp}")
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Create filename from database field or sanitized title
+        # Use filename from Notion doc, or fall back to sanitized title, or generic name
         if output_filename:
             # Use the filename from Notion doc (already formatted)
-            # Ensure it ends with .mp4
             if not output_filename.endswith('.mp4'):
                 output_filename = f"{output_filename}.mp4"
-            output_file = output_dir / output_filename
+            final_filename = output_filename
         elif track_title:
             # Fallback: Sanitize title for filename
-            sanitized_title = re.sub(r'[^\w\s-]', '', track_title)
-            sanitized_title = re.sub(r'[-\s]+', '_', sanitized_title).strip('_')
-            output_file = output_dir / f"{sanitized_title}.mp4"
+            from src.render.filename_generator import sanitize_for_filename
+            sanitized_title = sanitize_for_filename(track_title)
+            final_filename = f"{sanitized_title}.mp4"
         else:
-            output_file = output_dir / "output.mp4"
+            final_filename = "output.mp4"
+
+        # Allow custom output path override
+        if output:
+            output_file = Path(output)
+        else:
+            output_file = output_dir / final_filename
+
+        console.print(f"[cyan]Output file:[/cyan] {output_file}\n")
 
         # Validate inputs
         if not bg_video.exists():

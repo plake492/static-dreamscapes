@@ -1,8 +1,19 @@
 # Improvements Backlog
 
-This document tracks planned improvements to the static-dreamwaves workflow. These are NOT being implemented immediately.
+This document tracks planned and implemented improvements to the static-dreamwaves workflow.
 
-## 1. Fix Auto File Naming on Render
+## Implementation Status
+
+- ✅ **#1: Fix Auto File Naming on Render** - Completed
+- ⏳ **#2: Query Output Default Location** - Pending
+- ⏳ **#3: Illegal Phrase Detection** - Pending
+- ⏳ **#4: Fix Prerender Script** - Pending
+- ⏳ **#5: Standardize Track Parameter** - Pending
+- ⏳ **#6: Auto-Resolve Track Paths** - Pending
+
+---
+
+## 1. Fix Auto File Naming on Render ✅ COMPLETED
 
 **Issue**: When rendering tracks, the output filename is not automatically generated based on track metadata (track number, title, etc.).
 
@@ -58,6 +69,44 @@ track-25.mp4
 - `src/cli/main.py` - Update render command to auto-generate filename
 - `src/render/filename_generator.py` (NEW) - Create filename sanitization utility
 - `TRACK_CREATION_GUIDE.md` - Update render examples with new behavior
+
+### Implementation Summary
+
+**Completed:** 2025-12-20
+
+**Changes Made:**
+1. ✅ Created `src/render/filename_generator.py` with utilities:
+   - `sanitize_for_filename()` - Removes emojis, special chars, converts to lowercase kebab-case
+   - `generate_track_filename()` - Generates filename from track number + title
+   - `get_output_path()` - Returns full output path with directory creation
+
+2. ✅ Updated `src/cli/main.py` render command:
+   - Added `--output` parameter for custom paths
+   - Changed output directory from `Rendered/{track}/output_{timestamp}/` to `./Rendered/`
+   - Integrated filename generator for auto-naming
+   - Uses `output_filename` field from Notion document
+   - Falls back to `track-{number}-{sanitized-title}.mp4` if no Notion filename
+
+3. ✅ Updated `TRACK_CREATION_GUIDE.md`:
+   - Updated test render output location examples
+   - Updated full render output location examples
+   - Added `--output` parameter documentation
+   - Added custom output path examples
+
+**Result:**
+```bash
+# Before:
+yarn render --track 25
+# Output: Rendered/25/output_20251220_153045/output.mp4
+
+# After:
+yarn render --track 25
+# Output: Rendered/midnight-neon-crt-desk-3hr-lofi-synthwave-night-coding.mp4
+# (Uses "Filename" field from Notion document)
+
+# With custom path:
+yarn render --track 25 --output ./my-videos/custom-name.mp4
+```
 
 ---
 

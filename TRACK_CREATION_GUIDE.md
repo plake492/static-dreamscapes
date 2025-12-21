@@ -277,7 +277,8 @@ Do a quick 5-minute test render:
 yarn render --track 24 --duration test
 ```
 
-**Output location:** `Rendered/24/output_{timestamp}/output.mp4`
+**Output location:** `Rendered/{output-filename-from-notion}.mp4`
+*Example:* `Rendered/midnight-neon-crt-desk-3hr-lofi-synthwave-night-coding.mp4`
 
 **What to check:**
 - ✅ Audio crossfades are smooth
@@ -316,14 +317,27 @@ yarn render --track 24 --duration 3 --volume 2.0 --crossfade 8
 - `--duration N` - N hours (e.g., 3 = 3 hours, 0.5 = 30 min)
 - `--volume N` - Volume boost multiplier (default: 1.75)
 - `--crossfade N` - Crossfade duration in seconds (default: 5)
+- `--output PATH` - Custom output path (optional)
 
-**Output:** `Rendered/24/output_{timestamp}/output.mp4`
+**Output:** `Rendered/{output-filename-from-notion}.mp4`
+*Example:* `Rendered/midnight-neon-crt-desk-3hr-lofi-synthwave-night-coding.mp4`
+
+**Filename source:**
+- Uses the "Filename" field from your Notion document
+- Falls back to sanitized track title if Filename field is empty
+- Ensures you must run `yarn import-songs` first to populate track metadata
+
+**Custom output path:**
+```bash
+yarn render --track 24 --duration 3 --output ./custom/my-video.mp4
+```
 
 **Rendering features:**
 - ✨ Automatic crossfades between songs
 - 🔁 Looping background video
 - 🔊 Volume boost and fade in/out
-- 📁 Timestamped output folders (keeps multiple versions)
+- 📁 Uses filename from Notion document
+- 🎯 Outputs to Rendered/ directory
 
 ---
 
