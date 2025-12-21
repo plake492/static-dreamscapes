@@ -129,6 +129,7 @@ static-dreamwaves/
 │       └── query_service.py     # Semantic search
 │
 ├── scripts/                      # Utility scripts
+│   ├── batch_import_from_notion.py  # Import from Notion parent folder
 │   ├── consolidate_songs.py     # Copy songs from subdirectories
 │   ├── import_all_tracks.py     # Batch import all tracks
 │   ├── prepend_text.py          # Add prefix to filenames
@@ -791,6 +792,13 @@ python scripts/consolidate_songs.py --base-dir ./Tracks --track-id 123456  # Spe
 python scripts/import_all_tracks.py --dry-run
 python scripts/import_all_tracks.py  # Interactive confirmation
 python scripts/import_all_tracks.py --tracks "10,11,12"  # Specific tracks
+
+# Batch import from Notion parent folder (scans child pages)
+# Add NOTION_PARENT_FOLDER_URL to .env, or use --notion-url
+yarn batch-import-folder --dry-run  # Preview what would be imported
+yarn batch-import-folder  # Import all matching tracks
+yarn batch-import-folder --skip-tracks "14,15,20"  # Skip specific tracks
+yarn batch-import-folder --notion-url "https://notion.so/parent"  # Override env var
 
 # Add prefix to filenames (useful for organizing variants)
 python scripts/prepend_text.py --folder ./Tracks/24/Songs --prefix "A_" --dry-run

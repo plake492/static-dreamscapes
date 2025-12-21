@@ -1,6 +1,6 @@
 {
   "model": "sentence-transformers/all-MiniLM-L6-v2",
   "dimension": 384,
-  "song_count": 662,
-  "generated_at": "2025-12-18T22:58:09.592660"
+  "song_count": 731,
+  "generated_at": "2025-12-20T16:17:11.877293"
 }

@@ -27,6 +27,7 @@
     "prepend": "python3 scripts/prepend_text.py",
     "remove-prefix": "python3 scripts/remove_prefix.py",
     "consolidate": "python3 scripts/consolidate_songs.py",
-    "import-all": "python3 scripts/import_all_tracks.py"
+    "import-all": "python3 scripts/import_all_tracks.py",
+    "batch-import-folder": "source venv/bin/activate && python3 scripts/batch_import_from_notion.py"
   }
 }
