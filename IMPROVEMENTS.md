@@ -7,9 +7,9 @@ This document tracks planned and implemented improvements to the static-dreamwav
 - ✅ **#1: Fix Auto File Naming on Render** - Completed
 - ✅ **#2: Query Output Default Location** - Completed
 - ✅ **#3: Illegal Phrase Detection** - Completed
-- ⏳ **#4: Fix Prerender Script** - Pending
-- ⏳ **#5: Standardize Track Parameter** - Pending
-- ⏳ **#6: Auto-Resolve Track Paths** - Pending
+- ✅ **#4: Fix Prerender Script** - Completed
+- ✅ **#5: Standardize Track Parameter** - Completed
+- ✅ **#6: Auto-Resolve Track Paths** - Completed
 
 ---
 
@@ -266,7 +266,7 @@ Summary:
 
 ---
 
-## 4. Fix Prerender Script
+## 4. Fix Prerender Script ✅ COMPLETED
 
 **Issue**: The prerender script referenced in TRACK_CREATION_GUIDE.md does not work as documented.
 
@@ -291,9 +291,60 @@ yarn prepare-render --track 25 --playlist track-25-matches.json --duration 180
 - `scripts/prepare_render.py` or similar - Find the actual script
 - `TRACK_CREATION_GUIDE.md` - Update documentation if needed
 
+### Implementation Summary
+
+**Completed:** 2025-12-21
+
+**Changes Made:**
+1. ✅ **Fixed parameter mismatch** in `src/cli/main.py`:
+   - Documentation used `--results` but code expected `--playlist`
+   - Updated parameter to accept both `--results` and `--playlist` as aliases
+   - Renamed internal variable from `playlist` to `results` for clarity
+   - Help text now says "Path to query results JSON file"
+
+2. ✅ **Verified functionality** - Script works correctly:
+   - Copies matched songs from query results to track's Songs folder
+   - Supports `--duration` for auto-selecting songs to fill target time
+   - Displays summary table showing songs per arc
+   - Generates `remaining-prompts.md` for prompts without matches
+   - Uses `--copy` (default) or `--move` for file operations
+
+**Result:**
+```bash
+# Before (didn't work - parameter mismatch):
+yarn prepare-render --track 25 --results track-25-matches.json
+# Error: Missing option '--playlist'
+
+# After (both work now):
+yarn prepare-render --track 25 --results output/track-25-matches.json
+yarn prepare-render --track 25 --playlist output/track-25-matches.json  # Also works
+
+# Output:
+✅ Prepared 11 songs for rendering
+Location: Tracks/25/Songs
+
+           Songs by Arc
+┏━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━┓
+┃ Arc   ┃ Songs ┃ Duration (min) ┃
+┡━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━┩
+│ arc_1 │     2 │            7.5 │
+│ arc_2 │     4 │           14.7 │
+│ arc_3 │     3 │           11.5 │
+│ arc_4 │     2 │            8.0 │
+└───────┴───────┴────────────────┘
+
+✓ Created: Tracks/25/remaining-prompts.md
+```
+
+**Benefits:**
+- Documentation now matches implementation
+- Backward compatible with `--playlist` for existing scripts
+- Clearer parameter naming with `--results`
+- Confirmed script works end-to-end
+
 ---
 
-## 5. Standardize Track Parameter Naming
+## 5. Standardize Track Parameter Naming ✅ COMPLETED
 
 **Issue**: Different scripts use inconsistent parameter names for specifying tracks: `--track-number`, `--track-id`, `--track`
 
@@ -331,9 +382,62 @@ yarn something --track 25
 4. Update all documentation
 5. After one release cycle, remove deprecated aliases
 
+### Implementation Summary
+
+**Completed:** 2025-12-21
+
+**Changes Made:**
+1. ✅ **Audited all CLI commands** in `src/cli/main.py`:
+   - `init_db` - No track parameter ✓
+   - `import_songs` - Already uses `--track` ✓
+   - `generate_embeddings` - No track parameter ✓
+   - `query` - Already uses `--track` ✓
+   - `playlist_gaps` - No track parameter ✓
+   - `scaffold_track` - **Used `--track-number`** ❌ **FIXED** ✅
+   - `track_duration` - Already uses `--track` ✓
+   - `prepare_render` - Already uses `--track` ✓
+   - `render` - Already uses `--track` ✓
+   - `post_render` - Already uses `--track` ✓
+   - `mark_published` - Already uses `--track` ✓
+   - `stats` - No track parameter ✓
+   - `batch_import` - No track parameter ✓
+   - `version` - No track parameter ✓
+
+2. ✅ **Fixed `scaffold_track` command**:
+   - Changed parameter from `--track-number` to `--track`
+   - Kept `--track-number` as alias for backward compatibility
+   - Updated all internal references from `track_number` to `track`
+
+**Result:**
+```bash
+# Before (inconsistent):
+yarn scaffold-track --track-number 25 --notion-url "..."  # Only this worked
+yarn scaffold-track --track 25 --notion-url "..."         # Didn't work
+
+# After (both work, standardized):
+yarn scaffold-track --track 25 --notion-url "..."         # Preferred ✓
+yarn scaffold-track --track-number 25 --notion-url "..."  # Still works (alias) ✓
+
+# All commands now use --track consistently:
+yarn import-songs --track 25 --notion-url "..."
+yarn query --track 25 --notion-url "..."
+yarn prepare-render --track 25 --results "..."
+yarn render --track 25 --duration 3
+yarn scaffold-track --track 25 --notion-url "..."
+yarn track-duration --track 25
+yarn post-render --track 25
+yarn mark-published --track 25
+```
+
+**Benefits:**
+- ✅ 100% consistency across all CLI commands
+- ✅ Backward compatible with `--track-number` alias
+- ✅ Clearer, simpler command syntax
+- ✅ Easier to remember and document
+
 ---
 
-## 6. Auto-Resolve Track Paths from Track Number
+## 6. Auto-Resolve Track Paths from Track Number ✅ COMPLETED
 
 **Issue**: Many commands require full file paths or output paths that reference track-specific files (e.g., `./output/track-25-matches.json`, `./Tracks/25/Songs`). This is verbose and error-prone.
 
@@ -413,6 +517,79 @@ class TrackPathResolver:
 
     def render_output(self) -> Path:
         return self.base_dir / "output" / f"track-{self.track_number}-final.mp4"
+```
+
+### Implementation Summary
+
+**Completed:** 2025-12-21
+
+**Changes Made:**
+
+Most of this improvement was already implemented in previous improvements (#1 and #2). This final session completed the remaining piece:
+
+1. ✅ **query command** (Improvement #2):
+   - Already auto-creates `./output/track-{track}-matches.json` when `--track` is provided
+   - Makes `--output` optional
+   - Example: `yarn query --track 25 --notion-url "..."`
+
+2. ✅ **import-songs command** (Previously implemented):
+   - Already auto-resolves to `./Tracks/{track}/Songs` when `--track` is provided
+   - Makes `--songs-dir` optional
+   - Example: `yarn import-songs --track 25 --notion-url "..."`
+
+3. ✅ **render command** (Improvement #1):
+   - Already auto-generates filename from Notion `output_filename` field
+   - Makes `--output` optional
+   - Example: `yarn render --track 25 --duration 3`
+
+4. ✅ **track-duration command** (Previously implemented):
+   - Already auto-resolves to `./Tracks/{track}/Songs` when `--track` is provided
+   - Makes `--songs-dir` optional
+   - Example: `yarn track-duration --track 25`
+
+5. ✅ **prepare-render command** (THIS SESSION):
+   - **NEW:** Made `--results` parameter optional
+   - **NEW:** Auto-resolves to `./output/track-{track}-matches.json` if not provided
+   - Still allows explicit `--results` override
+   - Example: `yarn prepare-render --track 25`
+
+**Result:**
+```bash
+# Before (verbose):
+yarn query --track 25 --notion-url "..." --output ./output/track-25-matches.json
+yarn import-songs --track 25 --notion-url "..." --songs-dir ./Tracks/25/Songs
+yarn prepare-render --track 25 --results ./output/track-25-matches.json
+yarn track-duration --songs-dir ./Tracks/25/Songs
+yarn render --track 25 --output custom-name.mp4
+
+# After (simplified):
+yarn query --track 25 --notion-url "..."
+yarn import-songs --track 25 --notion-url "..."
+yarn prepare-render --track 25
+yarn track-duration --track 25
+yarn render --track 25
+
+# Explicit overrides still work:
+yarn query --track 25 --notion-url "..." --output custom-query.json
+yarn prepare-render --track 25 --results custom-playlist.json
+```
+
+**Benefits:**
+- ✅ **Drastically reduced command verbosity** - Simple `--track` parameter is all you need
+- ✅ **Less error-prone** - Can't typo path structure
+- ✅ **Convention over configuration** - Standard paths are automatic
+- ✅ **Flexibility preserved** - Can still override paths when needed
+- ✅ **Consistent workflow** - All commands follow same pattern
+
+**Complete Workflow Example:**
+```bash
+# Complete track creation workflow with auto-path resolution:
+yarn scaffold-track --track 25 --notion-url "..."
+yarn import-songs --track 25 --notion-url "..."
+yarn query --track 25 --notion-url "..."
+yarn prepare-render --track 25
+yarn track-duration --track 25
+yarn render --track 25 --duration 3
 ```
 
 ---

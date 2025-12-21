@@ -559,7 +559,7 @@ def playlist_gaps(
 
 @app.command()
 def scaffold_track(
-    track_number: int = typer.Option(..., "--track-number", "-t", help="Track number"),
+    track: int = typer.Option(..., "--track", "--track-number", "-t", help="Track number"),
     notion_url: str = typer.Option(..., "--notion-url", "-n", help="Notion document URL"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
@@ -571,7 +571,7 @@ def scaffold_track(
         config = get_config(config_path)
 
         console.print("\n[bold blue]📁 Scaffolding Track Folder[/bold blue]\n")
-        console.print(f"Track number: {track_number}")
+        console.print(f"Track number: {track}")
         console.print(f"Notion URL: {notion_url}\n")
 
         # Parse Notion doc
@@ -582,7 +582,7 @@ def scaffold_track(
         console.print(f"Track title: [bold]{track_metadata.title}[/bold]\n")
 
         # Create folder structure
-        track_dir = Path(f"./Tracks/{track_number}")
+        track_dir = Path(f"./Tracks/{track}")
 
         if track_dir.exists():
             console.print(f"[yellow]⚠️  Track folder already exists: {track_dir}[/yellow]")
@@ -610,7 +610,7 @@ def scaffold_track(
         import json
         metadata_file = track_dir / "metadata" / "track_info.json"
         metadata_content = {
-            "track_number": track_number,
+            "track_number": track,
             "title": track_metadata.title,
             "notion_url": notion_url,
             "duration_target_minutes": track_metadata.duration_target_minutes,
@@ -631,7 +631,7 @@ def scaffold_track(
 
         # Create README
         readme_file = track_dir / "README.md"
-        readme_content = f"""# Track {track_number}: {track_metadata.title}
+        readme_content = f"""# Track {track}: {track_metadata.title}
 
 ## Overview
 - **Duration Target**: {track_metadata.duration_target_minutes} minutes
@@ -647,7 +647,7 @@ def scaffold_track(
         readme_file.write_text(readme_content)
         console.print(f"✅ Created: {readme_file}")
 
-        console.print(f"\n[bold green]✅ Track {track_number} scaffolded successfully![/bold green]")
+        console.print(f"\n[bold green]✅ Track {track} scaffolded successfully![/bold green]")
         console.print(f"Location: {track_dir}\n")
 
     except Exception as e:
@@ -790,7 +790,7 @@ def track_duration(
 @app.command()
 def prepare_render(
     track: int = typer.Option(..., "--track", "-t", help="Track number"),
-    playlist: str = typer.Option(..., "--playlist", "-p", help="Path to playlist JSON file"),
+    results: Optional[str] = typer.Option(None, "--results", "--playlist", "-p", help="Path to query results JSON file (optional if --track provided)"),
     copy: bool = typer.Option(True, "--copy/--move", help="Copy files (default) or move them"),
     target_duration: int = typer.Option(None, "--duration", "-d", help="Target duration in minutes (auto-selects songs)"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
@@ -805,17 +805,22 @@ def prepare_render(
         config = get_config(config_path)
         db = Database(config.database_path)
 
+        # Auto-resolve results path if not provided
+        if results is None:
+            results = f"./output/track-{track}-matches.json"
+            console.print(f"[dim]Auto-resolved results path from --track {track}[/dim]\n")
+
         console.print("\n[bold blue]🎬 Preparing Track for Render[/bold blue]\n")
         console.print(f"Track: {track}")
-        console.print(f"Playlist: {playlist}\n")
+        console.print(f"Query results: {results}\n")
 
-        # Load playlist
-        playlist_file = Path(playlist)
-        if not playlist_file.exists():
-            console.print(f"[bold red]❌ Playlist file not found: {playlist}[/bold red]\n")
+        # Load query results
+        results_file = Path(results)
+        if not results_file.exists():
+            console.print(f"[bold red]❌ Results file not found: {results}[/bold red]\n")
             raise typer.Exit(1)
 
-        with open(playlist_file) as f:
+        with open(results_file) as f:
             data = json.load(f)
 
         # Prepare destination
