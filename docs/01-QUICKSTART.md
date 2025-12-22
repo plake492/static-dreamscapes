@@ -2,6 +2,8 @@
 
 Get up and running in 5 minutes.
 
+---
+
 ## 🚀 Installation
 
 ### One-Line Setup (Recommended)
@@ -57,9 +59,7 @@ yarn init-db
 ## 📥 Import Your First Track
 
 ```bash
-yarn import \
-  --notion-url "https://www.notion.so/your-track-page" \
-  --songs-dir "./Tracks/17-analogue-study-console/Songs"
+yarn import-songs --track 25 --notion-url "https://www.notion.so/your-track-page"
 ```
 
 **What happens:**
@@ -72,6 +72,23 @@ yarn import \
 
 ---
 
+## 🧠 Generate Embeddings
+
+Required for semantic search:
+
+```bash
+yarn generate-embeddings
+```
+
+**What happens:**
+- Creates 384-dimensional vector for each song
+- Enables similarity search
+- Caches for fast queries
+
+**Takes about:** 30-60 seconds for 100 songs
+
+---
+
 ## 📊 View Your Library
 
 ```bash
@@ -79,242 +96,172 @@ yarn import \
 yarn stats
 
 # Just songs
-yarn stats:songs
+yarn stats songs
 
 # Just tracks
-yarn stats:tracks
+yarn stats tracks
 ```
 
 ---
 
-## 🎯 Typical Workflow
+## 🎯 Create Your First Track
 
-### 1. First Time - Build Your Library
+### Complete Workflow
+
 ```bash
-# Initialize (one time only)
+# 1. Scaffold track folder
+yarn scaffold-track --track 26 --notion-url "https://notion.so/Track-26-..."
+
+# 2. Query for matching songs
+yarn query --track 26 --notion-url "https://notion.so/Track-26-..."
+
+# 3. Analyze gaps
+yarn gaps ./output/track-26-matches.json
+
+# 4. Prepare songs for rendering
+yarn prepare-render --track 26
+
+# 5. Add background video to Tracks/26/Video/26.mp4
+
+# 6. Test render (5 minutes)
+yarn render --track 26 --duration test
+
+# 7. Full render (3 hours)
+yarn render --track 26 --duration 3
+```
+
+---
+
+## 🔁 Building Your Library Workflow
+
+### First Time Setup
+
+```bash
+# 1. Initialize (one time only)
 ./setup.sh
 
-# Import all your existing tracks
-yarn import --notion-url "URL_TRACK_17" --songs-dir "./Tracks/17-*/Songs"
-yarn import --notion-url "URL_TRACK_16" --songs-dir "./Tracks/16-*/Songs"
-yarn import --notion-url "URL_TRACK_15" --songs-dir "./Tracks/15-*/Songs"
+# 2. Import all your existing tracks
+yarn import-songs --track 24 --notion-url "https://notion.so/Track-24-..."
+yarn import-songs --track 25 --notion-url "https://notion.so/Track-25-..."
 
-# Check your library
-yarn stats
+# 3. Generate embeddings once
+yarn generate-embeddings
 ```
 
-**After importing 3-5 tracks, you'll have:**
-- 150-250 songs cataloged
-- All with BPM, key, duration metadata
-- Ready for semantic search (Phase 4)
+**Time:** 5-10 minutes for 2-3 tracks
 
----
+### For Each New Track
 
-### 2. Create New Tracks (Full Workflow)
 ```bash
-# Step 1: Query for matches
-yarn query \
-  --notion-url "https://notion.so/new-track" \
-  --output "./output/playlists/track-20-matches.json"
+# 1. Create folder structure
+yarn scaffold-track --track 26 --notion-url "URL"
 
-# Step 2: Analyze gaps
-yarn gaps "./output/playlists/track-20-matches.json"
+# 2. Find reusable songs
+yarn query --track 26 --notion-url "URL"
 
-# Step 3: Scaffold track folder
-yarn scaffold-track --track-number 20 --notion-url "https://notion.so/new-track"
+# 3. Check what's missing
+yarn gaps ./output/track-26-matches.json
 
-# Step 4: Prepare for rendering
-yarn prepare-render --track 20 --playlist "./output/playlists/track-20-matches.json"
+# 4. Prepare matched songs
+yarn prepare-render --track 26
 
-# Step 5: Generate missing songs (if needed)
-# Use AI generator for gaps identified in Step 2
+# 5. Generate missing songs (if needed)
+# Check Tracks/26/remaining-prompts.md for gaps
+# Generate with your AI music tool
+# Save to Tracks/26/Songs/ with correct naming
 
-# Step 6: Render video with automated FFmpeg
-yarn render --track 20 --duration 3  # 3-hour render
-
-# Step 7: Import rendered songs
-yarn post-render --track 20
+# 6. Import the complete track
+yarn import-songs --track 26 --notion-url "URL"
 yarn generate-embeddings
 
-# Step 8: Publish
-yarn publish --track 20 --youtube-url "https://youtube.com/watch?v=..."
+# 7. Add background video
+# Place at Tracks/26/Video/26.mp4
+
+# 8. Render
+yarn render --track 26 --duration test  # Test first
+yarn render --track 26 --duration 3     # Full render
 ```
 
-**Results:**
-- 60-70% song reuse from library
-- 30-40% new generation needed
-- 40-60% time savings per track!
+**Time:** 2-3 hours per track (vs 4-5 hours without reuse)
 
 ---
 
-## 🔧 Common Commands
+## 💡 Key Commands Reference
 
-### Database & Setup
 ```bash
-yarn init-db                # Initialize database (first time only)
-yarn generate-embeddings    # Generate embeddings (after importing songs)
-yarn stats                  # View statistics
-yarn help                   # Show all commands
-```
+# Setup & Database
+yarn init-db                 # Initialize database
+yarn generate-embeddings     # Generate/update embeddings
 
-### Import & Analysis
-```bash
-# Basic import
-yarn import-songs --notion-url "URL" --songs-dir "PATH"
+# Import & Analysis
+yarn import-songs --track N --notion-url "URL"
+yarn stats                   # View statistics
 
-# Force re-analysis
-yarn import:force --notion-url "URL" --songs-dir "PATH"
-```
+# Create Track
+yarn scaffold-track --track N --notion-url "URL"
+yarn query --track N --notion-url "URL"
+yarn gaps ./output/track-N-matches.json
+yarn prepare-render --track N
 
-### Query & Gaps
-```bash
-# Query for new track
-yarn query --notion-url "URL" --output "./output/playlists/track-X.json"
+# Render
+yarn track-duration --track N            # Check duration
+yarn render --track N --duration test    # 5-min test
+yarn render --track N --duration 3       # 3-hour render
 
-# Analyze gaps
-yarn gaps "./output/playlists/track-X.json"
-yarn gaps "./output/playlists/track-X.json" --min-similarity 0.7
-```
-
-### Track Management
-```bash
-yarn scaffold-track --track-number X --notion-url "URL"
-yarn track-duration --track X
-yarn prepare-render --track X --playlist "FILE"
-yarn post-render --track X
-yarn publish --track X --youtube-url "URL"
-```
-
-### Statistics
-```bash
-yarn stats               # All stats
-yarn stats:songs         # Song details
-yarn stats:tracks        # Track overview
-```
-
-### Database Viewing
-```bash
-./scripts/view_db.sh songs     # View all songs
-./scripts/view_db.sh tracks    # View all tracks
-./scripts/view_db.sh arc 2     # Songs in Arc 2
-./scripts/view_db.sh stats     # Quick stats
+# Post-Publish
+yarn mark-published --track N --youtube-url "URL"
 ```
 
 ---
 
-## 📁 File Organization
+## 📖 Next Steps
 
-Your audio files should be named: `arc_prompt_song[order].mp3`
+### Learn More
 
-**Examples:**
-- `1_1_45a.mp3` → Arc 1, Prompt 1, Song 45, Order a
-- `2_6_19a.mp3` → Arc 2, Prompt 6, Song 19, Order a
-- `3_2_88b.mp3` → Arc 3, Prompt 2, Song 88, Order b
+- **[Track Creation Guide](./TRACK_CREATION_GUIDE.md)** - Detailed workflow
+- **[CLI Reference](./CLI_REFERENCE.md)** - All commands
+- **[Configuration](./03-CONFIGURATION.md)** - Customize settings
 
-**Typical structure:**
-```
-Tracks/
-├── 17-analogue-study-console/
-│   └── Songs/
-│       ├── 1_1_45a.mp3
-│       ├── 1_2_46a.mp3
-│       ├── 2_1_47a.mp3
-│       └── ...
-```
+### Common Tasks
+
+- **Generate missing songs:** Check `remaining-prompts.md` in track folder
+- **Adjust render settings:** Use `--volume` and `--crossfade` flags
+- **Find unused songs:** Run `yarn stats songs`
 
 ---
 
-## ❓ Troubleshooting
+## 🐛 Troubleshooting
 
-### "Notion API authentication failed"
-- Check `.env` has `NOTION_API_TOKEN`
-- Make sure you shared the Notion page with your integration
-
-### "No songs found in directory"
-- Check files match pattern: `arc_prompt_song[order].mp3`
-- Make sure path is correct
-
-### "Module not found"
-- Run `source venv/bin/activate`
-- Then `pip install -r requirements.txt`
-
-### "Command not found: yarn"
+### "Could not find database"
 ```bash
-npm install -g yarn
+yarn init-db
 ```
 
----
-
-## 📖 Documentation
-
-- **SYSTEM_COMPLETE.md** - Complete system overview (all phases)
-- **PHASE_6_COMPLETE.md** - Phase 6 workflow automation details
-- **QUICKSTART.md** - This file (quick reference)
-- **README.md** - Project overview
-
----
-
-## ✅ Verify Installation
-
+### "No embeddings found"
 ```bash
-# Should show version
-yarn version
-
-# Should show empty database
-yarn stats
-
-# Should show help
-yarn help
+yarn generate-embeddings
 ```
+
+### "Notion API error"
+- Check token in `.env`
+- Verify page is shared with integration
+
+### "Background video not found"
+- Ensure video exists at `Tracks/N/Video/N.mp4`
+- Filename must match track number
 
 ---
 
-## 🎉 Next Steps
+## 🎯 Success Metrics
 
-1. ✅ Run `./setup.sh` (or manual setup)
-2. ✅ Configure `.env` with Notion token
-3. ✅ Import 3-5 existing tracks
-4. ✅ Generate embeddings: `yarn generate-embeddings`
-5. ✅ View your library with `yarn stats`
-6. ✅ Query for new tracks!
-7. ✅ Start creating tracks 40-60% faster!
-
-**System Status:** All 6 phases complete and production-ready! 🚀
+**What to expect:**
+- **60-70% song reuse** - Most songs found in library
+- **40-60% time savings** - 2-3 hours per track vs 4-5 hours
+- **<30s query time** - Fast semantic search
+- **<2min import** - Quick analysis and storage
 
 ---
 
-## 💡 Pro Tips
+**You're ready to go!** Start with `yarn scaffold-track` for your next track. 🚀
 
-**Use aliases** for common commands:
-```bash
-# Add to ~/.bashrc or ~/.zshrc
-alias lofi="cd ~/Dev/personal/static-dreamwaves && source venv/bin/activate"
-alias lofi-import="yarn import"
-alias lofi-stats="yarn stats"
-```
-
-Then use:
-```bash
-lofi
-lofi-stats
-lofi-import --notion-url "URL" --songs-dir "PATH"
-```
-
-**Batch import** multiple tracks:
-```bash
-# Create a script
-cat > import_all.sh << 'EOF'
-#!/bin/bash
-yarn import --notion-url "$1" --songs-dir "$2"
-EOF
-
-chmod +x import_all.sh
-
-# Use it
-./import_all.sh "URL_17" "./Tracks/17-*/Songs"
-./import_all.sh "URL_16" "./Tracks/16-*/Songs"
-```
-
----
-
-**That's it! You're ready to start organizing your lofi empire!** 🎵
+See **[TRACK_CREATION_GUIDE.md](./TRACK_CREATION_GUIDE.md)** for detailed workflow.
