@@ -19,8 +19,8 @@ The LoFi Track Manager automates the discovery and reuse of songs from your exis
 ./setup.sh  # Or manual setup (see docs)
 
 # 2. Import existing tracks
-yarn import-songs --notion-url "TRACK_9_URL" --songs-dir "./Tracks/9/Songs"
-yarn import-songs --notion-url "TRACK_13_URL" --songs-dir "./Tracks/13/Songs"
+yarn import-songs --track 25 --notion-url "https://notion.so/..."
+yarn import-songs --track 25 --notion-url "https://notion.so/..."
 yarn generate-embeddings
 
 # 3. Query for new track
@@ -49,6 +49,13 @@ yarn publish --track 20 --youtube-url "https://youtube.com/watch?v=..."
 - **[Complete Workflow](./docs/04-WORKFLOW.md)** - End-to-end track creation
 - **[Command Reference](./docs/05-COMMANDS.md)** - All commands with examples
 
+### Prompt Crafting & Templates
+- **[Prompt Crafting Guide](./docs/PROMPT_CRAFTING_GUIDE.md)** - How to write prompts for maximum semantic matching
+- **[Prompt Templates](./docs/PROMPT_TEMPLATES.md)** - Ready-to-use prompt sets for common themes
+  - Template 1: Neon Night / Rain / Coding Focus
+  - Template 2: Pre-Dawn / Sunrise / Calm Focus
+  - Template 3: Retro Tech / Analog Neutral
+
 ### Understanding the System
 - **[System Overview](./docs/07-SYSTEM-OVERVIEW.md)** - Architecture and technical details
 - **[Duplicate Prevention](./docs/06-DUPLICATES.md)** - How duplicates are handled
@@ -62,6 +69,8 @@ See **[docs/README.md](./docs/README.md)** for complete documentation index.
 
 - **60-70% Song Reuse** - Dramatically reduce generation time
 - **Semantic Search** - AI-powered song matching with 384-dimensional embeddings
+- **Prompt Templates** - Pre-validated prompt sets for consistent semantic matching (75-80% similarity)
+- **Semantic Consistency** - Standardized vocabulary ensures songs match across different tracks
 - **Multi-format Support** - Handles 3 different Notion document formats
 - **Audio Analysis** - Automatic BPM, key, duration detection with librosa
 - **Complete Workflow** - Query → Gaps → Prepare → Render → Publish

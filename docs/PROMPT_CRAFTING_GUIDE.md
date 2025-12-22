@@ -4,6 +4,17 @@
 
 ---
 
+## Quick Start: Ready-to-Use Templates
+
+**Need prompts fast?** See **[PROMPT_TEMPLATES.md](PROMPT_TEMPLATES.md)** for complete 13-prompt track sets:
+- **Template 1:** Neon Night / Rain / Coding Focus
+- **Template 2:** Pre-Dawn / Sunrise / Calm Focus
+- **Template 3:** Retro Tech / Analog Neutral
+
+All templates are pre-validated and ready to paste into Notion. Read below to understand the rules and customize your own.
+
+---
+
 ## The Problem
 
 Prompts that are too technical (e.g., "sustained pad in mid-low register, slow attack and long release") work for Suno but create library fragmentation:
