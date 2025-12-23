@@ -69,12 +69,13 @@ See **[docs/README.md](./docs/README.md)** for complete documentation index.
 
 - **60-70% Song Reuse** - Dramatically reduce generation time
 - **Semantic Search** - AI-powered song matching with 384-dimensional embeddings
+- **Usage Tracking & Filtering** - Track song reuse, filter overused songs, prevent recent repetition
+- **Intelligent Filters** - Skip songs used in recent tracks or exceeding usage limits
 - **Prompt Templates** - Pre-validated prompt sets for consistent semantic matching (75-80% similarity)
 - **Semantic Consistency** - Standardized vocabulary ensures songs match across different tracks
 - **Multi-format Support** - Handles 3 different Notion document formats
 - **Audio Analysis** - Automatic BPM, key, duration detection with librosa
 - **Complete Workflow** - Query → Gaps → Prepare → Render → Publish
-- **Usage Tracking** - Know which songs are most valuable
 - **Duplicate Prevention** - Safe re-imports, no duplicates
 - **Beautiful CLI** - Rich terminal formatting
 
@@ -200,6 +201,12 @@ yarn prepare-render --track N --playlist "FILE"
 yarn post-render --track N
 yarn publish --track N --youtube-url "URL"
 
+# Usage Tracking & Filtering
+python3 scripts/backfill_usage_tracking.py  # Backfill existing usage data
+yarn prepare-render --track N --playlist "FILE" --skip-recent-tracks 2  # Skip songs used in last 2 tracks
+yarn prepare-render --track N --playlist "FILE" --max-usage 5  # Skip songs used more than 5 times
+yarn prepare-render --track N --playlist "FILE" --skip-recent-tracks 2 --max-usage 5  # Combine filters
+
 # Stats
 yarn stats
 yarn stats:tracks
@@ -226,8 +233,10 @@ yarn gaps "./output/playlists/track-20-matches.json"
 # Step 3: Scaffold track
 yarn scaffold-track --track-number 20 --notion-url "https://notion.so/Track-20"
 
-# Step 4: Prepare for rendering
+# Step 4: Prepare for rendering (with optional usage filters)
 yarn prepare-render --track 20 --playlist "./output/playlists/track-20-matches.json"
+# OR with filters to prevent overuse:
+# yarn prepare-render --track 20 --playlist "./output/playlists/track-20-matches.json" --skip-recent-tracks 2 --max-usage 5
 
 # Step 5: Generate missing songs (if needed)
 # Use AI generator for gaps identified in Step 2

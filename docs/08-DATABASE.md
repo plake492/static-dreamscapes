@@ -57,6 +57,10 @@ CREATE TABLE songs (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     times_used INTEGER DEFAULT 0,
 
+    -- Usage tracking
+    last_used_track_id TEXT,
+    last_used_at TIMESTAMP,
+
     FOREIGN KEY (track_id) REFERENCES tracks(id)
 );
 ```
@@ -99,6 +103,8 @@ CREATE INDEX idx_filename ON songs(filename);
 | `created_at` | TIMESTAMP | Import time | `2025-01-15 10:30:00` |
 | `updated_at` | TIMESTAMP | Last update | `2025-01-20 15:45:00` |
 | `times_used` | INTEGER | Usage count | `3` |
+| `last_used_track_id` | TEXT | Track ID where last used | `26` |
+| `last_used_at` | TIMESTAMP | When last used | `2025-01-20 10:30:00` |
 
 ---
 
@@ -262,6 +268,44 @@ GROUP BY t.id
 ORDER BY t.track_number;
 ```
 
+### Get songs used in recent tracks
+
+```sql
+SELECT filename, last_used_track_id, last_used_at, times_used
+FROM songs
+WHERE last_used_track_id IN ('24', '25', '26')
+ORDER BY last_used_at DESC;
+```
+
+### Get songs filtered by usage limits
+
+```sql
+-- Songs used more than 5 times
+SELECT filename, times_used, last_used_track_id, last_used_at
+FROM songs
+WHERE times_used > 5
+ORDER BY times_used DESC;
+
+-- Songs never used
+SELECT filename, arc_number, bpm, key
+FROM songs
+WHERE times_used = 0 OR times_used IS NULL
+ORDER BY created_at DESC;
+```
+
+### Get usage statistics by track
+
+```sql
+SELECT
+    last_used_track_id,
+    COUNT(*) as songs_used,
+    AVG(times_used) as avg_usage_before
+FROM songs
+WHERE last_used_track_id IS NOT NULL
+GROUP BY last_used_track_id
+ORDER BY last_used_track_id;
+```
+
 ---
 
 ## Database Operations
@@ -365,6 +409,40 @@ yarn init-db  # Creates tables if missing, doesn't modify existing
 ```bash
 rm data/tracks.db  # Deletes everything
 ```
+
+### Usage Tracking Migration
+
+To add usage tracking fields to existing databases:
+
+```bash
+# Preview changes (dry run)
+python3 scripts/migrate_add_usage_tracking.py --dry-run
+
+# Apply migration
+python3 scripts/migrate_add_usage_tracking.py
+
+# Verify migration
+python3 scripts/migrate_add_usage_tracking.py --verify
+```
+
+After migration, backfill existing usage data:
+
+```bash
+# Preview what will be backfilled (dry run)
+python3 scripts/backfill_usage_tracking.py --dry-run
+
+# Backfill all tracks
+python3 scripts/backfill_usage_tracking.py
+
+# Backfill specific tracks only
+python3 scripts/backfill_usage_tracking.py --tracks "24,25,26"
+```
+
+**What backfill does:**
+- Scans `/Tracks/*/Songs/` directories
+- Updates `times_used` counter for each song
+- Sets `last_used_track_id` to the most recent track
+- Sets `last_used_at` to the track folder creation time
 
 ### Adding Indexes
 

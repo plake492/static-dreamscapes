@@ -1,8 +1,8 @@
 # Static Dreamwaves - Agent Context Document
 
-**Last Updated:** 2024-12-14
+**Last Updated:** 2025-12-22
 **Project Type:** LoFi Music Track Generator & Manager
-**Current Phase:** Phase 6 Complete - Full workflow operational
+**Current Phase:** Phase 6 Complete - Full workflow operational with usage tracking
 
 ---
 
@@ -87,6 +87,9 @@ Static Dreamwaves is an AI-powered system for creating long-form LoFi/Synthwave/
 - `duration_seconds`: INTEGER - Song duration
 - `embedding`: BLOB - Sentence transformer vector embedding
 - `created_at`: TIMESTAMP
+- `times_used`: INTEGER - How many times this song has been used
+- `last_used_track_id`: TEXT - Track ID where song was last used
+- `last_used_at`: TIMESTAMP - When song was last used
 
 ### arcs
 - `id`: INTEGER PRIMARY KEY
@@ -213,8 +216,14 @@ yarn gaps --track 24
 # Prepare track folder with matched songs
 yarn prepare-render --results track-24-matches.json --track 24
 
+# Prepare with usage filters (prevents overuse and recent repetition)
+yarn prepare-render --results track-24-matches.json --track 24 --skip-recent-tracks 2 --max-usage 5
+
 # Get track duration statistics
 yarn track-duration --track 24
+
+# Backfill existing usage tracking data
+python3 scripts/backfill_usage_tracking.py
 ```
 
 #### Rendering
@@ -359,10 +368,10 @@ Each render generates:
 
 ### Database Statistics
 
-- **Total Songs**: 515 (as of last batch import)
-- **Total Tracks**: 15 successfully imported
-- **Songs on Disk**: 911 audio files in Tracks folders
-- **Missing from DB**: ~396 songs (from tracks without valid Notion docs)
+- **Total Songs**: 731 (as of 2025-12-22)
+- **Total Tracks**: 20 successfully imported
+- **Usage Tracking**: Fully implemented with backfill complete
+- **Songs on Disk**: 917+ audio files in Tracks folders
 
 ### Completed Tracks
 
@@ -429,6 +438,22 @@ Successfully imported tracks: 22, 23, 24, and others from batch import
 - **prepend_text.py**: Add prefix to filenames (e.g., for organizing song variants)
 - **remove_prefix.py**: Remove prefix from filenames
 - All scripts support `--dry-run` for safe previewing
+
+### 8. Usage Tracking & Filtering
+- **Automatic tracking**: `prepare-render` now tracks song usage automatically
+  - Increments `times_used` counter for each song
+  - Records `last_used_track_id` (which track the song was last used on)
+  - Records `last_used_at` timestamp
+- **Filtering flags**: Prevent song overuse and recent repetition
+  - `--skip-recent-tracks N`: Skip songs used in last N tracks
+  - `--max-usage X`: Skip songs used more than X times
+- **Query output**: `query` command now includes usage data in JSON output
+  - Shows `times_used`, `last_used_track`, `last_used_at` for each match
+- **Migration & backfill scripts**:
+  - `migrate_add_usage_tracking.py`: Add usage tracking fields to existing databases
+  - `backfill_usage_tracking.py`: Populate usage data from existing `/Tracks/*/Songs/` folders
+  - Both support `--dry-run` for safe previewing
+- **Result**: Maintain song variety across tracks, prevent listener fatigue from repetitive songs
 
 ---
 
@@ -568,12 +593,21 @@ yarn gaps track-24-matches.json
 
 ```bash
 yarn prepare-render --results track-24-matches.json --track 24
+
+# OR with usage filters to prevent overuse and repetition:
+yarn prepare-render --results track-24-matches.json --track 24 --skip-recent-tracks 2 --max-usage 5
 ```
 
 **What it does:**
 - Copies matched songs to `Tracks/24/Songs/`
+- Updates usage tracking (times_used, last_used_track_id, last_used_at)
+- Applies filters if specified (skips overused or recently used songs)
 - Generates `Tracks/24/remaining-prompts.md` (prompts still needing songs)
 - Organizes songs by arc and prompt
+
+**Filtering options:**
+- `--skip-recent-tracks N`: Skip songs used in last N tracks
+- `--max-usage X`: Skip songs used more than X times
 
 **Check:** `Tracks/24/remaining-prompts.md` to see what's missing
 
@@ -820,6 +854,16 @@ python scripts/prepend_text.py --folder ./Tracks/24/Songs --prefix "A_"
 # Remove prefix from filenames
 python scripts/remove_prefix.py --folder ./Tracks/24/Songs --prefix "A_" --dry-run
 python scripts/remove_prefix.py --folder ./Tracks/24/Songs --prefix "A_"
+
+# Migrate database to add usage tracking fields
+python scripts/migrate_add_usage_tracking.py --dry-run  # Preview
+python scripts/migrate_add_usage_tracking.py  # Apply migration
+python scripts/migrate_add_usage_tracking.py --verify  # Verify
+
+# Backfill usage tracking data from existing track folders
+python scripts/backfill_usage_tracking.py --dry-run  # Preview
+python scripts/backfill_usage_tracking.py  # Backfill all tracks
+python scripts/backfill_usage_tracking.py --tracks "24,25,26"  # Specific tracks
 ```
 
 **Pro tip:** Always use `--dry-run` first to preview changes before executing!

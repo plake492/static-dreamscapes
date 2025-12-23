@@ -201,7 +201,10 @@ yarn query --track 25 --notion-url "https://notion.so/..." --output ./custom/res
             "similarity": 0.823,
             "bpm": 85.5,
             "key": "C minor",
-            "duration": 180
+            "duration": 180,
+            "times_used": 3,
+            "last_used_track": "26",
+            "last_used_at": "2025-12-15T10:30:00"
           }
         ]
       }
@@ -209,6 +212,11 @@ yarn query --track 25 --notion-url "https://notion.so/..." --output ./custom/res
   }
 }
 ```
+
+**Usage tracking fields:**
+- `times_used` - Number of times this song has been used
+- `last_used_track` - Track ID where song was last used
+- `last_used_at` - Timestamp of last usage (ISO 8601 format)
 
 ---
 
@@ -360,6 +368,8 @@ yarn prepare-render --track <N>
 | `--playlist` | string | No | - | Alias for `--results` (backward compatible) |
 | `--copy/--move` | boolean | No | true | Copy files (default) or move them |
 | `--duration`, `-d` | number | No | - | Target duration in minutes (auto-selects songs) |
+| `--skip-recent-tracks` | number | No | - | Skip songs used in last N tracks |
+| `--max-usage` | number | No | - | Skip songs used more than X times |
 | `--config` | string | No | `./config/settings.yaml` | Path to config file |
 
 ### Examples
@@ -376,6 +386,15 @@ yarn prepare-render --track 25 --move
 # Auto-select songs for 3-hour duration
 yarn prepare-render --track 25 --duration 180
 
+# Skip songs used in last 2 tracks (prevents recent repetition)
+yarn prepare-render --track 25 --skip-recent-tracks 2
+
+# Skip songs used more than 5 times (prevents overuse)
+yarn prepare-render --track 25 --max-usage 5
+
+# Combine filters for maximum variety
+yarn prepare-render --track 25 --skip-recent-tracks 2 --max-usage 5
+
 # Backward-compatible --playlist parameter
 yarn prepare-render --track 25 --playlist ./output/track-25-matches.json
 ```
@@ -383,9 +402,13 @@ yarn prepare-render --track 25 --playlist ./output/track-25-matches.json
 ### What It Does
 1. Loads query results JSON
 2. Finds source files in database
-3. Copies/moves matched songs to `Tracks/{N}/Songs/`
-4. Generates `remaining-prompts.md` with unfilled prompts
-5. Shows summary by arc
+3. Applies usage filters (if specified):
+   - Skips songs used in recent tracks
+   - Skips songs exceeding usage limit
+4. Copies/moves matched songs to `Tracks/{N}/Songs/`
+5. Updates usage tracking for each song (times_used, last_used_track_id, last_used_at)
+6. Generates `remaining-prompts.md` with unfilled prompts
+7. Shows summary by arc
 
 ### With --duration Option
 Intelligently selects songs to fill target duration:

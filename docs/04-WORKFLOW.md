@@ -119,6 +119,15 @@ yarn prepare-render --track 20 --playlist "FILE"
 
 # Move files (removes originals)
 yarn prepare-render --track 20 --playlist "FILE" --move
+
+# Skip songs used in recent tracks (prevents repetition)
+yarn prepare-render --track 20 --playlist "FILE" --skip-recent-tracks 2
+
+# Skip songs exceeding usage limit (prevents overuse)
+yarn prepare-render --track 20 --playlist "FILE" --max-usage 5
+
+# Combine filters for strict control
+yarn prepare-render --track 20 --playlist "FILE" --skip-recent-tracks 2 --max-usage 5
 ```
 
 **Example output:**
@@ -333,6 +342,41 @@ yarn stats
 ---
 
 ## 💡 Tips & Best Practices
+
+### Usage Tracking & Filtering
+
+**Prevent song overuse and repetition:**
+
+The system automatically tracks every time a song is used and when it was last used. Use filtering flags to maintain variety:
+
+```bash
+# Skip songs used in last 2 tracks (prevents recent repetition)
+yarn prepare-render --track 27 --playlist "file.json" --skip-recent-tracks 2
+
+# Skip songs used more than 5 times (prevents overuse)
+yarn prepare-render --track 27 --playlist "file.json" --max-usage 5
+
+# Combine both filters for maximum variety
+yarn prepare-render --track 27 --playlist "file.json" --skip-recent-tracks 2 --max-usage 5
+```
+
+**Backfill existing usage data:**
+
+If you have existing tracks and want to populate usage tracking:
+
+```bash
+python3 scripts/backfill_usage_tracking.py
+
+# For specific tracks only
+python3 scripts/backfill_usage_tracking.py --tracks "24,25,26"
+
+# Preview changes without updating database
+python3 scripts/backfill_usage_tracking.py --dry-run
+```
+
+**View usage statistics:**
+
+Query results now include usage data (times_used, last_used_track, last_used_at) to help you make informed decisions about which songs to use.
 
 ### Optimize Query Results
 

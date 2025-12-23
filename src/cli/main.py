@@ -343,7 +343,10 @@ def query(
                             'bpm': m.song.bpm,
                             'key': m.song.key,
                             'arc': m.song.arc_number,
-                            'duration': round(m.song.duration_seconds) if m.song.duration_seconds else None
+                            'duration': round(m.song.duration_seconds) if m.song.duration_seconds else None,
+                            'times_used': m.song.times_used,
+                            'last_used_track': m.song.last_used_track_id,
+                            'last_used_at': m.song.last_used_at.isoformat() if m.song.last_used_at else None
                         }
                         for m in matches
                     ]
@@ -793,6 +796,8 @@ def prepare_render(
     results: Optional[str] = typer.Option(None, "--results", "--playlist", "-p", help="Path to query results JSON file (optional if --track provided)"),
     copy: bool = typer.Option(True, "--copy/--move", help="Copy files (default) or move them"),
     target_duration: int = typer.Option(None, "--duration", "-d", help="Target duration in minutes (auto-selects songs)"),
+    skip_recent_tracks: Optional[int] = typer.Option(None, "--skip-recent-tracks", help="Skip songs used in last N tracks"),
+    max_usage: Optional[int] = typer.Option(None, "--max-usage", help="Skip songs used more than X times"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
     """Prepare track for rendering by organizing matched songs into track folder."""
@@ -920,7 +925,51 @@ def prepare_render(
             console.print("[yellow]No songs to copy. All prompts need new generation.[/yellow]\n")
             return
 
-        console.print(f"[cyan]Found {len(songs_to_copy)} songs to {'copy' if copy else 'move'}[/cyan]\n")
+        console.print(f"[cyan]Found {len(songs_to_copy)} songs before filtering[/cyan]\n")
+
+        # Apply usage filters if specified
+        if skip_recent_tracks or max_usage:
+            console.print("[bold blue]📊 Applying Usage Filters...[/bold blue]\n")
+
+            if skip_recent_tracks:
+                console.print(f"  Filter: Skip songs used in last {skip_recent_tracks} tracks")
+                recent_track_ids = db.get_recent_track_ids(track, skip_recent_tracks)
+                console.print(f"  Recent tracks: {', '.join(recent_track_ids)}\n")
+
+            if max_usage:
+                console.print(f"  Filter: Skip songs used more than {max_usage} times\n")
+
+            # Filter songs
+            filtered_songs = []
+            skipped_count = 0
+
+            for source_path, filename, prompt_num, arc_name, duration in songs_to_copy:
+                song = db.get_song_by_filename(filename)
+                skip_reason = None
+
+                if song:
+                    # Check recent tracks filter
+                    if skip_recent_tracks and song.last_used_track_id in recent_track_ids:
+                        skip_reason = f"used in Track {song.last_used_track_id} (within last {skip_recent_tracks} tracks)"
+
+                    # Check max usage filter
+                    if not skip_reason and max_usage and song.times_used >= max_usage:
+                        skip_reason = f"used {song.times_used} times (>= {max_usage})"
+
+                if skip_reason:
+                    console.print(f"  [yellow]⏭️  Skipping {filename}: {skip_reason}[/yellow]")
+                    skipped_count += 1
+                else:
+                    filtered_songs.append((source_path, filename, prompt_num, arc_name, duration))
+
+            songs_to_copy = filtered_songs
+            console.print(f"\n[cyan]Filtered: {len(songs_to_copy)} songs (skipped {skipped_count})[/cyan]\n")
+
+            if not songs_to_copy:
+                console.print("[yellow]No songs remaining after filtering. Consider relaxing filters or generating new songs.[/yellow]\n")
+                return
+
+        console.print(f"[cyan]{len(songs_to_copy)} songs to {'copy' if copy else 'move'}[/cyan]\n")
 
         # Copy/move files
         copied_count = 0
@@ -937,6 +986,15 @@ def prepare_render(
 
                 copied_count += 1
                 console.print(f"  ✓ {filename} ({arc_name}, prompt {prompt_num})")
+
+                # Update usage tracking
+                song = db.get_song_by_filename(filename)
+                if song:
+                    db.update_song_usage_on_prepare(
+                        song_id=song.id,
+                        track_id=str(track),
+                        timestamp=datetime.now()
+                    )
 
             except Exception as e:
                 console.print(f"  [red]✗ Failed to copy {filename}: {e}[/red]")

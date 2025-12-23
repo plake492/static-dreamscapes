@@ -171,6 +171,10 @@ class Song(BaseModel):
     updated_at: datetime = Field(default_factory=datetime.now)
     times_used: int = Field(default=0)
 
+    # Usage tracking
+    last_used_track_id: Optional[str] = Field(None, description="Track ID where song was last used")
+    last_used_at: Optional[datetime] = Field(None, description="Timestamp of last usage")
+
     model_config = {"json_encoders": {datetime: lambda v: v.isoformat()}}
 
     @property
