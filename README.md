@@ -59,6 +59,7 @@ yarn publish --track 20 --youtube-url "https://youtube.com/watch?v=..."
 ### Understanding the System
 - **[System Overview](./docs/07-SYSTEM-OVERVIEW.md)** - Architecture and technical details
 - **[Duplicate Prevention](./docs/06-DUPLICATES.md)** - How duplicates are handled
+- **[Database Reset & Rebuild](./docs/RESET_AND_REBUILD.md)** - Complete reset guide for template updates
 
 ### All Documentation
 See **[docs/README.md](./docs/README.md)** for complete documentation index.

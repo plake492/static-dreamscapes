@@ -129,44 +129,54 @@ class SongMatcher:
     ) -> SearchFilters:
         """Infer filters from prompt characteristics."""
 
-        # Infer BPM from tempo hints
+        # NOTE: Disabled BPM inference from tempo hints because Suno doesn't
+        # reliably follow BPM instructions. This was causing most Track 1000
+        # songs to be filtered out even though prompts were identical.
+        # Focus on semantic similarity instead of strict BPM matching.
         target_bpm = None
         tempo_category = None
 
-        for hint in prompt.tempo_hints:
-            if hint == 'very_slow':
-                target_bpm = 50
-                tempo_category = TempoCategory.VERY_SLOW
-                break
-            elif hint == 'slow':
-                target_bpm = 70
-                tempo_category = TempoCategory.SLOW
-                break
-            elif hint == 'mid_tempo':
-                target_bpm = 95
-                tempo_category = TempoCategory.MID_TEMPO
-                break
-            elif hint == 'upbeat':
-                target_bpm = 120
-                tempo_category = TempoCategory.UPBEAT
-                break
-            elif hint == 'fast':
-                target_bpm = 150
-                tempo_category = TempoCategory.FAST
-                break
+        # DISABLED - Suno doesn't follow tempo hints reliably
+        # for hint in prompt.tempo_hints:
+        #     if hint == 'very_slow':
+        #         target_bpm = 50
+        #         tempo_category = TempoCategory.VERY_SLOW
+        #         break
+        #     elif hint == 'slow':
+        #         target_bpm = 70
+        #         tempo_category = TempoCategory.SLOW
+        #         break
+        #     elif hint == 'mid_tempo':
+        #         target_bpm = 95
+        #         tempo_category = TempoCategory.MID_TEMPO
+        #         break
+        #     elif hint == 'upbeat':
+        #         target_bpm = 120
+        #         tempo_category = TempoCategory.UPBEAT
+        #         break
+        #     elif hint == 'fast':
+        #         target_bpm = 150
+        #         tempo_category = TempoCategory.FAST
+        #         break
+
+        # NOTE: Disabled BPM inference from prompt text because Suno doesn't
+        # actually respect BPM instructions in prompts. Inferring BPM from
+        # descriptive text like "very slow" causes false negatives.
+        # BPM filtering should only be used when explicitly requested.
 
         # Also check prompt text directly for tempo keywords
-        if target_bpm is None:
-            text_lower = prompt.prompt_text.lower()
-            if 'slow' in text_lower:
-                target_bpm = 70
-                tempo_category = TempoCategory.SLOW
-            elif 'mid-tempo' in text_lower or 'mid tempo' in text_lower:
-                target_bpm = 95
-                tempo_category = TempoCategory.MID_TEMPO
-            elif 'upbeat' in text_lower or 'energetic' in text_lower:
-                target_bpm = 120
-                tempo_category = TempoCategory.UPBEAT
+        # DISABLED - Suno doesn't follow these instructions reliably
+        # if target_bpm is None:
+        #     text_lower = prompt.prompt_text.lower()
+        #     if 'slow' in text_lower:
+        #         target_bpm = 70
+        #         tempo_category = TempoCategory.SLOW
+        #     elif 'mid-tempo' in text_lower or 'mid tempo' in text_lower:
+        #         target_bpm = 95
+        #         tempo_category = TempoCategory.MID_TEMPO
+        #     elif 'upbeat' in text_lower or 'energetic' in text_lower:
+        #         target_bpm = 120
+        #         tempo_category = TempoCategory.UPBEAT
 
         return SearchFilters(
             target_bpm=target_bpm,

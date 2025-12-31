@@ -39,7 +39,7 @@ YOUTUBE_RECOURCES/
 *.db
 *.db-shm
 *.db-wal
-data/tracks.db
+data/tracks.db*
 
 # Python
 __pycache__/

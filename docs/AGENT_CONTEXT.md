@@ -14,10 +14,12 @@ Static Dreamwaves is an AI-powered system for creating long-form LoFi/Synthwave/
 
 - **Semantic Song Matching**: Use AI embeddings to find songs that match creative prompts
 - **Duration-Aware Selection**: Intelligently select enough songs to fill target durations (e.g., 3 hours)
+- **Usage Tracking & Filtering**: Track song reuse, prevent overuse and recent repetition
 - **Notion Integration**: Pull track metadata and prompts from Notion workspace
 - **Batch Import**: Import multiple tracks from Notion in one operation
 - **Video Rendering**: Automated ffmpeg-based rendering with crossfades and looping backgrounds
 - **Track Management**: Complete CLI toolset for managing songs, tracks, and rendering workflow
+- **Database Reset**: Complete reset and rebuild process for template updates
 
 ---
 
@@ -824,6 +826,39 @@ ls -R Tracks/24/
 cat Rendered/24/output_{timestamp}/ffmpeg_command.txt
 cat Rendered/24/output_{timestamp}/filter_complex.txt
 ```
+
+### Database Reset & Rebuild
+
+For complete database and embeddings reset (useful after template updates):
+
+**See: [RESET_AND_REBUILD.md](./RESET_AND_REBUILD.md)** for detailed guide
+
+**Quick reset process:**
+```bash
+# 1. Backup
+cp data/tracks.db "data/tracks.db.backup-$(date +%Y%m%d-%H%M%S)"
+
+# 2. Reset
+rm data/tracks.db
+rm -rf data/embeddings/
+yarn init-db
+
+# 3. Re-import
+yarn batch-import --folder-id "YOUR_FOLDER_ID" --yes
+
+# 4. Rebuild
+yarn generate-embeddings
+python3 scripts/backfill_usage_tracking.py
+
+# 5. Verify
+yarn stats
+```
+
+**When to reset:**
+- Updated prompt templates requiring fresh embeddings
+- Schema changes
+- Data corruption
+- Major system refactoring
 
 ### Utility Scripts
 

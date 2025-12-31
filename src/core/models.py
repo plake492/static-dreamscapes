@@ -179,7 +179,10 @@ class Song(BaseModel):
 
     @property
     def embedding_text(self) -> str:
-        """Generate text for embedding if combined_text not set."""
+        """Generate text for embedding if combined_text not set.
+
+        Format matches query embedding format for better similarity matching.
+        """
         if self.combined_text:
             return self.combined_text
 
@@ -190,12 +193,10 @@ class Song(BaseModel):
             parts.append(clean_prompt)
         if self.arc_name:
             parts.append(f"Arc: {self.arc_name}")
-        if self.track_title:
-            parts.append(f"Track: {self.track_title}")
+        # Use minimal metadata - prompt_text and arc are most important
+        # Removed track_title, mood_keywords to better match query format
         if self.vibe_tags:
             parts.append(f"Vibes: {', '.join(self.vibe_tags)}")
-        if self.mood_keywords:
-            parts.append(f"Mood: {', '.join(self.mood_keywords)}")
 
         return " | ".join(parts)
 

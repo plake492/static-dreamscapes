@@ -75,6 +75,8 @@ class Database:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 times_used INTEGER DEFAULT 0,
+                last_used_track_id TEXT,
+                last_used_at TIMESTAMP,
 
                 FOREIGN KEY (track_id) REFERENCES tracks(id)
             )

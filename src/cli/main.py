@@ -7,6 +7,7 @@ from rich.table import Table
 from pathlib import Path
 import logging
 import sys
+from datetime import datetime
 
 from ..core.database import Database
 from ..core.config import get_config
@@ -26,6 +27,44 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+def extract_notion_id(url_or_id: str) -> str:
+    """Extract and format Notion ID from URL or raw ID.
+
+    Args:
+        url_or_id: Either a full Notion URL or a raw ID
+
+    Returns:
+        Properly formatted Notion ID with dashes
+
+    Examples:
+        extract_notion_id("https://notion.so/Page-abc123def456...")
+        extract_notion_id("abc123def456...")
+    """
+    import re
+
+    # If it's a URL, extract the ID part
+    if url_or_id.startswith('http'):
+        # Extract ID from URL (last part after final /)
+        # Example: https://www.notion.so/Tracks-293433e578858089913bfa3d8dd6ed72
+        match = re.search(r'([a-f0-9]{32})', url_or_id)
+        if match:
+            raw_id = match.group(1)
+        else:
+            raise ValueError(f"Could not extract Notion ID from URL: {url_or_id}")
+    else:
+        # Already an ID, remove any existing dashes
+        raw_id = url_or_id.replace('-', '')
+
+    # Validate length
+    if len(raw_id) != 32:
+        raise ValueError(f"Invalid Notion ID length (expected 32 chars, got {len(raw_id)}): {raw_id}")
+
+    # Format with dashes: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    formatted_id = f"{raw_id[0:8]}-{raw_id[8:12]}-{raw_id[12:16]}-{raw_id[16:20]}-{raw_id[20:32]}"
+
+    return formatted_id
 
 
 @app.command()
@@ -1833,7 +1872,10 @@ def batch_import(
         db = Database(config.database_path)
 
         console.print("\n[bold blue]📦 Batch Import from Notion Folder[/bold blue]\n")
-        console.print(f"Folder ID: {folder_id}")
+
+        # Extract Notion ID from URL if needed
+        notion_id = extract_notion_id(folder_id)
+        console.print(f"Folder ID: {notion_id}")
         console.print(f"Base directory: {base_dir}\n")
 
         # Initialize Notion client
@@ -1841,7 +1883,7 @@ def batch_import(
 
         # Get child pages from folder
         console.print("[cyan]Fetching track pages from Notion...[/cyan]")
-        blocks = client.blocks.children.list(block_id=folder_id)
+        blocks = client.blocks.children.list(block_id=notion_id)
 
         # Find all track pages
         track_pages = []
