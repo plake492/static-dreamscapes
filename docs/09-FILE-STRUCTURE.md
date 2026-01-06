@@ -39,17 +39,23 @@ Each track has its own numbered folder:
 
 ```
 Tracks/25/
-├── Songs/                    # Main audio files
-│   ├── A_1_1_25a.mp3        # Arc 1, Prompt 1, variant a
-│   ├── A_1_2_25a.mp3        # Arc 1, Prompt 2, variant a
-│   ├── B_2_3_25a.mp3        # Arc 2, Prompt 3, variant a
+├── Songs/                    # Final audio files (after consolidation)
+│   ├── A_1_1_25a.mp3        # Arc 1, Prompt 1, variant a (from folder 1/)
+│   ├── A_1_2_25a.mp3        # Arc 1, Prompt 2, variant a (from folder 1/)
+│   ├── B_2_3_25a.mp3        # Arc 2, Prompt 3, variant a (from folder 2/)
 │   └── ...
-├── 1/                        # Pre-render audio (prefixed A_)
-│   ├── intro.mp3
-│   └── ...
-├── 2/                        # Pre-render audio (prefixed B_)
-│   ├── outro.mp3
-│   └── ...
+├── Staging/                  # Unformatted audio files for batch processing
+│   ├── audio1.mp3           # Raw file from AI generator
+│   ├── generated.mp3        # Gets auto-renamed by stage-rename script
+│   └── ...                  # Moved to 1/ or 2/ by disperse script
+├── 1/                        # First half of songs for rendering
+│   ├── 1_1_25a.mp3          # Unformatted (pre-consolidate)
+│   ├── 1_2_25b.mp3
+│   └── ...                  # Gets A_ prefix during consolidate
+├── 2/                        # Second half of songs for rendering
+│   ├── 1_3_25c.mp3          # Unformatted (pre-consolidate)
+│   ├── 2_1_25a.mp3
+│   └── ...                  # Gets B_ prefix during consolidate
 ├── Video/                    # Background videos
 │   └── 25.mp4               # Looping background (MUST match track number)
 ├── Image/                    # Track artwork
@@ -62,6 +68,26 @@ Tracks/25/
 ├── remaining-prompts.md      # Prompts without matches
 └── README.md                 # Track overview from Notion
 ```
+
+### Staging Workflow Folders
+
+The **Staging/**, **1/**, and **2/** folders enable batch song generation:
+
+**Staging/:**
+- Drop unformatted audio files here (any name: `audio.mp3`, `song-v2.mp3`, etc.)
+- Run `yarn stage-rename` to auto-rename based on Notion doc
+- Files stay here until dispersed
+
+**1/ and 2/:**
+- Songs distributed evenly from Staging/ by prompt
+- Represents two halves of final render
+- Run `yarn disperse` to move files from Staging/ → 1/ and 2/
+- Run `yarn consolidate` to add A_/B_ prefixes and move to Songs/
+
+**Songs/:**
+- Final destination for all songs
+- Contains properly formatted files with A_/B_ prefixes
+- Used by render command
 
 ---
 
@@ -316,8 +342,8 @@ These should be created manually:
 
 - `Tracks/{N}/Video/` - Add background video here
 - `Tracks/{N}/Image/` - Add artwork here
-- `Tracks/{N}/1/` - Optional pre-render audio
-- `Tracks/{N}/2/` - Optional pre-render audio
+
+**Note:** Staging/, 1/, and 2/ are auto-created by `scaffold-track` (as of Phase 7)
 
 ---
 

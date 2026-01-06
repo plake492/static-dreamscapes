@@ -10,13 +10,15 @@ All documentation has been organized into the `docs/` folder with a clear, logic
 
 ### Main Documentation Files
 
-1. **[README.md](../README.md)** - Project overview and main README
+1. **[README.md](./README.md)** - Documentation index and overview
 2. **[TRACK_CREATION_GUIDE.md](./TRACK_CREATION_GUIDE.md)** - Quick start guide for creating tracks
-3. **[CLI_REFERENCE.md](./CLI_REFERENCE.md)** - Complete command reference
-4. **[PROMPT_CRAFTING_GUIDE.md](./PROMPT_CRAFTING_GUIDE.md)** - Writing effective prompts
-5. **[AGENT_CONTEXT.md](./AGENT_CONTEXT.md)** - Technical context for AI agents
-6. **[06-DUPLICATES.md](./06-DUPLICATES.md)** - Duplicate prevention guide
-7. **[07-SYSTEM-OVERVIEW.md](./07-SYSTEM-OVERVIEW.md)** - Technical architecture
+3. **[CLI_REFERENCE.md](./CLI_REFERENCE.md)** - Complete command reference (17 commands)
+4. **[04-WORKFLOW.md](./04-WORKFLOW.md)** - Detailed workflows (Song Bank + Staging)
+5. **[PROMPT_CRAFTING_GUIDE.md](./PROMPT_CRAFTING_GUIDE.md)** - Writing effective prompts
+6. **[AGENT_CONTEXT.md](./AGENT_CONTEXT.md)** - Technical context for AI agents
+7. **[06-DUPLICATES.md](./06-DUPLICATES.md)** - Duplicate prevention guide
+8. **[07-SYSTEM-OVERVIEW.md](./07-SYSTEM-OVERVIEW.md)** - Technical architecture
+9. **[09-FILE-STRUCTURE.md](./09-FILE-STRUCTURE.md)** - File organization and naming
 
 ### Legacy Documentation
 
@@ -63,7 +65,7 @@ Old documentation files moved to `docs/archive/`:
 Concise, imperative guide for creating YouTube lofi tracks. Shows the standard 7-command workflow and covers common scenarios. Start here if you're creating a new track.
 
 ### CLI_REFERENCE.md
-Complete reference for all 14 CLI commands with full parameter documentation, examples, and usage notes. Use this when you need detailed information about a specific command.
+Complete reference for all 17 CLI commands with full parameter documentation, examples, and usage notes. Includes staging workflow commands (stage-rename, disperse, consolidate). Use this when you need detailed information about a specific command.
 
 ### PROMPT_CRAFTING_GUIDE.md
 Guidelines for writing effective prompts for AI music generation. Covers approved vocabulary, forbidden technical terms, and best practices for creating prompts that produce semantic-searchable songs.
@@ -95,8 +97,17 @@ docs/
 
 ---
 
-## 🔄 Recent Updates (2025-12-21)
+## 🔄 Recent Updates
 
+### Phase 7 (2026-01-05)
+- ✅ Added staging workflow documentation to 04-WORKFLOW.md
+- ✅ Updated CLI_REFERENCE.md with stage-rename, disperse, consolidate commands
+- ✅ Updated 09-FILE-STRUCTURE.md with Staging/, 1/, 2/ folder structure
+- ✅ Updated AGENT_CONTEXT.md with Phase 7 enhancements
+- ✅ Added workflow options to 01-QUICKSTART.md and TRACK_CREATION_GUIDE.md
+- ✅ Updated docs/README.md to Phase 7 status
+
+### Previous Updates (2025-12-21)
 - ✅ Consolidated documentation into `docs/` folder
 - ✅ Removed duplicate files (QUICKSTART.md, IMPROVEMENTS.md)
 - ✅ Created comprehensive CLI_REFERENCE.md

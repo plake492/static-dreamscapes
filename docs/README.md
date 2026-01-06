@@ -45,7 +45,7 @@ Complete documentation for the LoFi Track Manager system.
 
 ## 📊 System Status
 
-**All 6 Phases Complete ✅**
+**Phase 7 Complete ✅**
 
 - ✅ Phase 1: Foundation (Database, Models, Config, CLI)
 - ✅ Phase 2: Ingestion (Notion Parser, Audio Analysis, Metadata)
@@ -53,6 +53,7 @@ Complete documentation for the LoFi Track Manager system.
 - ✅ Phase 4: Playlist Generation (Query, Matching)
 - ✅ Phase 5: Rendering Workflow (Scaffolding, Duration)
 - ✅ Phase 6: Polish & Automation (Gaps, Prepare, Publish)
+- ✅ Phase 7: Staging Workflow (Auto-rename, Disperse, Consolidate)
 
 **Status:** Production-ready! 🚀
 
@@ -61,12 +62,14 @@ Complete documentation for the LoFi Track Manager system.
 ## 💡 Key Features
 
 - **60-70% Song Reuse** - Reduce generation time significantly
+- **Staging Workflow** - Auto-rename, organize, and disperse batch generations
 - **Semantic Search** - AI-powered song matching with embeddings
 - **Multi-format Support** - Handles 3 different Notion formats
 - **Audio Analysis** - Automatic BPM, key, duration detection
-- **Complete Workflow** - Query → Gaps → Prepare → Render → Publish
+- **Two Complete Workflows** - Song Bank (reuse) or Staging (batch generation)
 - **Usage Tracking** - Know which songs are most valuable
 - **Duplicate Prevention** - Safe re-imports, no duplicates
+- **Real-time Notion Parsing** - Always synced with latest arc/prompt structure
 
 ---
 
@@ -86,9 +89,9 @@ Complete documentation for the LoFi Track Manager system.
 
 ## 📖 Documentation Version
 
-- **Version:** 1.0.0
-- **Last Updated:** December 2025
-- **System Version:** All Phases Complete
+- **Version:** 1.1.0
+- **Last Updated:** January 2026
+- **System Version:** Phase 7 Complete
 
 ---
 

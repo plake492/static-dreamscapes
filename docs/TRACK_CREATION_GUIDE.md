@@ -2,9 +2,15 @@
 
 Quick guide for creating YouTube lofi tracks from Notion documents.
 
+**Two workflows available:**
+- **Song Bank Workflow** - Reuse songs from your library (shown below)
+- **Staging Workflow** - Generate new songs in batches with auto-naming
+
+See **[04-WORKFLOW.md](./04-WORKFLOW.md)** for detailed comparison and staging workflow guide.
+
 ---
 
-## Quick Start (Standard 3-Hour Track)
+## Quick Start (Song Bank Workflow)
 
 ```bash
 # 1. Create track folder structure

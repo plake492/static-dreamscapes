@@ -12,11 +12,14 @@ Complete reference for all CLI commands in the LoFi Track Manager.
 - [query](#query) - Find matching songs for track
 - [gaps](#gaps) - Analyze playlist gaps
 - [scaffold-track](#scaffold-track) - Create track folder structure
+- [stage-rename](#stage-rename) - Auto-rename files in Staging folder
+- [disperse](#disperse) - Distribute files from Staging to folders 1 and 2
+- [consolidate](#consolidate) - Consolidate folders 1 and 2 to Songs with prefixes
+- [reset-track](#reset-track) - Reset a track by clearing database and files
 - [track-duration](#track-duration) - Calculate track duration
 - [prepare-render](#prepare-render) - Prepare songs for rendering
 - [render](#render) - Render final video
 - [post-render](#post-render) - Import rendered songs to database
-- [mark-published](#mark-published) - Mark track as published
 - [stats](#stats) - Show database statistics
 - [batch-import](#batch-import) - Batch import from Notion folder
 - [version](#version) - Show version
@@ -291,6 +294,7 @@ yarn scaffold-track --track-number 25 --notion-url "https://notion.so/..."
 ### What It Creates
 ```
 Tracks/{N}/
+├── Staging/            # Unformatted files for batch renaming
 ├── 1/                  # Pre-render audio folder (prefixed A_)
 ├── 2/                  # Pre-render audio folder (prefixed B_)
 ├── Songs/              # Main songs directory
@@ -306,6 +310,294 @@ Tracks/{N}/
 - Creates a **snapshot** of track metadata
 - Later commands fetch fresh data from Notion
 - Safe to re-run (will prompt for confirmation if folder exists)
+
+---
+
+## stage-rename
+
+Auto-rename unformatted audio files in the Staging folder according to the track's naming convention.
+
+### Usage
+```bash
+yarn stage-rename --track <N> [--dry-run]
+```
+
+### Options
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| `--track`, `-t` | number | Yes | - | Track number |
+| `--dry-run`, `-d` | boolean | No | false | Preview without renaming files |
+
+### Examples
+```bash
+# Preview rename for track 31
+yarn stage-rename --track 31 --dry-run
+
+# Execute rename
+yarn stage-rename --track 31
+```
+
+### What It Does
+1. Scans `Tracks/{N}/Staging/` for audio files
+2. Separates formatted files (already named correctly) from unformatted files
+3. Reads the Notion doc to determine arc structure and prompt ranges
+4. Finds the next available `arc_prompt` combination
+5. Renames all unformatted files to `{arc}_{prompt}_{track}{letter}.ext`
+6. Auto-increments letters: a, b, c... z, aa, ab... az, ba...
+7. Files stay in Staging/ for review
+
+### Naming Logic
+- **Already formatted files** are skipped (e.g., `1_1_31a.mp3`)
+- **Next arc_prompt** is determined by:
+  1. Finding highest arc_prompt in Songs/ and Staging/
+  2. Reading Notion doc to find next valid prompt in sequence
+  3. If arc is complete, moves to next arc's first prompt
+- **All unformatted files** get the SAME arc_prompt prefix
+- **Letters** increment for each file: a, b, c...
+
+### Example
+```
+Input (Staging/):
+  - already_formatted_3_8_31p.mp3 (skipped)
+  - song1.mp3
+  - song2.mp3
+  - song (1).mp3
+
+Output (Staging/):
+  - 3_8_31p.mp3 (unchanged)
+  - 3_9_31a.mp3 (renamed from song1.mp3)
+  - 3_9_31b.mp3 (renamed from song2.mp3)
+  - 3_9_31c.mp3 (renamed from song (1).mp3)
+```
+
+### Requirements
+- Track must be scaffolded with `scaffold-track`
+- Notion doc cache must exist at `data/cache/notion_docs/`
+- Staging/ directory must exist at `Tracks/{N}/Staging/`
+
+---
+
+## disperse
+
+Distribute files from Staging/ evenly into folders 1/ and 2/, split per prompt number.
+
+### Usage
+```bash
+yarn disperse --track <N> [--dry-run]
+```
+
+### Options
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| `--track`, `-t` | number | Yes | - | Track number |
+| `--dry-run`, `-d` | boolean | No | false | Preview without moving files |
+
+### Examples
+```bash
+# Preview dispersion for track 31
+yarn disperse --track 31 --dry-run
+
+# Execute dispersion
+yarn disperse --track 31
+```
+
+### What It Does
+1. Scans `Tracks/{N}/Staging/` for formatted audio files
+2. Groups files by `(arc, prompt)` combination
+3. For each prompt group, splits files evenly:
+   - First half → folder `1/`
+   - Second half → folder `2/`
+   - If odd count, folder `1/` gets the extra file
+4. Moves files from Staging/ to their destination folders
+
+### Dispersion Logic
+Files are split **per prompt**, not globally:
+- **Prompt 1_1** (4 files): 2 → folder 1, 2 → folder 2
+- **Prompt 1_2** (5 files): 3 → folder 1, 2 → folder 2 (odd, so 1 gets extra)
+- **Prompt 2_1** (3 files): 2 → folder 1, 1 → folder 2
+
+### Example
+```
+Input (Staging/):
+  - 1_1_31a.mp3
+  - 1_1_31b.mp3
+  - 1_1_31c.mp3
+  - 1_2_31a.mp3
+  - 1_2_31b.mp3
+
+Output:
+  Folder 1/:
+    - 1_1_31a.mp3 (first 2 of prompt 1_1)
+    - 1_1_31b.mp3
+    - 1_2_31a.mp3 (first 1 of prompt 1_2)
+
+  Folder 2/:
+    - 1_1_31c.mp3 (last 1 of prompt 1_1)
+    - 1_2_31b.mp3 (last 1 of prompt 1_2)
+```
+
+### Use Case
+Dispersing files allows you to render the track in two halves for variety, then consolidate them with different prefixes (A_ and B_) for the final render.
+
+---
+
+## consolidate
+
+Consolidate songs from folders 1/ and 2/ into Songs/ with A_ and B_ prefixes.
+
+### Usage
+```bash
+yarn consolidate [--track <N>] [--dry-run] [--copy]
+```
+
+### Options
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| `--track`, `-t` | number | No | - | Process only a specific track number |
+| `--dry-run`, `-d` | boolean | No | false | Preview without processing files |
+| `--copy`, `-c` | boolean | No | false | Copy files instead of moving |
+| `--base-dir`, `-b` | string | No | `./Tracks` | Base directory containing track folders |
+
+### Examples
+```bash
+# Preview consolidation for all tracks
+yarn consolidate --dry-run
+
+# Consolidate specific track (moves files by default)
+yarn consolidate --track 31
+
+# Copy files instead of moving (keeps originals)
+yarn consolidate --track 31 --copy
+
+# Process all tracks
+yarn consolidate
+```
+
+### What It Does
+1. Scans `Tracks/{N}/1/` and `Tracks/{N}/2/` for audio files
+2. Prepends prefixes:
+   - Files from `1/` → prepend `A_`
+   - Files from `2/` → prepend `B_`
+3. Moves (or copies) to `Tracks/{N}/Songs/`
+4. **Default behavior**: MOVES files (deletes from 1/ and 2/)
+5. **With --copy**: Keeps originals in 1/ and 2/
+
+### Example
+```
+Input:
+  Tracks/31/1/:
+    - 1_1_31a.mp3
+    - 1_1_31b.mp3
+
+  Tracks/31/2/:
+    - 1_1_31c.mp3
+    - 1_2_31a.mp3
+
+Output (Tracks/31/Songs/):
+  - A_1_1_31a.mp3 (from 1/)
+  - A_1_1_31b.mp3 (from 1/)
+  - B_1_1_31c.mp3 (from 2/)
+  - B_1_2_31a.mp3 (from 2/)
+```
+
+### Use Case
+The A_ and B_ prefixes allow you to identify which half of the track each song came from, useful for analyzing rendering results and managing variety in your final track composition.
+
+### Output
+- Progress bar showing tracks being processed
+- Summary table: files moved/copied, files skipped, errors
+- Skips files that already exist in Songs/
+
+---
+
+## reset-track
+
+Reset a track by clearing songs from database and deleting files. Useful for test tracks or starting over.
+
+### Usage
+```bash
+yarn reset-track --track <N> [--dry-run]
+```
+
+### Options
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| `--track`, `-t` | number | Yes | - | Track number to reset |
+| `--dry-run`, `-d` | boolean | No | false | Preview without deleting anything |
+
+### Examples
+```bash
+# Preview what will be deleted
+yarn reset-track --track 9999 --dry-run
+
+# Actually reset the track
+yarn reset-track --track 9999
+```
+
+### What It Does
+1. Removes songs from database (where filename contains track number)
+2. Deletes files from `Tracks/{N}/Songs/`
+3. Deletes files from `Tracks/{N}/Staging/`
+4. Deletes files from `Tracks/{N}/1/`
+5. Deletes files from `Tracks/{N}/2/`
+6. Deletes all render sessions from `Rendered/{N}/`
+
+### What Is Preserved
+- Track folder structure (`Tracks/{N}/`)
+- Metadata files (`track_info.json`, etc.)
+- Video and Image folders
+- `README.md` and other documentation
+
+### Output
+```
+🔄 Resetting Track 9999
+======================================================================
+
+Reset Plan:
+======================================================================
+
+📊 Database:
+   15 song(s) will be removed from database
+
+📁 /Users/.../Tracks/9999/Songs/
+   12 file(s) will be deleted
+      • 1_1_9999a.mp3
+      • 1_2_9999a.mp3
+      • 2_1_9999a.mp3
+      ...
+
+📁 /Users/.../Tracks/9999/Staging/
+   3 file(s) will be deleted
+      • audio.mp3
+      • generated.mp3
+      • test.mp3
+
+📁 /Users/.../Rendered/9999/
+   2 render session(s) will be deleted
+      • output_20260105_143022/
+      • output_20260104_091533/
+======================================================================
+
+⚠️  WARNING: This action cannot be undone!
+Reset track 9999? [y/N]: y
+
+✓ Removed 15 song(s) from database
+✓ Deleted 12 file(s) from Songs/
+✓ Deleted 3 file(s) from Staging/
+✓ Deleted 2 render session(s)
+✓ Removed empty Rendered/9999/ directory
+
+✅ Track 9999 has been reset
+```
+
+### Use Case
+Perfect for test tracks where you want to completely start over, or when you need to reimport a track with different settings without leaving old data behind.
+
+### Safety Features
+- Dry-run mode for safe preview
+- Confirmation prompt before deletion
+- Clear summary of what will be deleted
+- Only deletes files related to the specified track
 
 ---
 
@@ -550,6 +842,8 @@ yarn post-render --track 25 --rendered-dir ./my-rendered
 
 ## mark-published
 
+> **⚠️ DEPRECATED**: This command is not currently in use.
+
 Mark track as published with YouTube URL and increment usage counts.
 
 ### Usage
@@ -728,14 +1022,55 @@ Some parameters have aliases for backward compatibility:
 
 ### Standard Workflow
 
+#### Option 1: Query from Song Bank
 ```bash
+# 1. Create track structure
 yarn scaffold-track --track 25 --notion-url "URL"
+
+# 2. Query song bank for matches
 yarn query --track 25 --notion-url "URL"
+
+# 3. Prepare matched songs for rendering
 yarn prepare-render --track 25
+
+# 4. Import songs to database
 yarn import-songs --track 25 --notion-url "URL"
-# Add background video
-yarn render --track 25 --duration test
-yarn render --track 25 --duration 3
+
+# 5. Add background video to Tracks/25/Video/25.mp4
+
+# 6. Render
+yarn render --track 25 --duration test  # Test render
+yarn render --track 25 --duration 3     # Full render
+```
+
+#### Option 2: Generate New Songs with Staging
+```bash
+# 1. Create track structure
+yarn scaffold-track --track 25 --notion-url "URL"
+
+# 2. Generate songs with Suno and add to Staging/
+cp *.mp3 Tracks/25/Staging/
+
+# 3. Auto-rename files
+yarn stage-rename --track 25 --dry-run  # Preview
+yarn stage-rename --track 25            # Execute
+
+# 4. Disperse to folders 1 and 2
+yarn disperse --track 25 --dry-run      # Preview
+yarn disperse --track 25                # Execute
+
+# 5. Consolidate with prefixes to Songs/
+yarn consolidate --track 25 --dry-run   # Preview
+yarn consolidate --track 25             # Execute
+
+# 6. Import songs to database
+yarn import-songs --track 25 --notion-url "URL"
+
+# 7. Add background video to Tracks/25/Video/25.mp4
+
+# 8. Render
+yarn render --track 25 --duration test  # Test render
+yarn render --track 25 --duration 3     # Full render
 ```
 
 ---

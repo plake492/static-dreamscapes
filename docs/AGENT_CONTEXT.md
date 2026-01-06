@@ -1,8 +1,8 @@
 # Static Dreamwaves - Agent Context Document
 
-**Last Updated:** 2025-12-22
+**Last Updated:** 2026-01-05
 **Project Type:** LoFi Music Track Generator & Manager
-**Current Phase:** Phase 6 Complete - Full workflow operational with usage tracking
+**Current Phase:** Phase 7 Complete - Staging workflow and batch song management
 
 ---
 
@@ -15,7 +15,8 @@ Static Dreamwaves is an AI-powered system for creating long-form LoFi/Synthwave/
 - **Semantic Song Matching**: Use AI embeddings to find songs that match creative prompts
 - **Duration-Aware Selection**: Intelligently select enough songs to fill target durations (e.g., 3 hours)
 - **Usage Tracking & Filtering**: Track song reuse, prevent overuse and recent repetition
-- **Notion Integration**: Pull track metadata and prompts from Notion workspace
+- **Staging Workflow**: Auto-rename, disperse, and consolidate song files with intelligent naming
+- **Notion Integration**: Pull track metadata and prompts from Notion workspace with real-time arc/prompt parsing
 - **Batch Import**: Import multiple tracks from Notion in one operation
 - **Video Rendering**: Automated ffmpeg-based rendering with crossfades and looping backgrounds
 - **Track Management**: Complete CLI toolset for managing songs, tracks, and rendering workflow
@@ -107,9 +108,17 @@ Static Dreamwaves is an AI-powered system for creating long-form LoFi/Synthwave/
 ```
 static-dreamwaves/
 ├── Tracks/{N}/                    # Individual track folders
-│   ├── Songs/                     # Prepared songs for rendering
+│   ├── Staging/                   # Unformatted files for batch renaming
+│   ├── 1/                         # Pre-render songs (first half)
+│   ├── 2/                         # Pre-render songs (second half)
+│   ├── Songs/                     # Final songs with A_/B_ prefixes
 │   ├── Video/                     # Background video files
 │   │   └── {N}.mp4               # Background loop video
+│   ├── Image/                     # Track artwork
+│   ├── Rendered/                  # Rendered output videos
+│   ├── metadata/
+│   │   └── track_info.json       # Track metadata snapshot
+│   ├── README.md                  # Track overview
 │   └── remaining-prompts.md      # Prompts still needing songs
 │
 ├── Rendered/{N}/                  # Rendered output
@@ -119,26 +128,39 @@ static-dreamwaves/
 │       └── filter_complex.txt    # Debug: Audio filter chain
 │
 ├── data/
-│   └── tracks.db                 # SQLite database
+│   ├── tracks.db                 # SQLite database
+│   └── cache/
+│       └── notion_docs/          # Cached Notion markdown files
 │
 ├── src/
 │   ├── cli/
 │   │   └── main.py              # Main CLI application (Typer)
-│   ├── database/
-│   │   └── db.py                # Database operations
-│   ├── models/
-│   │   └── models.py            # Pydantic data models
-│   └── services/
-│       ├── notion_service.py    # Notion API integration
-│       ├── embedding_service.py # AI embeddings
-│       └── query_service.py     # Semantic search
+│   ├── core/
+│   │   ├── database.py          # Database operations
+│   │   ├── models.py            # Pydantic data models
+│   │   └── config.py            # Configuration loader
+│   ├── ingest/
+│   │   ├── filename_parser.py   # Parse song filenames
+│   │   ├── notion_parser.py     # Parse Notion documents
+│   │   └── metadata_extractor.py # Extract audio metadata
+│   ├── query/
+│   │   ├── matcher.py           # Semantic matching
+│   │   ├── scorer.py            # Score songs
+│   │   └── filters.py           # Usage filters
+│   └── render/
+│       └── video.py             # Video rendering
 │
 ├── scripts/                      # Utility scripts
 │   ├── batch_import_from_notion.py  # Import from Notion parent folder
-│   ├── consolidate_songs.py     # Copy songs from subdirectories
+│   ├── consolidate_songs.py     # Legacy: Copy songs from subdirectories
+│   ├── consolidate_with_prefix.py # Consolidate 1/ and 2/ to Songs/ with A_/B_ prefixes
+│   ├── stage_and_rename.py      # Auto-rename files in Staging/
+│   ├── disperse_staging.py      # Distribute Staging/ files to 1/ and 2/
 │   ├── import_all_tracks.py     # Batch import all tracks
 │   ├── prepend_text.py          # Add prefix to filenames
-│   └── remove_prefix.py         # Remove prefix from filenames
+│   ├── remove_prefix.py         # Remove prefix from filenames
+│   ├── migrate_add_usage_tracking.py # Database migration
+│   └── backfill_usage_tracking.py # Populate usage data
 │
 └── config/
     └── settings.yaml            # Configuration
@@ -211,6 +233,22 @@ yarn query --notion-url "<url>" --duration 180
 
 # Check for missing prompts
 yarn gaps --track 24
+```
+
+#### Song Organization & Staging
+```bash
+# Auto-rename unformatted files in Staging/
+yarn stage-rename --track 31 --dry-run  # Preview
+yarn stage-rename --track 31            # Execute
+
+# Distribute files from Staging/ to folders 1/ and 2/
+yarn disperse --track 31 --dry-run      # Preview
+yarn disperse --track 31                # Execute
+
+# Consolidate folders 1/ and 2/ to Songs/ with A_/B_ prefixes
+yarn consolidate --track 31 --dry-run   # Preview
+yarn consolidate --track 31             # Execute
+yarn consolidate                        # Process all tracks
 ```
 
 #### Track Preparation
@@ -456,6 +494,98 @@ Successfully imported tracks: 22, 23, 24, and others from batch import
   - `backfill_usage_tracking.py`: Populate usage data from existing `/Tracks/*/Songs/` folders
   - Both support `--dry-run` for safe previewing
 - **Result**: Maintain song variety across tracks, prevent listener fatigue from repetitive songs
+
+---
+
+## Recent Enhancements (Phase 7)
+
+### 1. Staging Workflow for Batch Song Management
+
+**Problem**: Manually renaming dozens of AI-generated songs from Suno with inconsistent filenames was tedious and error-prone.
+
+**Solution**: Comprehensive staging workflow with three new commands:
+
+#### a. Auto-Rename (`stage-rename`)
+- **Purpose**: Automatically rename unformatted files in `Staging/` folder
+- **Intelligence**:
+  - Reads actual Notion doc (not just cached metadata) to determine arc structure and prompt ranges
+  - Parses markdown to extract min/max prompt numbers per arc
+  - Finds next available `arc_prompt` combination from existing Songs/ and Staging/ files
+  - Auto-increments letters: a, b, c... z, aa, ab... az, ba...
+- **Safety**:
+  - Files stay in Staging/ for review (not moved to Songs/)
+  - Already-formatted files are skipped
+  - Dry-run mode for previewing changes
+- **Example**:
+  ```
+  Input: song1.mp3, song2.mp3, song3.mp3
+  Output: 3_9_31a.mp3, 3_9_31b.mp3, 3_9_31c.mp3
+  ```
+
+#### b. Disperse (`disperse`)
+- **Purpose**: Split files from Staging/ evenly between folders 1/ and 2/
+- **Logic**: Splits **per prompt**, not globally
+  - Each prompt group divided in half
+  - If odd count, folder 1/ gets the extra file
+  - Maintains order within each prompt
+- **Use Case**: Allows rendering track in two halves for variety
+- **Example**:
+  ```
+  Prompt 1_1 (4 files): 2 → folder 1/, 2 → folder 2/
+  Prompt 1_2 (5 files): 3 → folder 1/, 2 → folder 2/
+  ```
+
+#### c. Consolidate (`consolidate`)
+- **Purpose**: Merge folders 1/ and 2/ into Songs/ with prefixes
+- **Prefixes**:
+  - Files from 1/ → prepend `A_`
+  - Files from 2/ → prepend `B_`
+- **Benefit**: Track which rendering half each song came from
+- **Options**: Move (default) or copy files
+- **Example**:
+  ```
+  1/1_1_31a.mp3 → Songs/A_1_1_31a.mp3
+  2/1_1_31c.mp3 → Songs/B_1_1_31c.mp3
+  ```
+
+### 2. Real-Time Notion Doc Parsing
+
+**Enhancement**: `stage-rename` now reads cached Notion docs directly instead of relying on stale `track_info.json`
+
+**Benefits**:
+- Always uses current arc/prompt structure from Notion
+- Handles cases where tracks have different prompt ranges per arc
+- Example: Arc 1 (prompts 1-3), Arc 2 (prompts 4-7), Arc 3 (prompts 8-10)
+- Prevents errors from metadata going out of sync with Notion
+
+**Implementation**:
+- Extracts Notion page ID from track metadata URL
+- Loads markdown from `data/cache/notion_docs/{page_id}.md`
+- Parses `### Phase N` headers and prompt lists
+- Extracts actual min/max prompt numbers per arc
+
+### 3. Staging Directory Structure
+
+**Addition**: `Staging/` folder added to standard track structure
+
+**Created by**: `scaffold-track` command now includes Staging/
+
+**Purpose**: Landing zone for unformatted AI-generated songs before processing
+
+**Complete Structure**:
+```
+Tracks/{N}/
+├── Staging/     # Unformatted files → stage-rename → formatted files here
+├── 1/           # disperse → first half goes here
+├── 2/           # disperse → second half goes here
+└── Songs/       # consolidate → final A_/B_ prefixed files
+```
+
+### 4. Updated Documentation
+
+- **CLI_REFERENCE.md**: Added full documentation for stage-rename, disperse, consolidate
+- **Workflow examples**: Two complete workflows (song bank query vs. new song generation)
+- **mark-published**: Marked as deprecated (not currently in use)
 
 ---
 

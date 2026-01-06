@@ -106,7 +106,9 @@ yarn stats tracks
 
 ## 🎯 Create Your First Track
 
-### Complete Workflow
+### Two Workflow Options
+
+**Option A: Song Bank Workflow** (Reuse existing songs)
 
 ```bash
 # 1. Scaffold track folder
@@ -129,6 +131,31 @@ yarn render --track 26 --duration test
 # 7. Full render (3 hours)
 yarn render --track 26 --duration 3
 ```
+
+**Option B: Staging Workflow** (Generate new songs in batches)
+
+```bash
+# 1. Scaffold track folder
+yarn scaffold-track --track 26 --notion-url "https://notion.so/Track-26-..."
+
+# 2. Generate songs → drop in Tracks/26/Staging/
+
+# 3. Auto-rename files
+yarn stage-rename --track 26
+
+# 4. Disperse to folders 1/ and 2/
+yarn disperse --track 26
+
+# 5. Repeat steps 2-4 for more prompts, then consolidate
+yarn consolidate --track 26
+
+# 6. Add background video to Tracks/26/Video/26.mp4
+
+# 7. Render
+yarn render --track 26 --duration 3
+```
+
+See **[04-WORKFLOW.md](./04-WORKFLOW.md)** for detailed explanations of both workflows.
 
 ---
 

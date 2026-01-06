@@ -12,7 +12,23 @@ The LoFi Track Manager streamlines your track production by finding reusable son
 
 ---
 
-## 📋 Complete Workflow
+## 📋 Two Workflow Options
+
+Choose the workflow that fits your needs:
+
+### Option A: Song Bank Workflow (Reuse Existing Songs)
+Best for tracks where you have a large library and want to maximize reuse.
+
+[Jump to Song Bank Workflow](#song-bank-workflow)
+
+### Option B: Staging Workflow (Generate New Songs in Batches)
+Best for generating new songs for a track. Auto-renames files, splits them for rendering variety, and consolidates for final render.
+
+[Jump to Staging Workflow](#staging-workflow)
+
+---
+
+## Song Bank Workflow
 
 ### Step 1: Query for Matching Songs
 
@@ -295,7 +311,248 @@ yarn stats
 
 ---
 
-## 🔄 Visual Workflow
+## Staging Workflow
+
+For generating new songs in batches with automatic organization and naming.
+
+### Step 1: Scaffold Track with Staging
+
+Create track structure including Staging/ directory:
+
+```bash
+yarn scaffold-track \
+  --track-number 31 \
+  --notion-url "https://notion.so/Track-31"
+```
+
+**Creates:**
+```
+Tracks/31/
+├── Songs/          # Final songs after consolidation
+├── Staging/        # NEW: Drop unformatted files here
+├── 1/              # First half of files for rendering
+├── 2/              # Second half of files for rendering
+├── Video/          # Background videos
+├── Image/          # Artwork
+├── Rendered/       # Final rendered tracks
+└── metadata/       # Track metadata & config
+```
+
+---
+
+### Step 2: Generate Songs in Batches
+
+Generate songs with your AI music generator (Suno, Udio, etc.):
+
+1. Look at your Notion doc for the next prompt(s) you want to generate
+2. Generate multiple variations (3-5 songs per prompt recommended)
+3. Download raw files with any names (e.g., `audio1.mp3`, `song-v2.mp3`, etc.)
+4. Drop them into `Tracks/31/Staging/`
+
+**No need to rename manually!** The next step handles this automatically.
+
+---
+
+### Step 3: Auto-Rename Files
+
+Automatically rename files based on Notion doc structure:
+
+```bash
+# Preview what will happen (recommended first time)
+yarn stage-rename --track 31 --dry-run
+
+# Actually rename files
+yarn stage-rename --track 31
+```
+
+**What it does:**
+- Scans Staging/ for unformatted audio files
+- Parses Notion doc to find next arc_prompt
+- Renames all files with same arc_prompt, incrementing letters (a, b, c...)
+- Validates against Notion doc structure
+- Keeps files in Staging/ for review
+
+**Example output:**
+```
+Found 5 unformatted file(s) to process:
+Next arc_prompt: 3_9
+Starting letter: a
+
+Rename Plan:
+======================================================================
+  audio1.mp3                     -> 3_9_31a.mp3
+  generated-track.mp3            -> 3_9_31b.mp3
+  song-final.mp3                 -> 3_9_31c.mp3
+  output-v2.mp3                  -> 3_9_31d.mp3
+  untitled.mp3                   -> 3_9_31e.mp3
+======================================================================
+
+✅ Successfully renamed 5 file(s) in Staging/
+```
+
+**Smart features:**
+- Skips already-formatted files (e.g., `3_8_31a.mp3` won't be touched)
+- Continues letter sequence from existing files
+- Validates arc/prompt exists in Notion doc
+- Scans both Songs/ and Staging/ to determine next position
+
+---
+
+### Step 4: Disperse to Folders 1 and 2
+
+Split files for rendering variety:
+
+```bash
+# Preview distribution (recommended)
+yarn disperse --track 31 --dry-run
+
+# Actually move files
+yarn disperse --track 31
+```
+
+**What it does:**
+- Groups files by (arc, prompt)
+- Splits each group evenly between folders 1/ and 2/
+- If odd count, folder 1 gets the extra file
+- Moves from Staging/ → 1/ and 2/
+
+**Example output:**
+```
+Dispersion Plan:
+======================================================================
+
+Prompt 3_9 (5 files):
+  → Folder 1: 3 file(s)
+  → Folder 2: 2 file(s)
+    3_9_31a.mp3                    → 1/
+    3_9_31b.mp3                    → 1/
+    3_9_31c.mp3                    → 1/
+    3_9_31d.mp3                    → 2/
+    3_9_31e.mp3                    → 2/
+======================================================================
+
+✅ Successfully dispersed 5 file(s)
+```
+
+**Why split files?**
+Folders 1/ and 2/ represent the two halves of your final track render. This ensures variety - different versions of the same prompt appear in different parts of the track.
+
+---
+
+### Step 5: Consolidate to Songs/
+
+Prefix and move to final Songs/ directory:
+
+```bash
+yarn consolidate --track 31
+```
+
+**What it does:**
+- Adds `A_` prefix to all files in folder 1/
+- Adds `B_` prefix to all files in folder 2/
+- Moves all files to Songs/
+- Tracks which rendering half each song came from
+
+**Example:**
+```
+Before:
+  Tracks/31/1/3_9_31a.mp3
+  Tracks/31/1/3_9_31b.mp3
+  Tracks/31/2/3_9_31d.mp3
+
+After:
+  Tracks/31/Songs/A_3_9_31a.mp3
+  Tracks/31/Songs/A_3_9_31b.mp3
+  Tracks/31/Songs/B_3_9_31d.mp3
+```
+
+**Why A_ and B_ prefixes?**
+- Tracks which render half the song was used in
+- Helps identify song sources during final render
+- Enables usage tracking per rendering session
+
+---
+
+### Step 6: Repeat for More Prompts
+
+Continue generating songs in batches:
+
+```bash
+# Generate next batch of songs → drop in Staging/
+yarn stage-rename --track 31
+yarn disperse --track 31
+
+# Generate another batch → drop in Staging/
+yarn stage-rename --track 31
+yarn disperse --track 31
+
+# When done with all prompts, consolidate
+yarn consolidate --track 31
+```
+
+**Workflow loop:**
+1. Generate songs for 1-3 prompts
+2. Drop in Staging/
+3. Run `stage-rename`
+4. Run `disperse`
+5. Repeat until all prompts complete
+6. Run `consolidate` once at the end
+
+---
+
+### Step 7: Render Video with FFmpeg
+
+Same as Song Bank Workflow:
+
+```bash
+# Test render (5 minutes)
+yarn render --track 31 --duration test
+
+# Full 3-hour render
+yarn render --track 31 --duration 3
+```
+
+**Output location:** `Rendered/31/output_{timestamp}/output.mp4`
+
+---
+
+### Step 8: Import Rendered Songs
+
+Add songs back to library:
+
+```bash
+yarn post-render --track 31
+```
+
+---
+
+### Step 9: Regenerate Embeddings
+
+Make new songs searchable:
+
+```bash
+yarn generate-embeddings
+```
+
+---
+
+### Step 10: Verify & Review
+
+Check your work:
+
+```bash
+# View track duration
+yarn track-duration --track 31
+
+# View statistics
+yarn stats
+```
+
+---
+
+## 🔄 Visual Workflows
+
+### Song Bank Workflow
 
 ```
 ┌─────────────────────┐
@@ -319,7 +576,7 @@ yarn stats
 └──────────┬──────────┘
            ↓
 ┌─────────────────────┐
-│  6. Render in DAW   │ → Manual: Arrange, mix, render
+│  6. Render Video    │ → FFmpeg: Create final video
 └──────────┬──────────┘
            ↓
 ┌─────────────────────┐
@@ -331,12 +588,50 @@ yarn stats
 └──────────┬──────────┘
            ↓
 ┌─────────────────────┐
-│  9. Mark Published  │ → Track YouTube publication
+│   9. Verify         │ → Check duration & stats
+└─────────────────────┘
+```
+
+### Staging Workflow
+
+```
+┌─────────────────────┐
+│  1. Scaffold Track  │ → Create folder structure with Staging/
 └──────────┬──────────┘
            ↓
 ┌─────────────────────┐
-│   10. Verify        │ → Check duration & stats
-└─────────────────────┘
+│ 2. Generate Batch   │ → Manual: Create 3-5 songs for prompt(s)
+└──────────┬──────────┘
+           ↓
+┌─────────────────────┐
+│ 3. Auto-Rename      │ → yarn stage-rename (Staging/ files)
+└──────────┬──────────┘
+           ↓
+┌─────────────────────┐
+│  4. Disperse        │ → yarn disperse (Staging/ → 1/ and 2/)
+└──────────┬──────────┘
+           ↓
+     ┌────┴────┐
+     ↓         ↓
+   More      Done with
+  Prompts?   All Prompts?
+     │         │
+     └────┐    ↓
+          │  ┌─────────────────────┐
+          │  │ 5. Consolidate      │ → yarn consolidate (1/2/ → Songs/)
+          │  └──────────┬──────────┘
+          │             ↓
+          │  ┌─────────────────────┐
+          │  │ 6. Render Video     │ → FFmpeg: Create final video
+          │  └──────────┬──────────┘
+          │             ↓
+          │  ┌─────────────────────┐
+          │  │ 7. Import & Embed   │ → post-render + embeddings
+          │  └──────────┬──────────┘
+          │             ↓
+          │  ┌─────────────────────┐
+          └─>│ 8. Verify           │ → Check duration & stats
+             └─────────────────────┘
 ```
 
 ---
