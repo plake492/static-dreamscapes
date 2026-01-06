@@ -638,6 +638,7 @@ def scaffold_track(
             track_dir / "1",
             track_dir / "2",
             track_dir / "Songs",
+            track_dir / "Staging",
             track_dir / "Image",
             track_dir / "Video",
             track_dir / "Rendered",
@@ -679,6 +680,14 @@ def scaffold_track(
 - **Duration Target**: {track_metadata.duration_target_minutes} minutes
 - **Theme**: {track_metadata.overall_theme}
 - **Notion**: [View Document]({notion_url})
+
+## Directories
+- **Staging/**: Place unformatted audio files here for batch renaming with `yarn stage-rename`
+- **Songs/**: Final location for properly named audio files
+- **1/**, **2/**: Generation batch folders
+- **Image/**, **Video/**: Visual assets
+- **Rendered/**: Final rendered videos
+- **metadata/**: Track metadata and configuration
 
 ## Arcs
 """
