@@ -886,8 +886,36 @@ def prepare_render(
 
         console.print(f"Destination: {songs_dir}\n")
 
-        # Collect all matched songs
+        # Pre-compute filter prerequisites
+        recent_track_ids = []
+        if skip_recent_tracks:
+            recent_track_ids = db.get_recent_track_ids(track, skip_recent_tracks)
+            console.print(f"[cyan]Filter: Skip songs used in last {skip_recent_tracks} tracks: {', '.join(recent_track_ids)}[/cyan]")
+
+        if max_usage is not None:
+            console.print(f"[cyan]Filter: Skip songs used more than {max_usage} times[/cyan]")
+
+        console.print()
+
+        # Helper function to check if a song should be skipped
+        def should_skip_song(song):
+            """Returns (should_skip: bool, reason: str)"""
+            if not song:
+                return True, "not found in database"
+
+            # Check recent tracks filter
+            if skip_recent_tracks and song.last_used_track_id in recent_track_ids:
+                return True, f"used in Track {song.last_used_track_id} (within last {skip_recent_tracks} tracks)"
+
+            # Check max usage filter
+            if max_usage is not None and song.times_used > max_usage:
+                return True, f"used {song.times_used} times (> {max_usage})"
+
+            return False, None
+
+        # Collect all matched songs with filtering applied during selection
         songs_to_copy = []
+        skipped_count = 0
 
         if target_duration:
             # Duration-aware selection: intelligently select songs to fill target duration
@@ -918,12 +946,12 @@ def prepare_render(
 
             console.print(f"[cyan]Distributing ~{duration_per_arc / 60:.1f} minutes per arc[/cyan]\n")
 
-            # Select songs for each arc
+            # Select songs for each arc, applying filters during selection
             for arc_name, matches in arc_matches.items():
                 arc_duration = 0
                 match_index = 0
 
-                # Keep adding songs until we hit the arc's duration target
+                # Keep adding songs until we hit the arc's duration target OR run out of matches
                 while arc_duration < duration_per_arc and match_index < len(matches):
                     match_data = matches[match_index]
                     match = match_data['match']
@@ -934,6 +962,15 @@ def prepare_render(
 
                     # Find the song in database to get file path
                     song = db.get_song_by_filename(filename)
+
+                    # Apply filters BEFORE adding to list
+                    skip, skip_reason = should_skip_song(song)
+
+                    if skip:
+                        skipped_count += 1
+                        match_index += 1
+                        continue
+
                     if song and song.file_path:
                         source_path = Path(song.file_path)
                         if source_path.exists():
@@ -945,77 +982,48 @@ def prepare_render(
 
                     match_index += 1
 
-            console.print(f"[cyan]Selected {len(songs_to_copy)} songs totaling {current_duration / 60:.1f} minutes[/cyan]\n")
+            console.print(f"[cyan]Selected {len(songs_to_copy)} songs totaling {current_duration / 60:.1f} minutes (skipped {skipped_count})[/cyan]\n")
 
         else:
-            # Original behavior: take best match per prompt
+            # Original behavior: take best match per prompt, with filtering
             for arc_name, prompts in data.get('results', {}).items():
                 for prompt_data in prompts:
                     prompt_num = prompt_data.get('prompt_number')
                     matches = prompt_data.get('matches', [])
 
                     if matches:
-                        # Take the best match
-                        best_match = matches[0]
-                        filename = best_match['filename']
-                        duration = best_match.get('duration', 180)
+                        # Find the first unfiltered match
+                        selected = False
+                        for match in matches:
+                            filename = match['filename']
+                            duration = match.get('duration', 180)
 
-                        # Find the song in database to get file path
-                        song = db.get_song_by_filename(filename)
-                        if song and song.file_path:
-                            source_path = Path(song.file_path)
-                            if source_path.exists():
-                                songs_to_copy.append((source_path, filename, prompt_num, arc_name, duration))
-                            else:
-                                console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
+                            # Find the song in database to get file path
+                            song = db.get_song_by_filename(filename)
+
+                            # Apply filters
+                            skip, skip_reason = should_skip_song(song)
+
+                            if skip:
+                                skipped_count += 1
+                                continue
+
+                            if song and song.file_path:
+                                source_path = Path(song.file_path)
+                                if source_path.exists():
+                                    songs_to_copy.append((source_path, filename, prompt_num, arc_name, duration))
+                                    selected = True
+                                    break
+                                else:
+                                    console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
 
         if not songs_to_copy:
-            console.print("[yellow]No songs to copy. All prompts need new generation.[/yellow]\n")
+            console.print(f"[yellow]No songs available after filtering (skipped {skipped_count} songs).[/yellow]")
+            console.print("[yellow]Consider relaxing filters or generating new songs.[/yellow]\n")
             return
 
-        console.print(f"[cyan]Found {len(songs_to_copy)} songs before filtering[/cyan]\n")
-
-        # Apply usage filters if specified
-        if skip_recent_tracks or max_usage is not None:
-            console.print("[bold blue]📊 Applying Usage Filters...[/bold blue]\n")
-
-            if skip_recent_tracks:
-                console.print(f"  Filter: Skip songs used in last {skip_recent_tracks} tracks")
-                recent_track_ids = db.get_recent_track_ids(track, skip_recent_tracks)
-                console.print(f"  Recent tracks: {', '.join(recent_track_ids)}\n")
-
-            if max_usage is not None:
-                console.print(f"  Filter: Skip songs used more than {max_usage} times\n")
-
-            # Filter songs
-            filtered_songs = []
-            skipped_count = 0
-
-            for source_path, filename, prompt_num, arc_name, duration in songs_to_copy:
-                song = db.get_song_by_filename(filename)
-                skip_reason = None
-
-                if song:
-                    # Check recent tracks filter
-                    if skip_recent_tracks and song.last_used_track_id in recent_track_ids:
-                        skip_reason = f"used in Track {song.last_used_track_id} (within last {skip_recent_tracks} tracks)"
-
-                    # Check max usage filter
-                    if not skip_reason and max_usage is not None and song.times_used > max_usage:
-                        skip_reason = f"used {song.times_used} times (> {max_usage})"
-
-                if skip_reason:
-                    console.print(f"  [yellow]⏭️  Skipping {filename}: {skip_reason}[/yellow]")
-                    skipped_count += 1
-                else:
-                    filtered_songs.append((source_path, filename, prompt_num, arc_name, duration))
-
-            songs_to_copy = filtered_songs
-            console.print(f"\n[cyan]Filtered: {len(songs_to_copy)} songs (skipped {skipped_count})[/cyan]\n")
-
-            if not songs_to_copy:
-                console.print("[yellow]No songs remaining after filtering. Consider relaxing filters or generating new songs.[/yellow]\n")
-                return
+        if skipped_count > 0:
+            console.print(f"[dim]Skipped {skipped_count} songs due to filters[/dim]\n")
 
         console.print(f"[cyan]{len(songs_to_copy)} songs to {'copy' if copy else 'move'}[/cyan]\n")
 
