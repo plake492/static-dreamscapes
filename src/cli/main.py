@@ -976,7 +976,7 @@ def prepare_render(
         console.print(f"[cyan]Found {len(songs_to_copy)} songs before filtering[/cyan]\n")
 
         # Apply usage filters if specified
-        if skip_recent_tracks or max_usage:
+        if skip_recent_tracks or max_usage is not None:
             console.print("[bold blue]📊 Applying Usage Filters...[/bold blue]\n")
 
             if skip_recent_tracks:
@@ -984,7 +984,7 @@ def prepare_render(
                 recent_track_ids = db.get_recent_track_ids(track, skip_recent_tracks)
                 console.print(f"  Recent tracks: {', '.join(recent_track_ids)}\n")
 
-            if max_usage:
+            if max_usage is not None:
                 console.print(f"  Filter: Skip songs used more than {max_usage} times\n")
 
             # Filter songs
@@ -1001,8 +1001,8 @@ def prepare_render(
                         skip_reason = f"used in Track {song.last_used_track_id} (within last {skip_recent_tracks} tracks)"
 
                     # Check max usage filter
-                    if not skip_reason and max_usage and song.times_used >= max_usage:
-                        skip_reason = f"used {song.times_used} times (>= {max_usage})"
+                    if not skip_reason and max_usage is not None and song.times_used > max_usage:
+                        skip_reason = f"used {song.times_used} times (> {max_usage})"
 
                 if skip_reason:
                     console.print(f"  [yellow]⏭️  Skipping {filename}: {skip_reason}[/yellow]")

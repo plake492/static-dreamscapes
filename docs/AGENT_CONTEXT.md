@@ -156,6 +156,8 @@ static-dreamwaves/
 │   ├── consolidate_with_prefix.py # Consolidate 1/ and 2/ to Songs/ with A_/B_ prefixes
 │   ├── stage_and_rename.py      # Auto-rename files in Staging/
 │   ├── disperse_staging.py      # Distribute Staging/ files to 1/ and 2/
+│   ├── disperse_and_consolidate.py # Combined: disperse + consolidate in one
+│   ├── reset_track.py           # Reset track by clearing database and files
 │   ├── import_all_tracks.py     # Batch import all tracks
 │   ├── prepend_text.py          # Add prefix to filenames
 │   ├── remove_prefix.py         # Remove prefix from filenames
@@ -241,14 +243,16 @@ yarn gaps --track 24
 yarn stage-rename --track 31 --dry-run  # Preview
 yarn stage-rename --track 31            # Execute
 
-# Distribute files from Staging/ to folders 1/ and 2/
-yarn disperse --track 31 --dry-run      # Preview
-yarn disperse --track 31                # Execute
-
-# Consolidate folders 1/ and 2/ to Songs/ with A_/B_ prefixes
-yarn consolidate --track 31 --dry-run   # Preview
-yarn consolidate --track 31             # Execute
+# Option 1: Separate commands (disperse, then consolidate)
+yarn disperse --track 31 --dry-run      # Preview distribution
+yarn disperse --track 31                # Distribute Staging/ → 1/ and 2/
+yarn consolidate --track 31 --dry-run   # Preview consolidation
+yarn consolidate --track 31             # Consolidate 1/ and 2/ → Songs/ with A_/B_
 yarn consolidate                        # Process all tracks
+
+# Option 2: Combined command (disperse + consolidate in one)
+yarn process --track 31 --dry-run       # Preview both phases
+yarn process --track 31                 # Execute disperse + consolidate together
 ```
 
 #### Track Preparation

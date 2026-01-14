@@ -408,7 +408,13 @@ yarn disperse --track 31 --dry-run
 
 # Actually move files
 yarn disperse --track 31
+
+# OR use combined command (disperse + consolidate in one - see Step 5)
+yarn process --track 31 --dry-run   # Preview both phases
+yarn process --track 31              # Execute both at once
 ```
+
+**Note:** If using `yarn process`, skip Steps 4 and 5 - it does both automatically.
 
 **What it does:**
 - Groups files by (arc, prompt)
@@ -477,6 +483,7 @@ After:
 
 Continue generating songs in batches:
 
+**Option 1: Separate commands**
 ```bash
 # Generate next batch of songs → drop in Staging/
 yarn stage-rename --track 31
@@ -490,13 +497,23 @@ yarn disperse --track 31
 yarn consolidate --track 31
 ```
 
+**Option 2: Streamlined workflow (recommended)**
+```bash
+# Generate songs → drop in Staging/
+yarn stage-rename --track 31
+yarn process --track 31    # Disperse + consolidate in one
+
+# Repeat for more prompts...
+yarn stage-rename --track 31
+yarn process --track 31
+```
+
 **Workflow loop:**
 1. Generate songs for 1-3 prompts
 2. Drop in Staging/
 3. Run `stage-rename`
-4. Run `disperse`
+4. Run `process` (or `disperse` if doing multiple batches, then `consolidate` once at end)
 5. Repeat until all prompts complete
-6. Run `consolidate` once at the end
 
 ---
 

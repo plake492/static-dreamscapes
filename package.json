@@ -31,6 +31,7 @@
     "batch-import-folder": "source venv/bin/activate && python3 scripts/batch_import_from_notion.py",
     "stage-rename": "source venv/bin/activate && python3 scripts/stage_and_rename.py",
     "disperse": "source venv/bin/activate && python3 scripts/disperse_staging.py",
+    "process": "source venv/bin/activate && python3 scripts/disperse_and_consolidate.py",
     "reset-test": "source venv/bin/activate && python3 scripts/reset_track.py"
   }
 }

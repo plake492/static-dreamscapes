@@ -15,6 +15,7 @@ Complete reference for all CLI commands in the LoFi Track Manager.
 - [stage-rename](#stage-rename) - Auto-rename files in Staging folder
 - [disperse](#disperse) - Distribute files from Staging to folders 1 and 2
 - [consolidate](#consolidate) - Consolidate folders 1 and 2 to Songs with prefixes
+- [process](#process) - Disperse and consolidate in one command
 - [reset-track](#reset-track) - Reset a track by clearing database and files
 - [track-duration](#track-duration) - Calculate track duration
 - [prepare-render](#prepare-render) - Prepare songs for rendering
@@ -507,6 +508,89 @@ The A_ and B_ prefixes allow you to identify which half of the track each song c
 - Progress bar showing tracks being processed
 - Summary table: files moved/copied, files skipped, errors
 - Skips files that already exist in Songs/
+
+---
+
+## process
+
+Disperse and consolidate in one command. Combines `disperse` and `consolidate` into a single streamlined workflow.
+
+### Usage
+```bash
+yarn process --track <N> [--dry-run]
+```
+
+### Options
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| `--track`, `-t` | number | Yes | - | Track number |
+| `--dry-run`, `-d` | boolean | No | false | Preview without moving files |
+
+### Examples
+```bash
+# Preview the complete workflow
+yarn process --track 31 --dry-run
+
+# Execute disperse + consolidate
+yarn process --track 31
+```
+
+### What It Does
+1. **Phase 1 - Disperse:** Moves files from `Staging/` → `1/` and `2/`
+   - Groups files by (arc, prompt)
+   - Splits each group evenly between folders 1 and 2
+   - If odd count, folder 1 gets the extra file
+2. **Phase 2 - Consolidate:** Moves files from `1/` and `2/` → `Songs/`
+   - Adds `A_` prefix to files from folder 1
+   - Adds `B_` prefix to files from folder 2
+
+### Example Output
+```
+🔄 Disperse & Consolidate for Track 31
+======================================================================
+
+📦 Phase 1: Dispersing from Staging/ → 1/ and 2/
+----------------------------------------------------------------------
+   Found 5 formatted file(s) in Staging/
+
+   Prompt 3_9 (5 files):
+      → Folder 1: 3 file(s)
+      → Folder 2: 2 file(s)
+
+📦 Phase 2: Consolidating from 1/ and 2/ → Songs/
+----------------------------------------------------------------------
+   Found 3 file(s) in 1/
+   Found 2 file(s) in 2/
+
+   From 1/ (A_ prefix): 3 file(s)
+   From 2/ (B_ prefix): 2 file(s)
+
+======================================================================
+
+✅ Complete!
+   Dispersed 5 file(s)
+   Consolidated 5 file(s)
+```
+
+### Use Case
+Perfect for the staging workflow when you've finished generating all songs for a prompt (or multiple prompts). Instead of running `disperse` then `consolidate` separately, run `process` once to complete both steps.
+
+**Typical workflow:**
+```bash
+# Generate songs → drop in Staging/
+yarn stage-rename --track 31
+
+# Process them in one command
+yarn process --track 31
+
+# Repeat for more prompts...
+```
+
+### Benefits
+- **Faster workflow** - One command instead of two
+- **Less typing** - Fewer commands to remember
+- **Atomic operation** - Both phases complete or neither does
+- **Clear output** - See both phases in one summary
 
 ---
 
