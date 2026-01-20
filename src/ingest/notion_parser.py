@@ -65,6 +65,7 @@ class NotionParser:
         overview = self._parse_track_overview(markdown)
         seo = self._parse_seo_section(markdown)
         music = self._parse_music_arc_structure(markdown)
+        chapter_titles = self._parse_chapter_titles(markdown)
 
         # Extract description
         description = self._extract_description(markdown)
@@ -108,6 +109,7 @@ class NotionParser:
             ctr_target=overview.get('ctr_target'),
             retention_target=overview.get('retention_target'),
             arcs=notion_arcs,
+            chapter_titles=chapter_titles,
             raw_notion_content={'markdown': markdown}
         )
 
@@ -567,12 +569,22 @@ class NotionParser:
 
     def _extract_description(self, markdown: str) -> Optional[str]:
         """Extract description section."""
-        desc_match = re.search(
-            r'### 📝 3\. DESCRIPTION.*?\n\n(.+?)(?:\n### |$)',
-            markdown,
-            re.IGNORECASE | re.DOTALL
-        )
-        return desc_match.group(1).strip() if desc_match else None
+        # Try multiple patterns to match different Notion formats
+        patterns = [
+            r'### 📝 3\. DESCRIPTION.*?\n\n(.+?)(?:\n##+ |$)',  # Old format
+            r'##+ \*\*3\. DESCRIPTION.*?\*\*\n+(.+?)(?:\n##+ |$)',  # New format with asterisks
+            r'##+ 3\. DESCRIPTION.*?\n+(.+?)(?:\n##+ |$)',  # Basic format
+        ]
+
+        for pattern in patterns:
+            desc_match = re.search(pattern, markdown, re.IGNORECASE | re.DOTALL)
+            if desc_match:
+                description = desc_match.group(1).strip()
+                # Clean up any remaining formatting
+                description = re.sub(r'\*\*', '', description)  # Remove bold markers
+                return description
+
+        return None
 
     def _infer_theme(self, title: str, description: Optional[str], hashtags: List[str]) -> str:
         """Infer overall theme from available text."""
@@ -601,6 +613,34 @@ class NotionParser:
             return "Synthwave/Retrowave"
 
         return title.split('|')[0].strip()
+
+    def _parse_chapter_titles(self, markdown: str) -> List[str]:
+        """Parse chapter titles from the CHAPTER TITLES section."""
+        chapter_titles = []
+
+        # Find the CHAPTER TITLES section
+        # Pattern: ## 6 CHAPTER TITLES or ## CHAPTER TITLES
+        section_match = re.search(
+            r'##\s*(?:\d+\s+)?CHAPTER TITLES\s*\n((?:- .+\n?)+)',
+            markdown,
+            re.IGNORECASE | re.MULTILINE
+        )
+
+        if not section_match:
+            logger.debug("No CHAPTER TITLES section found")
+            return chapter_titles
+
+        section_text = section_match.group(1)
+
+        # Extract each bullet point
+        for line in section_text.strip().split('\n'):
+            line = line.strip()
+            if line.startswith('- '):
+                title = line[2:].strip()  # Remove "- " prefix
+                chapter_titles.append(title)
+
+        logger.debug(f"Found {len(chapter_titles)} chapter titles")
+        return chapter_titles
 
     def _cache_content(self, page_id: str, content: str):
         """Cache parsed content to file."""

@@ -21,7 +21,9 @@ Complete reference for all CLI commands in the LoFi Track Manager.
 - [prepare-render](#prepare-render) - Prepare songs for rendering
 - [render](#render) - Render final video
 - [post-render](#post-render) - Import rendered songs to database
+- [generate-description](#generate-description) - Generate YouTube description with chapters
 - [stats](#stats) - Show database statistics
+- [audit-usage](#audit-usage) - Audit and fix song usage tracking
 - [batch-import](#batch-import) - Batch import from Notion folder
 - [version](#version) - Show version
 
@@ -145,14 +147,18 @@ Find matching songs from library for a new track.
 
 ### Usage
 ```bash
+# If track already imported to database
+yarn query --track <N>
+
+# If track not yet imported
 yarn query --track <N> --notion-url <URL>
 ```
 
 ### Options
 | Option | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
-| `--track`, `-t` | number | No | - | Track number (auto-generates output filename) |
-| `--notion-url`, `-n` | string | Yes | - | Notion document URL for new track |
+| `--track`, `-t` | number | No* | - | Track number (auto-generates output filename) |
+| `--notion-url`, `-n` | string | No* | From DB | Notion document URL (optional if track exists in DB) |
 | `--output`, `-o` | string | No | `./output/track-{N}-matches.json` or `./output/query-results.json` | Output JSON file |
 | `--duration`, `-d` | number | No | 180 | Target duration in minutes |
 | `--songs-per-arc` | number | No | 11 | Songs per arc |
@@ -160,22 +166,27 @@ yarn query --track <N> --notion-url <URL>
 | `--top-k`, `-k` | number | No | 5 | Number of matches per prompt |
 | `--config` | string | No | `./config/settings.yaml` | Path to config file |
 
+**\*Either `--track` or `--notion-url` must be provided.** If track exists in database, `--notion-url` is auto-loaded.
+
 ### Examples
 ```bash
-# Standard 3-hour track query
-yarn query --track 25 --notion-url "https://notion.so/..."
+# Track already imported - simplest usage
+yarn query --track 37
+
+# Track not yet imported - provide Notion URL
+yarn query --track 37 --notion-url "https://notion.so/..."
 
 # 1-hour track
-yarn query --track 25 --notion-url "https://notion.so/..." --duration 60
+yarn query --track 25 --duration 60
 
 # Get 10 songs per prompt
-yarn query --track 25 --notion-url "https://notion.so/..." --top-k 10
+yarn query --track 25 --top-k 10
 
 # High-quality matches only (70%+ similarity)
-yarn query --track 25 --notion-url "https://notion.so/..." --min-similarity 0.7
+yarn query --track 25 --min-similarity 0.7
 
 # Custom output location
-yarn query --track 25 --notion-url "https://notion.so/..." --output ./custom/results.json
+yarn query --track 25 --output ./custom/results.json
 ```
 
 ### What It Does
@@ -221,6 +232,21 @@ yarn query --track 25 --notion-url "https://notion.so/..." --output ./custom/res
 - `times_used` - Number of times this song has been used
 - `last_used_track` - Track ID where song was last used
 - `last_used_at` - Timestamp of last usage (ISO 8601 format)
+
+### Typical Workflow
+
+```bash
+# First time for a new track:
+# 1. Import track from Notion
+yarn scaffold-track --track 37 --notion-url "https://notion.so/..."
+
+# 2. Query for matches (no URL needed anymore)
+yarn query --track 37
+
+# Subsequent queries for the same track:
+# Just use the track number - Notion URL is stored in database
+yarn query --track 37
+```
 
 ---
 
@@ -852,10 +878,12 @@ yarn render --track 25 --duration 3 --output ./my-videos/track.mp4
 6. Loops background video to match audio duration
 7. Applies volume boost and fade in/out
 8. Renders final video
+9. **Automatically generates YouTube description** with chapter titles from Notion
 
 ### Output Files
 - **Video:** `Rendered/{N}/output_{timestamp}/{filename-from-notion}.mp4`
-- **Chapters:** `Rendered/{N}/output_{timestamp}/chapters.txt`
+- **Chapters:** `Rendered/{N}/output_{timestamp}/chapters.txt` (detailed timestamps)
+- **YouTube Description:** `Rendered/{N}/output_{timestamp}/youtube-description.txt` ✨ **NEW**
 - **Debug:** `Rendered/{N}/output_{timestamp}/ffmpeg_command.txt`
 - **Filter:** `Rendered/{N}/output_{timestamp}/filter_complex.txt`
 - **Image:** `Rendered/{N}/output_{timestamp}/Image/` (copied from track)
@@ -864,6 +892,7 @@ yarn render --track 25 --duration 3 --output ./my-videos/track.mp4
 - Background video at `Tracks/{N}/Video/{N}.mp4`
 - Songs in `Tracks/{N}/Songs/`
 - Track imported to database (for filename lookup)
+- **For YouTube description:** Notion doc must include `## 6 CHAPTER TITLES` section (optional, but recommended)
 
 ### Duration Options
 | Value | Behavior |
@@ -921,6 +950,90 @@ yarn post-render --track 25 --rendered-dir ./my-rendered
 - Count of imported songs
 - Count of skipped songs
 - Suggestion to regenerate embeddings
+
+---
+
+## generate-description
+
+> **Note**: YouTube description is now automatically generated during `yarn render`. This standalone command is still available if you need to regenerate the description separately.
+
+Generate a formatted YouTube description with chapters, ready to copy/paste.
+
+### Usage
+```bash
+yarn generate-description --track <N>
+```
+
+### Options
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| `--track`, `-t` | number | Yes | - | Track number |
+| `--notion-url`, `-n` | string | No | From DB | Notion document URL (auto-loads from database) |
+| `--output`, `-o` | string | No | `./Tracks/{N}/youtube-description.txt` | Output file path |
+| `--config` | string | No | `./config/settings.yaml` | Path to config file |
+
+### Auto-Generated During Render
+
+The YouTube description is automatically generated when you run `yarn render`. It will be saved to:
+```
+Rendered/{N}/output_{timestamp}/youtube-description.txt
+```
+
+Along with:
+- The rendered video file
+- `chapters.txt` (detailed chapter timestamps)
+- `ffmpeg_command.txt` (render command used)
+- Copy of the Image folder
+
+### Manual Generation
+
+Use this command if you need to regenerate the description separately:
+
+```bash
+# Generate description for track 37
+yarn generate-description --track 37
+```
+
+### Notion Format Required
+
+Your Notion doc must include a CHAPTER TITLES section:
+```markdown
+## 6 CHAPTER TITLES
+- Pre-Dawn Stillness — Cycle I
+- First Light Calm — Cycle I
+- Morning Clarity — Cycle I
+- Soft Morning Drift — Cycle I
+- Pre-Dawn Stillness — Cycle II
+- First Light Calm — Cycle II
+- Morning Clarity — Cycle II
+- Soft Morning Drift — Cycle II
+```
+
+### Output Format
+```
+[Vibe description from Notion]
+
+Best for:
+Late-night coding and development
+Studying and deep focus
+Writing and creative work
+Quiet night productivity
+
+Aesthetic:
+[Mood arc from Notion]
+
+Chapters
+00:00 Neon Night Entry — Cycle I
+14:11 Locked-In Focus Flow — Cycle I
+34:16 Midnight Drift — Cycle I
+45:47 Rainy Fade — Cycle I
+01:20:13 Neon Night Entry — Cycle II
+01:44:35 Locked-In Focus Flow — Cycle II
+02:18:31 Midnight Drift — Cycle II
+02:33:06 Rainy Fade — Cycle II
+
+#lofi #synthwave #codingmusic
+```
 
 ---
 
@@ -1004,6 +1117,99 @@ yarn stats tracks
 ### Track Statistics
 - Total tracks in database
 - All tracks table (number, title, status, duration target)
+
+---
+
+## audit-usage
+
+Audit song usage by scanning all track folders and updating the database with accurate usage counts.
+
+### Usage
+```bash
+yarn audit-usage [--dry-run]
+```
+
+### Options
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `--base-dir`, `-b` | string | `./Tracks` | Base directory containing track folders |
+| `--dry-run`, `-d` | boolean | false | Preview without updating database |
+| `--config` | string | `./config/settings.yaml` | Path to config file |
+
+### Examples
+```bash
+# Audit and update usage tracking
+yarn audit-usage
+
+# Preview what would be updated (dry run)
+yarn audit-usage --dry-run
+
+# Use custom tracks directory
+yarn audit-usage --base-dir ./my-tracks
+```
+
+### What It Does
+1. Scans all track folders (excludes tracks >= 999)
+2. Finds the highest track number
+3. Scans each track's Songs folder for audio files
+4. Counts how many times each song is used across all tracks
+5. Calculates "tracks ago" from the highest track number
+6. Identifies discrepancies between database and actual usage
+7. Updates database with correct values:
+   - `times_used` - Total usage count
+   - `last_used_track_id` - Most recent track where used
+   - `updated_at` - Timestamp
+
+### Output
+- Summary: unique songs found, total usages
+- Discrepancies table showing:
+  - Filename
+  - Database count vs. actual count
+  - Last track used
+  - How many tracks ago
+- Top 10 most used songs with usage statistics
+- Songs found in folders but not in database
+
+### When to Use
+- After manually copying songs between tracks
+- When usage tracking seems incorrect
+- Before running `prepare-render` with usage filters
+- To verify database integrity
+- After importing old tracks
+
+### Example Output
+```
+🔍 Auditing Song Usage
+
+Found 36 tracks (highest: Track 36)
+Scanning Songs folders...
+
+✓ Scanned 36 track folders
+
+Found 245 unique songs with 892 total usages
+
+Found 15 songs with incorrect usage counts:
+
+┌────────────────────┬──────────┬────────┬────────────┬────────────┐
+│ Filename           │ DB Count │ Actual │ Last Track │ Tracks Ago │
+├────────────────────┼──────────┼────────┼────────────┼────────────┤
+│ A_1_1_22a.mp3     │ 3        │ 5      │ Track 35   │ 1          │
+│ B_2_3_24b.mp3     │ 2        │ 4      │ Track 33   │ 3          │
+└────────────────────┴──────────┴────────┴────────────┴────────────┘
+
+Updating database...
+
+✅ Updated 245 songs in database
+
+Top 10 Most Used Songs:
+
+┌────────────────────┬────────────┬────────────┬────────────┐
+│ Filename           │ Times Used │ Last Used  │ Tracks Ago │
+├────────────────────┼────────────┼────────────┼────────────┤
+│ B_1_1_1001b.mp3   │ 7          │ Track 36   │ 0          │
+│ A_1_2_16a.mp3     │ 6          │ Track 35   │ 1          │
+└────────────────────┴────────────┴────────────┴────────────┘
+```
 
 ---
 

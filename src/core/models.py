@@ -127,6 +127,8 @@ class NotionTrackMetadata(BaseModel):
 
     arcs: List[NotionArc] = Field(..., min_length=1, max_length=4)
 
+    chapter_titles: List[str] = Field(default_factory=list, description="Chapter titles for YouTube description")
+
     raw_notion_content: Optional[Dict[str, Any]] = None
 
 
