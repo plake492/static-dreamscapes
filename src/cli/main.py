@@ -667,6 +667,27 @@ def scaffold_track(
             dir_path.mkdir(parents=True, exist_ok=True)
             console.print(f"✅ Created: {dir_path}")
 
+        # Check Image_bank for matching image file
+        import shutil
+        image_bank = Path("./Image_bank")
+        if image_bank.exists():
+            for img_file in image_bank.iterdir():
+                if img_file.is_file() and img_file.stem == str(track):
+                    dest = track_dir / "Image" / img_file.name
+                    shutil.move(str(img_file), str(dest))
+                    console.print(f"✅ Moved image: {img_file.name} → Image/")
+                    break
+
+        # Check Video_bank for matching video file
+        video_bank = Path("./Video_bank")
+        if video_bank.exists():
+            for vid_file in video_bank.iterdir():
+                if vid_file.is_file() and vid_file.stem == str(track):
+                    dest = track_dir / "Video" / vid_file.name
+                    shutil.move(str(vid_file), str(dest))
+                    console.print(f"✅ Moved video: {vid_file.name} → Video/")
+                    break
+
         # Create metadata file
         import json
         metadata_file = track_dir / "metadata" / "track_info.json"
@@ -981,71 +1002,95 @@ def prepare_render(
         skipped_count = 0
 
         if target_duration:
-            # Duration-aware selection with even distribution across arcs
+            # Duration-aware selection with even distribution across prompts and cycles
             console.print(f"[cyan]Target duration: {target_duration} minutes ({target_duration * 60} seconds)[/cyan]")
 
             target_seconds = target_duration * 60
             current_duration = 0
 
-            # Organize matches by arc for balanced selection
-            arc_matches = {}
+            # Helper to determine cycle from filename (A_ = Cycle 1, B_ = Cycle 2)
+            def get_cycle(filename):
+                if filename.startswith('A_'):
+                    return 1
+                elif filename.startswith('B_'):
+                    return 2
+                return 0  # Unknown/no prefix
+
+            # Organize matches by (arc, prompt) pairs, separated by cycle
+            # This ensures each prompt gets coverage in both cycles
+            prompt_matches_c1 = {}  # Cycle 1 (A_ prefix) matches
+            prompt_matches_c2 = {}  # Cycle 2 (B_ prefix) matches
+
             for arc_name, prompts in data.get('results', {}).items():
-                arc_matches[arc_name] = []
                 for prompt_data in prompts:
                     prompt_num = prompt_data.get('prompt_number')
                     matches = prompt_data.get('matches', [])
                     if matches:
-                        # Add all matches with metadata
+                        key = (arc_name, prompt_num)
+                        prompt_matches_c1[key] = []
+                        prompt_matches_c2[key] = []
+
                         for match in matches:
-                            arc_matches[arc_name].append({
+                            match_data = {
                                 'match': match,
                                 'prompt_num': prompt_num,
                                 'arc_name': arc_name
-                            })
+                            }
+                            cycle = get_cycle(match['filename'])
+                            if cycle == 1:
+                                prompt_matches_c1[key].append(match_data)
+                            elif cycle == 2:
+                                prompt_matches_c2[key].append(match_data)
+                            else:
+                                # No prefix - add to both pools
+                                prompt_matches_c1[key].append(match_data)
+                                prompt_matches_c2[key].append(match_data)
 
-            num_arcs = len(arc_matches)
-            console.print(f"[cyan]Distributing tracks evenly across {num_arcs} arcs[/cyan]\n")
+            # Sort keys for consistent ordering: by arc, then by prompt number
+            sorted_prompt_keys = sorted(
+                set(prompt_matches_c1.keys()) | set(prompt_matches_c2.keys()),
+                key=lambda x: (x[0], x[1])
+            )
+            num_prompts = len(sorted_prompt_keys)
+            num_arcs = len(set(k[0] for k in sorted_prompt_keys))
 
-            # Track indices for each arc (where we are in the match list)
-            arc_indices = {arc_name: 0 for arc_name in arc_matches.keys()}
-            arc_counts = {arc_name: 0 for arc_name in arc_matches.keys()}
+            console.print(f"[cyan]Distributing songs evenly across {num_prompts} prompts in {num_arcs} arcs (both cycles)[/cyan]\n")
 
-            # Round-robin selection across arcs to ensure even distribution
-            # Keep going until we hit target duration or exhaust all filtered matches
-            exhausted_arcs = set()
+            # Track indices for each (arc, prompt) pair per cycle
+            prompt_indices_c1 = {key: 0 for key in sorted_prompt_keys}
+            prompt_indices_c2 = {key: 0 for key in sorted_prompt_keys}
+            prompt_counts = {key: 0 for key in sorted_prompt_keys}
+            arc_counts = {}
+            cycle_counts = {1: 0, 2: 0}
 
-            while current_duration < target_seconds and len(exhausted_arcs) < num_arcs:
+            # Round-robin selection: alternate between cycles, then across prompts
+            # This ensures: Cycle 1 gets one from each prompt, then Cycle 2 gets one from each prompt, repeat
+            exhausted_c1 = set()
+            exhausted_c2 = set()
+
+            while current_duration < target_seconds:
                 progress_this_round = False
 
-                # Try to select one song from each arc in this round
-                for arc_name in sorted(arc_matches.keys()):
-                    # Skip if we've exhausted this arc
-                    if arc_name in exhausted_arcs:
-                        continue
-
-                    # Skip if we've already hit target duration
+                # Cycle 1 round: try to select one Cycle 1 song from each prompt
+                for prompt_key in sorted_prompt_keys:
                     if current_duration >= target_seconds:
                         break
+                    if prompt_key in exhausted_c1:
+                        continue
 
-                    matches = arc_matches[arc_name]
-                    match_index = arc_indices[arc_name]
+                    arc_name, prompt_num = prompt_key
+                    matches = prompt_matches_c1.get(prompt_key, [])
+                    match_index = prompt_indices_c1[prompt_key]
 
-                    # Try to find a valid song from this arc
                     found_song = False
                     while match_index < len(matches) and not found_song:
                         match_data = matches[match_index]
                         match = match_data['match']
-                        prompt_num = match_data['prompt_num']
-
                         filename = match['filename']
-                        duration = match.get('duration', 180)  # Default 3 min if unknown
+                        duration = match.get('duration', 180)
 
-                        # Find the song in database to get file path
                         song = db.get_song_by_filename(filename)
-
-                        # Apply filters BEFORE adding to list
                         skip, skip_reason = should_skip_song(song)
-
                         match_index += 1
 
                         if skip:
@@ -1056,7 +1101,9 @@ def prepare_render(
                             source_path = Path(song.file_path)
                             if source_path.exists():
                                 songs_to_copy.append((source_path, filename, prompt_num, arc_name, duration))
-                                arc_counts[arc_name] += 1
+                                prompt_counts[prompt_key] += 1
+                                arc_counts[arc_name] = arc_counts.get(arc_name, 0) + 1
+                                cycle_counts[1] += 1
                                 current_duration += duration
                                 found_song = True
                                 progress_this_round = True
@@ -1064,19 +1111,65 @@ def prepare_render(
                                 console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
                                 continue
 
-                    # Update index for this arc
-                    arc_indices[arc_name] = match_index
-
-                    # Mark arc as exhausted if we've gone through all matches
+                    prompt_indices_c1[prompt_key] = match_index
                     if match_index >= len(matches):
-                        exhausted_arcs.add(arc_name)
+                        exhausted_c1.add(prompt_key)
 
-                # If no progress was made this round, all arcs are exhausted
+                # Cycle 2 round: try to select one Cycle 2 song from each prompt
+                for prompt_key in sorted_prompt_keys:
+                    if current_duration >= target_seconds:
+                        break
+                    if prompt_key in exhausted_c2:
+                        continue
+
+                    arc_name, prompt_num = prompt_key
+                    matches = prompt_matches_c2.get(prompt_key, [])
+                    match_index = prompt_indices_c2[prompt_key]
+
+                    found_song = False
+                    while match_index < len(matches) and not found_song:
+                        match_data = matches[match_index]
+                        match = match_data['match']
+                        filename = match['filename']
+                        duration = match.get('duration', 180)
+
+                        song = db.get_song_by_filename(filename)
+                        skip, skip_reason = should_skip_song(song)
+                        match_index += 1
+
+                        if skip:
+                            skipped_count += 1
+                            continue
+
+                        if song and song.file_path:
+                            source_path = Path(song.file_path)
+                            if source_path.exists():
+                                songs_to_copy.append((source_path, filename, prompt_num, arc_name, duration))
+                                prompt_counts[prompt_key] += 1
+                                arc_counts[arc_name] = arc_counts.get(arc_name, 0) + 1
+                                cycle_counts[2] += 1
+                                current_duration += duration
+                                found_song = True
+                                progress_this_round = True
+                            else:
+                                console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
+                                continue
+
+                    prompt_indices_c2[prompt_key] = match_index
+                    if match_index >= len(matches):
+                        exhausted_c2.add(prompt_key)
+
+                # If no progress was made this round, all prompts in both cycles are exhausted
                 if not progress_this_round:
                     break
 
             console.print(f"[cyan]Selected {len(songs_to_copy)} songs totaling {current_duration / 60:.1f} minutes (skipped {skipped_count})[/cyan]")
-            console.print(f"[dim]Arc distribution: {', '.join([f'{arc}: {count}' for arc, count in sorted(arc_counts.items())])}[/dim]\n")
+            console.print(f"[dim]Arc distribution: {', '.join([f'{arc}: {count}' for arc, count in sorted(arc_counts.items())])}[/dim]")
+            console.print(f"[dim]Cycle distribution: Cycle 1 (A_): {cycle_counts[1]}, Cycle 2 (B_): {cycle_counts[2]}[/dim]")
+
+            # Show prompt distribution summary
+            prompts_with_songs = sum(1 for c in prompt_counts.values() if c > 0)
+            console.print(f"[dim]Prompt coverage: {prompts_with_songs}/{num_prompts} prompts have at least one song[/dim]\n")
 
         else:
             # Original behavior: take best match per prompt, with filtering

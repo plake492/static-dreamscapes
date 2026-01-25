@@ -1,9 +1,9 @@
-# Track 9999: 3HR Rainy Desk Coding ⌨️ LoFi & Synthwave Mix — Deep Night Focus (Royalty Free)
+# Track 1004: Untitled Track
 
 ## Overview
 - **Duration Target**: 180 minutes
-- **Theme**: LoFi Rainy
-- **Notion**: [View Document](https://www.notion.so/Track-9999-Testing-track-2d0433e57885807f8b67fd1c1d3a8b59\?source\=copy_link)
+- **Theme**: Untitled Track
+- **Notion**: [View Document](https://www.notion.so/Track-1004-MASTER-ARC-03-RETRO-TECH-ANALOG-NEUTRAL-2f1433e57885806da681c703f0b0dafe\?source\=copy_link)
 
 ## Directories
 - **Staging/**: Place unformatted audio files here for batch renaming with `yarn stage-rename`
@@ -15,14 +15,14 @@
 
 ## Arcs
 
-### Arc 1: Neon Night Entry
+### Arc 1: System Idle
 - Prompts: 3
 
-### Arc 2: Locked-In Focus Flow
+### Arc 2: Processing Loop
 - Prompts: 4
 
-### Arc 3: Midnight Drift
+### Arc 3: Extended Operation
 - Prompts: 3
 
-### Arc 4: Rainy Fade
+### Arc 4: Power Down
 - Prompts: 3
