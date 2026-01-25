@@ -7,6 +7,7 @@ from rich.table import Table
 from pathlib import Path
 import logging
 import sys
+from datetime import datetime
 
 from ..core.database import Database
 from ..core.config import get_config
@@ -26,6 +27,44 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+def extract_notion_id(url_or_id: str) -> str:
+    """Extract and format Notion ID from URL or raw ID.
+
+    Args:
+        url_or_id: Either a full Notion URL or a raw ID
+
+    Returns:
+        Properly formatted Notion ID with dashes
+
+    Examples:
+        extract_notion_id("https://notion.so/Page-abc123def456...")
+        extract_notion_id("abc123def456...")
+    """
+    import re
+
+    # If it's a URL, extract the ID part
+    if url_or_id.startswith('http'):
+        # Extract ID from URL (last part after final /)
+        # Example: https://www.notion.so/Tracks-293433e578858089913bfa3d8dd6ed72
+        match = re.search(r'([a-f0-9]{32})', url_or_id)
+        if match:
+            raw_id = match.group(1)
+        else:
+            raise ValueError(f"Could not extract Notion ID from URL: {url_or_id}")
+    else:
+        # Already an ID, remove any existing dashes
+        raw_id = url_or_id.replace('-', '')
+
+    # Validate length
+    if len(raw_id) != 32:
+        raise ValueError(f"Invalid Notion ID length (expected 32 chars, got {len(raw_id)}): {raw_id}")
+
+    # Format with dashes: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    formatted_id = f"{raw_id[0:8]}-{raw_id[8:12]}-{raw_id[12:16]}-{raw_id[16:20]}-{raw_id[20:32]}"
+
+    return formatted_id
 
 
 @app.command()
@@ -68,7 +107,8 @@ def init_db(
 @app.command()
 def import_songs(
     notion_url: str = typer.Option(..., "--notion-url", "-n", help="Notion document URL"),
-    songs_dir: str = typer.Option(..., "--songs-dir", "-s", help="Directory containing audio files"),
+    track: Optional[int] = typer.Option(None, "--track", "-t", help="Track number (auto-resolves to ./Tracks/{track}/Songs)"),
+    songs_dir: Optional[str] = typer.Option(None, "--songs-dir", "-s", help="Directory containing audio files (optional if --track is provided)"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file"),
     force_reanalyze: bool = typer.Option(False, "--force", help="Force re-analysis of existing songs")
 ):
@@ -78,6 +118,15 @@ def import_songs(
         from ..ingest.notion_parser import NotionParser
         from ..ingest.audio_analyzer import AudioAnalyzer
         from pathlib import Path
+
+        # Resolve songs_dir from track if not provided
+        if songs_dir is None and track is None:
+            console.print("[red]❌ Error: Either --track or --songs-dir must be provided[/red]\n")
+            raise typer.Exit(1)
+
+        if songs_dir is None:
+            songs_dir = f"./Tracks/{track}/Songs"
+            console.print(f"[dim]Auto-resolved songs directory from --track {track}[/dim]\n")
 
         config = get_config(config_path)
         db = Database(config.database_path)
@@ -125,6 +174,14 @@ def import_songs(
             console.print(table)
             if len(songs) > 10:
                 console.print(f"\n... and {len(songs) - 10} more songs\n")
+
+        # Validate prompts for forbidden technical phrases
+        from ..ingest.prompt_validator import validate_track_prompts, format_violation_report
+
+        violations = validate_track_prompts(db, track.id)
+        if violations:
+            violation_report = format_violation_report(violations, track.track_number)
+            console.print(violation_report)
 
         db.close()
 
@@ -217,8 +274,9 @@ def generate_embeddings(
 
 @app.command()
 def query(
-    notion_url: str = typer.Option(..., "--notion-url", "-n", help="Notion document URL for new track"),
-    output: str = typer.Option("./output/playlists/playlist.json", "--output", "-o", help="Output JSON file"),
+    notion_url: Optional[str] = typer.Option(None, "--notion-url", "-n", help="Notion document URL (optional if track exists in DB)"),
+    track: Optional[int] = typer.Option(None, "--track", "-t", help="Track number (auto-generates output filename)"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output JSON file (optional if --track is provided)"),
     target_duration: int = typer.Option(180, "--duration", "-d", help="Target duration in minutes"),
     songs_per_arc: int = typer.Option(11, "--songs-per-arc", help="Songs per arc"),
     min_similarity: float = typer.Option(0.6, "--min-similarity", help="Minimum similarity score"),
@@ -235,10 +293,41 @@ def query(
         from pathlib import Path
         import json
 
+        # Auto-generate output filename from track number if not provided
+        if output is None:
+            if track is not None:
+                output = f"./output/track-{track}-matches.json"
+                console.print(f"[dim]Auto-generated output: {output}[/dim]\n")
+            else:
+                output = "./output/query-results.json"
+                console.print(f"[dim]Using default output: {output}[/dim]\n")
+
+        # Ensure output directory exists
+        output_path = Path(output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
         config = get_config(config_path)
         db = Database(config.database_path)
 
         console.print("\n[bold blue]🔍 Querying for Matching Songs[/bold blue]\n")
+
+        # Get notion URL from database if not provided
+        if not notion_url:
+            if not track:
+                console.print("[bold red]❌ Either --notion-url or --track must be provided[/bold red]\n")
+                raise typer.Exit(1)
+
+            track_record = db.get_track_by_number(track)
+            if track_record and track_record.notion_url:
+                notion_url = track_record.notion_url
+                console.print(f"[dim]Using Notion URL from database[/dim]")
+            else:
+                console.print(f"[bold red]❌ Track {track} not found in database[/bold red]\n")
+                console.print("Either:\n")
+                console.print("  1. Import the track first: [cyan]yarn scaffold-track --track {track} --notion-url <URL>[/cyan]")
+                console.print("  2. Or provide --notion-url directly\n")
+                raise typer.Exit(1)
+
         console.print(f"Notion URL: {notion_url}\n")
 
         # Parse Notion document
@@ -311,7 +400,10 @@ def query(
                             'bpm': m.song.bpm,
                             'key': m.song.key,
                             'arc': m.song.arc_number,
-                            'duration': round(m.song.duration_seconds) if m.song.duration_seconds else None
+                            'duration': round(m.song.duration_seconds) if m.song.duration_seconds else None,
+                            'times_used': m.song.times_used,
+                            'last_used_track': m.song.last_used_track_id,
+                            'last_used_at': m.song.last_used_at.isoformat() if m.song.last_used_at else None
                         }
                         for m in matches
                     ]
@@ -340,6 +432,67 @@ def query(
         console.print(f"[bold green]✅ Query complete![/bold green]")
         console.print(f"Total matches: {total_matches}")
         console.print(f"Results saved to: {output}\n")
+
+        # Aggregate songs by source track
+        from collections import defaultdict
+        from rich.table import Table
+
+        track_contributions = defaultdict(set)
+
+        # Parse all matched filenames to find contributing tracks
+        for arc_key, arc_data in results.items():
+            for prompt_data in arc_data:
+                for match in prompt_data['matches']:
+                    filename = match['filename']
+                    # Extract track number from filename (e.g., A_1_1_22a.mp3 -> 22)
+                    parts = filename.replace('.mp3', '').split('_')
+                    if len(parts) >= 4:
+                        track_part = parts[3]
+                        # Extract numeric portion (e.g., "22a" -> "22", "999d" -> "999")
+                        track_num = ''.join(c for c in track_part if c.isdigit())
+                        if track_num:
+                            track_contributions[track_num].add(filename)
+
+        if track_contributions:
+            # Get track titles from database
+            track_info = {}
+            cursor = db.conn.cursor()
+            for track_num in track_contributions.keys():
+                cursor.execute(
+                    "SELECT title FROM tracks WHERE track_number = ? OR id = ?",
+                    (int(track_num) if track_num.isdigit() else track_num, track_num)
+                )
+                result = cursor.fetchone()
+                title = result[0] if result else "Unknown Track"
+                # Truncate long titles
+                if len(title) > 40:
+                    title = title[:37] + "..."
+                track_info[track_num] = title
+
+            # Create and display table
+            table = Table(title="Contributing Tracks", show_header=True, header_style="bold cyan")
+            table.add_column("Track", style="yellow", width=10)
+            table.add_column("Title", style="white", width=42)
+            table.add_column("Songs", justify="right", style="green", width=8)
+
+            # Sort by song count (descending)
+            sorted_tracks = sorted(
+                track_contributions.items(),
+                key=lambda x: len(x[1]),
+                reverse=True
+            )
+
+            for track_num, filenames in sorted_tracks:
+                title = track_info.get(track_num, "Unknown Track")
+                song_count = len(filenames)
+                table.add_row(
+                    f"Track {track_num}",
+                    title,
+                    str(song_count)
+                )
+
+            console.print(table)
+            console.print()
 
         db.close()
 
@@ -466,7 +619,7 @@ def playlist_gaps(
 
 @app.command()
 def scaffold_track(
-    track_number: int = typer.Option(..., "--track-number", "-t", help="Track number"),
+    track: int = typer.Option(..., "--track", "--track-number", "-t", help="Track number"),
     notion_url: str = typer.Option(..., "--notion-url", "-n", help="Notion document URL"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
@@ -478,7 +631,7 @@ def scaffold_track(
         config = get_config(config_path)
 
         console.print("\n[bold blue]📁 Scaffolding Track Folder[/bold blue]\n")
-        console.print(f"Track number: {track_number}")
+        console.print(f"Track number: {track}")
         console.print(f"Notion URL: {notion_url}\n")
 
         # Parse Notion doc
@@ -489,7 +642,7 @@ def scaffold_track(
         console.print(f"Track title: [bold]{track_metadata.title}[/bold]\n")
 
         # Create folder structure
-        track_dir = Path(f"./Tracks/{track_number}")
+        track_dir = Path(f"./Tracks/{track}")
 
         if track_dir.exists():
             console.print(f"[yellow]⚠️  Track folder already exists: {track_dir}[/yellow]")
@@ -500,7 +653,12 @@ def scaffold_track(
         # Create directories
         dirs_to_create = [
             track_dir,
+            track_dir / "1",
+            track_dir / "2",
             track_dir / "Songs",
+            track_dir / "Staging",
+            track_dir / "Image",
+            track_dir / "Video",
             track_dir / "Rendered",
             track_dir / "metadata"
         ]
@@ -509,11 +667,32 @@ def scaffold_track(
             dir_path.mkdir(parents=True, exist_ok=True)
             console.print(f"✅ Created: {dir_path}")
 
+        # Check Image_bank for matching image file
+        import shutil
+        image_bank = Path("./Image_bank")
+        if image_bank.exists():
+            for img_file in image_bank.iterdir():
+                if img_file.is_file() and img_file.stem == str(track):
+                    dest = track_dir / "Image" / img_file.name
+                    shutil.move(str(img_file), str(dest))
+                    console.print(f"✅ Moved image: {img_file.name} → Image/")
+                    break
+
+        # Check Video_bank for matching video file
+        video_bank = Path("./Video_bank")
+        if video_bank.exists():
+            for vid_file in video_bank.iterdir():
+                if vid_file.is_file() and vid_file.stem == str(track):
+                    dest = track_dir / "Video" / vid_file.name
+                    shutil.move(str(vid_file), str(dest))
+                    console.print(f"✅ Moved video: {vid_file.name} → Video/")
+                    break
+
         # Create metadata file
         import json
         metadata_file = track_dir / "metadata" / "track_info.json"
         metadata_content = {
-            "track_number": track_number,
+            "track_number": track,
             "title": track_metadata.title,
             "notion_url": notion_url,
             "duration_target_minutes": track_metadata.duration_target_minutes,
@@ -534,12 +713,20 @@ def scaffold_track(
 
         # Create README
         readme_file = track_dir / "README.md"
-        readme_content = f"""# Track {track_number}: {track_metadata.title}
+        readme_content = f"""# Track {track}: {track_metadata.title}
 
 ## Overview
 - **Duration Target**: {track_metadata.duration_target_minutes} minutes
 - **Theme**: {track_metadata.overall_theme}
 - **Notion**: [View Document]({notion_url})
+
+## Directories
+- **Staging/**: Place unformatted audio files here for batch renaming with `yarn stage-rename`
+- **Songs/**: Final location for properly named audio files
+- **1/**, **2/**: Generation batch folders
+- **Image/**, **Video/**: Visual assets
+- **Rendered/**: Final rendered videos
+- **metadata/**: Track metadata and configuration
 
 ## Arcs
 """
@@ -550,7 +737,52 @@ def scaffold_track(
         readme_file.write_text(readme_content)
         console.print(f"✅ Created: {readme_file}")
 
-        console.print(f"\n[bold green]✅ Track {track_number} scaffolded successfully![/bold green]")
+        # Add track to database
+        console.print(f"\n[cyan]Adding track to database...[/cyan]")
+        db = Database(config.database_path)
+
+        # Check if track already exists
+        existing_track = db.get_track_by_number(track)
+        if existing_track:
+            console.print(f"[yellow]Track {track} already exists in database, updating...[/yellow]")
+            # Update existing track
+            cursor = db.conn.cursor()
+            cursor.execute("""
+                UPDATE tracks
+                SET title = ?,
+                    output_filename = ?,
+                    notion_url = ?,
+                    duration_target = ?,
+                    overall_theme = ?,
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE track_number = ?
+            """, (
+                track_metadata.title,
+                track_metadata.output_filename,
+                notion_url,
+                track_metadata.duration_target_minutes,
+                track_metadata.overall_theme,
+                track
+            ))
+            db.conn.commit()
+        else:
+            # Insert new track
+            from ..core.models import Track, TrackStatus
+            new_track = Track(
+                track_number=track,
+                title=track_metadata.title,
+                output_filename=track_metadata.output_filename,
+                notion_url=notion_url,
+                duration_target=track_metadata.duration_target_minutes,
+                overall_theme=track_metadata.overall_theme,
+                status=TrackStatus.DRAFT
+            )
+            db.insert_track(new_track)
+
+        console.print(f"[green]✓[/green] Track added to database")
+        db.close()
+
+        console.print(f"\n[bold green]✅ Track {track} scaffolded successfully![/bold green]")
         console.print(f"Location: {track_dir}\n")
 
     except Exception as e:
@@ -577,7 +809,8 @@ def track_duration(
         if songs_dir:
             songs_path = Path(songs_dir)
         elif track:
-            songs_path = Path(f"./Tracks/{track}/Songs")
+            # Search entire track directory for all MP3 files
+            songs_path = Path(f"./Tracks/{track}")
         else:
             console.print("[red]Error: Provide either --track or --songs-dir[/red]\n")
             raise typer.Exit(1)
@@ -586,7 +819,7 @@ def track_duration(
             console.print(f"[red]Error: Directory not found: {songs_path}[/red]\n")
             raise typer.Exit(1)
 
-        console.print(f"Scanning: {songs_path}\n")
+        console.print(f"Scanning: {songs_path}/**/*.mp3\n")
 
         # Find all audio files recursively (mp3 and wav)
         audio_files = []
@@ -692,9 +925,11 @@ def track_duration(
 @app.command()
 def prepare_render(
     track: int = typer.Option(..., "--track", "-t", help="Track number"),
-    playlist: str = typer.Option(..., "--playlist", "-p", help="Path to playlist JSON file"),
+    results: Optional[str] = typer.Option(None, "--results", "--playlist", "-p", help="Path to query results JSON file (optional if --track provided)"),
     copy: bool = typer.Option(True, "--copy/--move", help="Copy files (default) or move them"),
     target_duration: int = typer.Option(None, "--duration", "-d", help="Target duration in minutes (auto-selects songs)"),
+    skip_recent_tracks: Optional[int] = typer.Option(None, "--skip-recent-tracks", help="Skip songs used in last N tracks"),
+    max_usage: Optional[int] = typer.Option(None, "--max-usage", help="Skip songs used more than X times"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
     """Prepare track for rendering by organizing matched songs into track folder."""
@@ -707,17 +942,22 @@ def prepare_render(
         config = get_config(config_path)
         db = Database(config.database_path)
 
+        # Auto-resolve results path if not provided
+        if results is None:
+            results = f"./output/track-{track}-matches.json"
+            console.print(f"[dim]Auto-resolved results path from --track {track}[/dim]\n")
+
         console.print("\n[bold blue]🎬 Preparing Track for Render[/bold blue]\n")
         console.print(f"Track: {track}")
-        console.print(f"Playlist: {playlist}\n")
+        console.print(f"Query results: {results}\n")
 
-        # Load playlist
-        playlist_file = Path(playlist)
-        if not playlist_file.exists():
-            console.print(f"[bold red]❌ Playlist file not found: {playlist}[/bold red]\n")
+        # Load query results
+        results_file = Path(results)
+        if not results_file.exists():
+            console.print(f"[bold red]❌ Results file not found: {results}[/bold red]\n")
             raise typer.Exit(1)
 
-        with open(playlist_file) as f:
+        with open(results_file) as f:
             data = json.load(f)
 
         # Prepare destination
@@ -730,94 +970,249 @@ def prepare_render(
 
         console.print(f"Destination: {songs_dir}\n")
 
-        # Collect all matched songs
+        # Pre-compute filter prerequisites
+        recent_track_ids = []
+        if skip_recent_tracks:
+            recent_track_ids = db.get_recent_track_ids(track, skip_recent_tracks)
+            console.print(f"[cyan]Filter: Skip songs used in last {skip_recent_tracks} tracks: {', '.join(recent_track_ids)}[/cyan]")
+
+        if max_usage is not None:
+            console.print(f"[cyan]Filter: Skip songs used more than {max_usage} times[/cyan]")
+
+        console.print()
+
+        # Helper function to check if a song should be skipped
+        def should_skip_song(song):
+            """Returns (should_skip: bool, reason: str)"""
+            if not song:
+                return True, "not found in database"
+
+            # Check recent tracks filter
+            if skip_recent_tracks and song.last_used_track_id in recent_track_ids:
+                return True, f"used in Track {song.last_used_track_id} (within last {skip_recent_tracks} tracks)"
+
+            # Check max usage filter
+            if max_usage is not None and song.times_used > max_usage:
+                return True, f"used {song.times_used} times (> {max_usage})"
+
+            return False, None
+
+        # Collect all matched songs with filtering applied during selection
         songs_to_copy = []
+        skipped_count = 0
 
         if target_duration:
-            # Duration-aware selection: intelligently select songs to fill target duration
+            # Duration-aware selection with even distribution across prompts and cycles
             console.print(f"[cyan]Target duration: {target_duration} minutes ({target_duration * 60} seconds)[/cyan]")
 
             target_seconds = target_duration * 60
             current_duration = 0
 
-            # Organize matches by arc for balanced selection
-            arc_matches = {}
+            # Helper to determine cycle from filename (A_ = Cycle 1, B_ = Cycle 2)
+            def get_cycle(filename):
+                if filename.startswith('A_'):
+                    return 1
+                elif filename.startswith('B_'):
+                    return 2
+                return 0  # Unknown/no prefix
+
+            # Organize matches by (arc, prompt) pairs, separated by cycle
+            # This ensures each prompt gets coverage in both cycles
+            prompt_matches_c1 = {}  # Cycle 1 (A_ prefix) matches
+            prompt_matches_c2 = {}  # Cycle 2 (B_ prefix) matches
+
             for arc_name, prompts in data.get('results', {}).items():
-                arc_matches[arc_name] = []
                 for prompt_data in prompts:
                     prompt_num = prompt_data.get('prompt_number')
                     matches = prompt_data.get('matches', [])
                     if matches:
-                        # Add all matches with metadata
+                        key = (arc_name, prompt_num)
+                        prompt_matches_c1[key] = []
+                        prompt_matches_c2[key] = []
+
                         for match in matches:
-                            arc_matches[arc_name].append({
+                            match_data = {
                                 'match': match,
                                 'prompt_num': prompt_num,
                                 'arc_name': arc_name
-                            })
+                            }
+                            cycle = get_cycle(match['filename'])
+                            if cycle == 1:
+                                prompt_matches_c1[key].append(match_data)
+                            elif cycle == 2:
+                                prompt_matches_c2[key].append(match_data)
+                            else:
+                                # No prefix - add to both pools
+                                prompt_matches_c1[key].append(match_data)
+                                prompt_matches_c2[key].append(match_data)
 
-            # Calculate how much duration per arc (equal distribution)
-            num_arcs = len(arc_matches)
-            duration_per_arc = target_seconds / num_arcs if num_arcs > 0 else target_seconds
+            # Sort keys for consistent ordering: by arc, then by prompt number
+            sorted_prompt_keys = sorted(
+                set(prompt_matches_c1.keys()) | set(prompt_matches_c2.keys()),
+                key=lambda x: (x[0], x[1])
+            )
+            num_prompts = len(sorted_prompt_keys)
+            num_arcs = len(set(k[0] for k in sorted_prompt_keys))
 
-            console.print(f"[cyan]Distributing ~{duration_per_arc / 60:.1f} minutes per arc[/cyan]\n")
+            console.print(f"[cyan]Distributing songs evenly across {num_prompts} prompts in {num_arcs} arcs (both cycles)[/cyan]\n")
 
-            # Select songs for each arc
-            for arc_name, matches in arc_matches.items():
-                arc_duration = 0
-                match_index = 0
+            # Track indices for each (arc, prompt) pair per cycle
+            prompt_indices_c1 = {key: 0 for key in sorted_prompt_keys}
+            prompt_indices_c2 = {key: 0 for key in sorted_prompt_keys}
+            prompt_counts = {key: 0 for key in sorted_prompt_keys}
+            arc_counts = {}
+            cycle_counts = {1: 0, 2: 0}
 
-                # Keep adding songs until we hit the arc's duration target
-                while arc_duration < duration_per_arc and match_index < len(matches):
-                    match_data = matches[match_index]
-                    match = match_data['match']
-                    prompt_num = match_data['prompt_num']
+            # Round-robin selection: alternate between cycles, then across prompts
+            # This ensures: Cycle 1 gets one from each prompt, then Cycle 2 gets one from each prompt, repeat
+            exhausted_c1 = set()
+            exhausted_c2 = set()
 
-                    filename = match['filename']
-                    duration = match.get('duration', 180)  # Default 3 min if unknown
+            while current_duration < target_seconds:
+                progress_this_round = False
 
-                    # Find the song in database to get file path
-                    song = db.get_song_by_filename(filename)
-                    if song and song.file_path:
-                        source_path = Path(song.file_path)
-                        if source_path.exists():
-                            songs_to_copy.append((source_path, filename, prompt_num, arc_name, duration))
-                            arc_duration += duration
-                            current_duration += duration
-                        else:
-                            console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
+                # Cycle 1 round: try to select one Cycle 1 song from each prompt
+                for prompt_key in sorted_prompt_keys:
+                    if current_duration >= target_seconds:
+                        break
+                    if prompt_key in exhausted_c1:
+                        continue
 
-                    match_index += 1
+                    arc_name, prompt_num = prompt_key
+                    matches = prompt_matches_c1.get(prompt_key, [])
+                    match_index = prompt_indices_c1[prompt_key]
 
-            console.print(f"[cyan]Selected {len(songs_to_copy)} songs totaling {current_duration / 60:.1f} minutes[/cyan]\n")
+                    found_song = False
+                    while match_index < len(matches) and not found_song:
+                        match_data = matches[match_index]
+                        match = match_data['match']
+                        filename = match['filename']
+                        duration = match.get('duration', 180)
 
-        else:
-            # Original behavior: take best match per prompt
-            for arc_name, prompts in data.get('results', {}).items():
-                for prompt_data in prompts:
-                    prompt_num = prompt_data.get('prompt_number')
-                    matches = prompt_data.get('matches', [])
-
-                    if matches:
-                        # Take the best match
-                        best_match = matches[0]
-                        filename = best_match['filename']
-                        duration = best_match.get('duration', 180)
-
-                        # Find the song in database to get file path
                         song = db.get_song_by_filename(filename)
+                        skip, skip_reason = should_skip_song(song)
+                        match_index += 1
+
+                        if skip:
+                            skipped_count += 1
+                            continue
+
                         if song and song.file_path:
                             source_path = Path(song.file_path)
                             if source_path.exists():
                                 songs_to_copy.append((source_path, filename, prompt_num, arc_name, duration))
+                                prompt_counts[prompt_key] += 1
+                                arc_counts[arc_name] = arc_counts.get(arc_name, 0) + 1
+                                cycle_counts[1] += 1
+                                current_duration += duration
+                                found_song = True
+                                progress_this_round = True
                             else:
                                 console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
+                                continue
+
+                    prompt_indices_c1[prompt_key] = match_index
+                    if match_index >= len(matches):
+                        exhausted_c1.add(prompt_key)
+
+                # Cycle 2 round: try to select one Cycle 2 song from each prompt
+                for prompt_key in sorted_prompt_keys:
+                    if current_duration >= target_seconds:
+                        break
+                    if prompt_key in exhausted_c2:
+                        continue
+
+                    arc_name, prompt_num = prompt_key
+                    matches = prompt_matches_c2.get(prompt_key, [])
+                    match_index = prompt_indices_c2[prompt_key]
+
+                    found_song = False
+                    while match_index < len(matches) and not found_song:
+                        match_data = matches[match_index]
+                        match = match_data['match']
+                        filename = match['filename']
+                        duration = match.get('duration', 180)
+
+                        song = db.get_song_by_filename(filename)
+                        skip, skip_reason = should_skip_song(song)
+                        match_index += 1
+
+                        if skip:
+                            skipped_count += 1
+                            continue
+
+                        if song and song.file_path:
+                            source_path = Path(song.file_path)
+                            if source_path.exists():
+                                songs_to_copy.append((source_path, filename, prompt_num, arc_name, duration))
+                                prompt_counts[prompt_key] += 1
+                                arc_counts[arc_name] = arc_counts.get(arc_name, 0) + 1
+                                cycle_counts[2] += 1
+                                current_duration += duration
+                                found_song = True
+                                progress_this_round = True
+                            else:
+                                console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
+                                continue
+
+                    prompt_indices_c2[prompt_key] = match_index
+                    if match_index >= len(matches):
+                        exhausted_c2.add(prompt_key)
+
+                # If no progress was made this round, all prompts in both cycles are exhausted
+                if not progress_this_round:
+                    break
+
+            console.print(f"[cyan]Selected {len(songs_to_copy)} songs totaling {current_duration / 60:.1f} minutes (skipped {skipped_count})[/cyan]")
+            console.print(f"[dim]Arc distribution: {', '.join([f'{arc}: {count}' for arc, count in sorted(arc_counts.items())])}[/dim]")
+            console.print(f"[dim]Cycle distribution: Cycle 1 (A_): {cycle_counts[1]}, Cycle 2 (B_): {cycle_counts[2]}[/dim]")
+
+            # Show prompt distribution summary
+            prompts_with_songs = sum(1 for c in prompt_counts.values() if c > 0)
+            console.print(f"[dim]Prompt coverage: {prompts_with_songs}/{num_prompts} prompts have at least one song[/dim]\n")
+
+        else:
+            # Original behavior: take best match per prompt, with filtering
+            for arc_name, prompts in data.get('results', {}).items():
+                for prompt_data in prompts:
+                    prompt_num = prompt_data.get('prompt_number')
+                    matches = prompt_data.get('matches', [])
+
+                    if matches:
+                        # Find the first unfiltered match
+                        selected = False
+                        for match in matches:
+                            filename = match['filename']
+                            duration = match.get('duration', 180)
+
+                            # Find the song in database to get file path
+                            song = db.get_song_by_filename(filename)
+
+                            # Apply filters
+                            skip, skip_reason = should_skip_song(song)
+
+                            if skip:
+                                skipped_count += 1
+                                continue
+
+                            if song and song.file_path:
+                                source_path = Path(song.file_path)
+                                if source_path.exists():
+                                    songs_to_copy.append((source_path, filename, prompt_num, arc_name, duration))
+                                    selected = True
+                                    break
+                                else:
+                                    console.print(f"[yellow]⚠️  Source file not found: {source_path}[/yellow]")
 
         if not songs_to_copy:
-            console.print("[yellow]No songs to copy. All prompts need new generation.[/yellow]\n")
+            console.print(f"[yellow]No songs available after filtering (skipped {skipped_count} songs).[/yellow]")
+            console.print("[yellow]Consider relaxing filters or generating new songs.[/yellow]\n")
             return
 
-        console.print(f"[cyan]Found {len(songs_to_copy)} songs to {'copy' if copy else 'move'}[/cyan]\n")
+        if skipped_count > 0:
+            console.print(f"[dim]Skipped {skipped_count} songs due to filters[/dim]\n")
+
+        console.print(f"[cyan]{len(songs_to_copy)} songs to {'copy' if copy else 'move'}[/cyan]\n")
 
         # Copy/move files
         copied_count = 0
@@ -834,6 +1229,15 @@ def prepare_render(
 
                 copied_count += 1
                 console.print(f"  ✓ {filename} ({arc_name}, prompt {prompt_num})")
+
+                # Update usage tracking
+                song = db.get_song_by_filename(filename)
+                if song:
+                    db.update_song_usage_on_prepare(
+                        song_id=song.id,
+                        track_id=str(track),
+                        timestamp=datetime.now()
+                    )
 
             except Exception as e:
                 console.print(f"  [red]✗ Failed to copy {filename}: {e}[/red]")
@@ -929,6 +1333,7 @@ def render(
     duration: str = typer.Option("auto", "--duration", "-d", help="Duration: 'auto', 'test' (5min), or hours (e.g., '1', '0.5', '3')"),
     volume_boost: float = typer.Option(1.75, "--volume", "-v", help="Volume multiplier"),
     crossfade_duration: int = typer.Option(5, "--crossfade", help="Crossfade duration in seconds"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Custom output path (default: auto-generated in ./output/)"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
     """Render track by concatenating songs with crossfades over looping background video."""
@@ -967,26 +1372,35 @@ def render(
         bg_video = track_dir / "Video" / f"{track}.mp4"
         songs_dir = track_dir / "Songs"
         image_dir = track_dir / "Image"
+        folder_1_dir = track_dir / "1"
+        folder_2_dir = track_dir / "2"
 
         # Create timestamped output directory
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_dir = Path(f"Rendered/{track}/output_{timestamp}")
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Create filename from database field or sanitized title
+        # Use filename from Notion doc, or fall back to sanitized title, or generic name
         if output_filename:
             # Use the filename from Notion doc (already formatted)
-            # Ensure it ends with .mp4
             if not output_filename.endswith('.mp4'):
                 output_filename = f"{output_filename}.mp4"
-            output_file = output_dir / output_filename
+            final_filename = output_filename
         elif track_title:
             # Fallback: Sanitize title for filename
-            sanitized_title = re.sub(r'[^\w\s-]', '', track_title)
-            sanitized_title = re.sub(r'[-\s]+', '_', sanitized_title).strip('_')
-            output_file = output_dir / f"{sanitized_title}.mp4"
+            from src.render.filename_generator import sanitize_for_filename
+            sanitized_title = sanitize_for_filename(track_title)
+            final_filename = f"{sanitized_title}.mp4"
         else:
-            output_file = output_dir / "output.mp4"
+            final_filename = "output.mp4"
+
+        # Allow custom output path override
+        if output:
+            output_file = Path(output)
+        else:
+            output_file = output_dir / final_filename
+
+        console.print(f"[cyan]Output file:[/cyan] {output_file}\n")
 
         # Validate inputs
         if not bg_video.exists():
@@ -997,7 +1411,37 @@ def render(
             console.print(f"[red]❌ Songs directory not found: {songs_dir}[/red]\n")
             raise typer.Exit(1)
 
-        # Find all MP3 files
+        # Prepend files from folders 1 and 2 into Songs
+        console.print("[cyan]Prepending audio files from folders 1 and 2...[/cyan]")
+
+        files_moved = 0
+
+        # Move files from folder 1/ with A_ prefix into Songs/
+        if folder_1_dir.exists():
+            folder_1_files = sorted(folder_1_dir.glob("*.mp3"))
+            for audio_file in folder_1_files:
+                dest_name = f"A_{audio_file.name}"
+                dest_path = songs_dir / dest_name
+                shutil.move(str(audio_file), str(dest_path))
+                files_moved += 1
+            if folder_1_files:
+                console.print(f"[green]✓[/green] Moved {len(folder_1_files)} files from folder 1/ to Songs/ with A_ prefix")
+
+        # Move files from folder 2/ with B_ prefix into Songs/
+        if folder_2_dir.exists():
+            folder_2_files = sorted(folder_2_dir.glob("*.mp3"))
+            for audio_file in folder_2_files:
+                dest_name = f"B_{audio_file.name}"
+                dest_path = songs_dir / dest_name
+                shutil.move(str(audio_file), str(dest_path))
+                files_moved += 1
+            if folder_2_files:
+                console.print(f"[green]✓[/green] Moved {len(folder_2_files)} files from folder 2/ to Songs/ with B_ prefix")
+
+        if files_moved > 0:
+            console.print(f"[cyan]Total files prepended:[/cyan] {files_moved}\n")
+
+        # Find all MP3 files in Songs directory
         mp3_files = sorted(songs_dir.glob("*.mp3"))
 
         if not mp3_files:
@@ -1008,10 +1452,26 @@ def render(
         console.print(f"[cyan]Songs directory:[/cyan] {songs_dir}")
         console.print(f"[cyan]Found {len(mp3_files)} songs[/cyan]\n")
 
-        # Get duration of each song using ffprobe
-        console.print("[cyan]Analyzing song durations...[/cyan]")
+        # Get arc names from database
+        arc_names = {}
+        try:
+            db_temp = Database()
+            songs = db_temp.get_all_songs()
+            for song in songs:
+                if song.arc_number and song.arc_name:
+                    arc_names[song.arc_number] = song.arc_name
+            db_temp.close()
+        except Exception as e:
+            logger.warning(f"Could not load arc names: {e}")
+
+        # Get duration of each song using ffprobe and track chapters
+        console.print("[cyan]Analyzing song durations and generating chapters...[/cyan]")
         song_durations = []
         total_songs_duration = 0
+        chapters = []  # List of (timestamp, arc_num, arc_name, group) tuples
+        current_time = 0
+        last_arc = None
+        last_group = None
 
         for song_file in mp3_files:
             result = subprocess.run(
@@ -1024,6 +1484,44 @@ def render(
             dur_int = int(dur)
             song_durations.append(dur_int)
             total_songs_duration += dur_int
+
+            # Parse filename to extract arc info
+            # Format: [A/B]_[arc]_[prompt]_[track][variant].mp3
+            filename = song_file.name
+
+            # Determine group (A_, B_, or neither)
+            if filename.startswith('A_'):
+                group = 'Group 1'
+                parts = filename[2:].split('_')  # Remove A_ prefix
+            elif filename.startswith('B_'):
+                group = 'Group 2'
+                parts = filename[2:].split('_')  # Remove B_ prefix
+            else:
+                group = None
+                parts = filename.split('_')
+
+            # Try to extract arc number (second element after splitting)
+            try:
+                arc_num = int(parts[0]) if parts else None
+            except (ValueError, IndexError):
+                arc_num = None
+
+            # Add chapter marker when group or arc changes
+            if group and group != last_group:
+                chapters.append((current_time, None, None, group))
+                last_group = group
+                last_arc = None  # Reset arc tracking for new group
+
+            if arc_num is not None and arc_num != last_arc:
+                arc_name = arc_names.get(arc_num, f"Arc {arc_num}")
+                chapters.append((current_time, arc_num, arc_name, group))
+                last_arc = arc_num
+
+            # Update current time (with crossfade adjustment after first song)
+            if len(song_durations) > 1:
+                current_time += dur_int - crossfade_duration
+            else:
+                current_time += dur_int
 
         # Calculate target duration
         if duration == "test":
@@ -1156,6 +1654,156 @@ def render(
                     console.print(f"[yellow]⚠[/yellow] Could not copy Image folder: {e}")
             else:
                 console.print(f"[yellow]⚠[/yellow] No Image folder found at {image_dir}")
+
+            # Generate chapters file with multiple timestamp formats
+            if chapters:
+                def format_hms(seconds):
+                    """Format as HH:MM:SS"""
+                    hours = seconds // 3600
+                    minutes = (seconds % 3600) // 60
+                    secs = seconds % 60
+                    return f"{hours:02d}:{minutes:02d}:{secs:02d}"
+
+                def format_ms(seconds):
+                    """Format as MM:SS"""
+                    minutes = seconds // 60
+                    secs = seconds % 60
+                    return f"{minutes:02d}:{secs:02d}"
+
+                def format_youtube(seconds):
+                    """Format for YouTube (HH:MM:SS or MM:SS)"""
+                    if seconds >= 3600:
+                        return format_hms(seconds)
+                    else:
+                        return format_ms(seconds)
+
+                chapters_file = output_dir / "chapters.txt"
+                with open(chapters_file, 'w') as f:
+                    f.write("# Track Chapters and Timestamps\n")
+                    f.write("# Multiple formats for convenience\n\n")
+
+                    f.write("=" * 80 + "\n")
+                    f.write("YOUTUBE FORMAT (Copy to video description)\n")
+                    f.write("=" * 80 + "\n")
+                    for timestamp, arc_num, arc_name, group in chapters:
+                        if arc_num is not None and arc_name:
+                            label = f"Arc {arc_num}: {arc_name}"
+                            if group:
+                                label = f"{group} - {label}"
+                        elif group:
+                            label = group
+                        else:
+                            continue
+                        f.write(f"{format_youtube(timestamp)} {label}\n")
+
+                    f.write("\n" + "=" * 80 + "\n")
+                    f.write("DETAILED FORMAT\n")
+                    f.write("=" * 80 + "\n")
+                    f.write(f"{'Arc #':<8} {'Arc Name':<30} {'HH:MM:SS':<12} {'MM:SS':<10} {'Seconds':<10} {'Group'}\n")
+                    f.write("-" * 80 + "\n")
+                    for timestamp, arc_num, arc_name, group in chapters:
+                        if arc_num is not None:
+                            arc_display = str(arc_num)
+                            name_display = arc_name or ""
+                            group_display = group or ""
+                            f.write(f"{arc_display:<8} {name_display:<30} {format_hms(timestamp):<12} {format_ms(timestamp):<10} {timestamp:<10} {group_display}\n")
+
+                console.print(f"[green]✓[/green] Generated chapters file: {chapters_file}")
+                console.print(f"[cyan]Preview (YouTube format):[/cyan]")
+                count = 0
+                for timestamp, arc_num, arc_name, group in chapters:
+                    if arc_num is not None and count < 10:
+                        label = f"Arc {arc_num}: {arc_name}" if arc_name else f"Arc {arc_num}"
+                        if group:
+                            label = f"{group} - {label}"
+                        console.print(f"  {format_youtube(timestamp)} {label}")
+                        count += 1
+                if count < len([c for c in chapters if c[1] is not None]):
+                    remaining = len([c for c in chapters if c[1] is not None]) - count
+                    console.print(f"  ... and {remaining} more")
+
+                # Generate YouTube description
+                console.print(f"\n[cyan]Generating YouTube description...[/cyan]")
+                try:
+                    from ..ingest.notion_parser import NotionParser
+                    config = get_config(config_path)
+
+                    # Get track from database to fetch Notion URL
+                    db_desc = Database(config.database_path)
+                    track_record = db_desc.get_track_by_number(track)
+
+                    if track_record and track_record.notion_url:
+                        # Parse Notion document
+                        notion_parser = NotionParser(config.notion_api_token)
+                        metadata = notion_parser.parse_notion_doc(track_record.notion_url)
+
+                        # Build chapter lines for YouTube description
+                        chapter_lines = []
+                        for timestamp, arc_num, arc_name, group in chapters:
+                            if arc_num is not None and arc_name:
+                                # Determine cycle from group
+                                if group:
+                                    # Extract group number (e.g., "Group 1" -> "1")
+                                    import re
+                                    group_match = re.search(r'(\d+)', group)
+                                    if group_match:
+                                        group_num = int(group_match.group(1))
+                                        cycle = "I" if group_num == 1 else "II"
+                                        chapter_title = f"{arc_name} - Cycle {cycle}"
+                                    else:
+                                        # Fallback if group format is unexpected
+                                        chapter_title = f"{arc_name}"
+                                else:
+                                    # No group information
+                                    chapter_title = f"{arc_name}"
+
+                                chapter_lines.append(f"{format_youtube(timestamp)} {chapter_title}")
+
+                        # Build description content
+                        description_lines = []
+
+                        # Use the full description from Notion (already includes opening paragraphs,
+                        # "Best for:", "Aesthetic:", etc.)
+                        if metadata.vibe_description:
+                            description_lines.append(metadata.vibe_description)
+                            description_lines.append("")
+                        else:
+                            # Fallback if description not in Notion doc
+                            description_lines.append("This 3-hour mix is designed for deep focus, coding, studying, and creative work.")
+                            description_lines.append("")
+                            description_lines.append("Best for:")
+                            description_lines.append("Late-night coding and development")
+                            description_lines.append("Studying and deep focus")
+                            description_lines.append("Writing and creative work")
+                            description_lines.append("Quiet productivity")
+                            description_lines.append("")
+
+                        # Add chapters
+                        description_lines.append("Chapters")
+                        description_lines.extend(chapter_lines)
+                        description_lines.append("")
+
+                        # Add visible hashtags
+                        hashtags = " ".join(metadata.visible_hashtags)
+                        description_lines.append(hashtags)
+
+                        # Save to output folder
+                        description_file = output_dir / "youtube-description.txt"
+                        description_file.write_text("\n".join(description_lines), encoding='utf-8')
+
+                        console.print(f"[green]✓[/green] Generated YouTube description: {description_file}")
+
+                    else:
+                        console.print(f"[yellow]⚠[/yellow] Could not generate description - track not found in database or missing Notion URL")
+
+                    db_desc.close()
+
+                except Exception as e:
+                    logger.warning(f"Could not generate YouTube description: {e}")
+                    console.print(f"[yellow]⚠[/yellow] Could not generate YouTube description: {e}")
+
+            else:
+                console.print(f"[yellow]⚠[/yellow] No chapters generated")
         else:
             console.print(f"\n[bold red]❌ Render failed with exit code {result.returncode}[/bold red]\n")
             raise typer.Exit(1)
@@ -1492,6 +2140,412 @@ def stats(
 
 
 @app.command()
+def audit_usage(
+    base_dir: str = typer.Option("./Tracks", "--base-dir", "-b", help="Base directory containing track folders"),
+    dry_run: bool = typer.Option(False, "--dry-run", "-d", help="Preview without updating database"),
+    config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
+):
+    """Audit song usage by scanning all track folders and updating database."""
+    try:
+        from pathlib import Path
+        from collections import defaultdict
+        from rich.table import Table
+        from rich.progress import Progress, SpinnerColumn, TextColumn
+
+        config = get_config(config_path)
+        db = Database(config.database_path)
+
+        console.print("\n[bold blue]🔍 Auditing Song Usage[/bold blue]\n")
+
+        tracks_dir = Path(base_dir)
+        if not tracks_dir.exists():
+            console.print(f"[bold red]❌ Directory not found: {base_dir}[/bold red]\n")
+            raise typer.Exit(1)
+
+        # Find all track folders
+        track_folders = []
+        for item in tracks_dir.iterdir():
+            if item.is_dir() and item.name.isdigit():
+                track_num = int(item.name)
+                # Exclude track numbers >= 999 (test tracks)
+                if track_num < 999:
+                    track_folders.append((track_num, item))
+
+        if not track_folders:
+            console.print(f"[yellow]No track folders found in {base_dir}[/yellow]\n")
+            return
+
+        # Sort by track number
+        track_folders.sort(key=lambda x: x[0])
+        highest_track = track_folders[-1][0]
+
+        console.print(f"[cyan]Found {len(track_folders)} tracks (highest: Track {highest_track})[/cyan]")
+        console.print(f"[cyan]Scanning Songs folders...[/cyan]\n")
+
+        # Build usage map: song_filename -> [(track_num, track_id), ...]
+        song_usage = defaultdict(list)
+        tracks_scanned = 0
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console
+        ) as progress:
+            task = progress.add_task("Scanning tracks...", total=len(track_folders))
+
+            for track_num, track_path in track_folders:
+                songs_dir = track_path / "Songs"
+                if not songs_dir.exists():
+                    progress.update(task, advance=1)
+                    continue
+
+                # Scan for audio files
+                audio_files = []
+                for ext in ['*.mp3', '*.wav', '*.m4a']:
+                    audio_files.extend(songs_dir.glob(ext))
+
+                for audio_file in audio_files:
+                    filename = audio_file.name
+                    track_id = str(track_num)
+                    song_usage[filename].append((track_num, track_id))
+
+                tracks_scanned += 1
+                progress.update(task, advance=1)
+
+        console.print(f"[green]✓[/green] Scanned {tracks_scanned} track folders\n")
+
+        # Summary statistics
+        total_unique_songs = len(song_usage)
+        total_usages = sum(len(usages) for usages in song_usage.values())
+
+        console.print(f"[cyan]Found {total_unique_songs} unique songs with {total_usages} total usages[/cyan]\n")
+
+        if dry_run:
+            console.print("[yellow]DRY RUN - No changes will be made to database[/yellow]\n")
+
+        # Build update plan
+        songs_to_update = []
+        songs_not_in_db = []
+
+        for filename, usages in song_usage.items():
+            song = db.get_song_by_filename(filename)
+
+            if not song:
+                songs_not_in_db.append(filename)
+                continue
+
+            # Get most recent usage
+            usages_sorted = sorted(usages, key=lambda x: x[0], reverse=True)
+            most_recent_track_num, most_recent_track_id = usages_sorted[0]
+            times_used = len(usages)
+            tracks_ago = highest_track - most_recent_track_num
+
+            songs_to_update.append({
+                'song': song,
+                'filename': filename,
+                'current_times_used': song.times_used,
+                'actual_times_used': times_used,
+                'current_last_track': song.last_used_track_id,
+                'actual_last_track': most_recent_track_id,
+                'tracks_ago': tracks_ago,
+                'tracks_used_in': [t[0] for t in usages_sorted]
+            })
+
+        # Show songs not in database
+        if songs_not_in_db:
+            console.print(f"[yellow]⚠️  {len(songs_not_in_db)} songs found in track folders but not in database:[/yellow]")
+            for filename in songs_not_in_db[:10]:
+                console.print(f"  • {filename}")
+            if len(songs_not_in_db) > 10:
+                console.print(f"  ... and {len(songs_not_in_db) - 10} more")
+            console.print()
+
+        # Show discrepancies
+        discrepancies = [s for s in songs_to_update if s['current_times_used'] != s['actual_times_used']]
+
+        if discrepancies:
+            console.print(f"[bold yellow]Found {len(discrepancies)} songs with incorrect usage counts:[/bold yellow]\n")
+
+            table = Table(show_header=True, header_style="bold cyan")
+            table.add_column("Filename", style="white", no_wrap=False)
+            table.add_column("DB Count", justify="right", style="red")
+            table.add_column("Actual", justify="right", style="green")
+            table.add_column("Last Track", style="cyan")
+            table.add_column("Tracks Ago", justify="right", style="yellow")
+
+            # Show first 20 discrepancies
+            for item in discrepancies[:20]:
+                table.add_row(
+                    item['filename'],
+                    str(item['current_times_used']),
+                    str(item['actual_times_used']),
+                    f"Track {item['actual_last_track']}",
+                    str(item['tracks_ago'])
+                )
+
+            console.print(table)
+
+            if len(discrepancies) > 20:
+                console.print(f"\n[dim]... and {len(discrepancies) - 20} more discrepancies[/dim]")
+
+            console.print()
+
+        # Update database
+        if not dry_run:
+            console.print("[cyan]Updating database...[/cyan]\n")
+
+            updated_count = 0
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                console=console
+            ) as progress:
+                task = progress.add_task("Updating songs...", total=len(songs_to_update))
+
+                for item in songs_to_update:
+                    song = item['song']
+
+                    # Update usage fields
+                    cursor = db.conn.cursor()
+                    cursor.execute("""
+                        UPDATE songs
+                        SET times_used = ?,
+                            last_used_track_id = ?,
+                            updated_at = CURRENT_TIMESTAMP
+                        WHERE id = ?
+                    """, (
+                        item['actual_times_used'],
+                        item['actual_last_track'],
+                        song.id
+                    ))
+
+                    updated_count += 1
+                    progress.update(task, advance=1)
+
+                db.conn.commit()
+
+            console.print(f"[bold green]✅ Updated {updated_count} songs in database[/bold green]\n")
+
+        else:
+            console.print(f"[dim]Would update {len(songs_to_update)} songs[/dim]\n")
+
+        # Show summary of most used songs
+        if songs_to_update:
+            console.print("[bold]Top 10 Most Used Songs:[/bold]\n")
+
+            most_used = sorted(songs_to_update, key=lambda x: x['actual_times_used'], reverse=True)[:10]
+
+            table = Table(show_header=True, header_style="bold cyan")
+            table.add_column("Filename", style="white")
+            table.add_column("Times Used", justify="right", style="magenta")
+            table.add_column("Last Used", style="cyan")
+            table.add_column("Tracks Ago", justify="right", style="yellow")
+
+            for item in most_used:
+                table.add_row(
+                    item['filename'],
+                    str(item['actual_times_used']),
+                    f"Track {item['actual_last_track']}",
+                    str(item['tracks_ago'])
+                )
+
+            console.print(table)
+            console.print()
+
+        db.close()
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error auditing usage")
+        raise typer.Exit(1)
+
+
+@app.command()
+def generate_description(
+    track: int = typer.Option(..., "--track", "-t", help="Track number"),
+    notion_url: Optional[str] = typer.Option(None, "--notion-url", "-n", help="Notion document URL (optional if track exists in DB)"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Output file path"),
+    config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
+):
+    """Generate formatted YouTube description with chapters."""
+    try:
+        from pathlib import Path
+        from ..ingest.notion_parser import NotionParser
+        from ..ingest.audio_analyzer import AudioAnalyzer
+
+        config = get_config(config_path)
+        db = Database(config.database_path)
+
+        console.print("\n[bold blue]📝 Generating YouTube Description[/bold blue]\n")
+
+        # Get notion URL from database if not provided
+        if not notion_url:
+            track_record = db.get_track_by_number(track)
+            if track_record and track_record.notion_url:
+                notion_url = track_record.notion_url
+                console.print(f"[dim]Using Notion URL from database[/dim]")
+            else:
+                console.print("[bold red]❌ No Notion URL provided and track not found in database[/bold red]\n")
+                console.print("Use --notion-url to specify the Notion document URL\n")
+                raise typer.Exit(1)
+
+        console.print(f"Track: {track}")
+        console.print(f"Notion URL: {notion_url}\n")
+
+        # Parse Notion document
+        console.print("[cyan]Parsing Notion document...[/cyan]")
+        notion_parser = NotionParser(config.notion_api_token)
+        metadata = notion_parser.parse_notion_doc(notion_url)
+
+        console.print(f"[green]✓[/green] Loaded: {metadata.title}")
+        console.print(f"[green]✓[/green] Found {len(metadata.chapter_titles)} chapter titles\n")
+
+        # Scan track Songs folder to calculate arc durations
+        track_dir = Path(f"./Tracks/{track}")
+        songs_dir = track_dir / "Songs"
+
+        if not songs_dir.exists():
+            console.print(f"[bold red]❌ Songs directory not found: {songs_dir}[/bold red]\n")
+            console.print("Run prepare-render first to populate the Songs folder\n")
+            raise typer.Exit(1)
+
+        console.print("[cyan]Analyzing song durations...[/cyan]")
+
+        # Get all audio files sorted by filename
+        audio_files = []
+        for ext in ['*.mp3', '*.wav', '*.m4a']:
+            audio_files.extend(songs_dir.glob(ext))
+
+        audio_files = sorted(audio_files, key=lambda f: f.name)
+
+        if not audio_files:
+            console.print(f"[bold red]❌ No audio files found in {songs_dir}[/bold red]\n")
+            raise typer.Exit(1)
+
+        console.print(f"[green]✓[/green] Found {len(audio_files)} songs\n")
+
+        # Calculate cumulative durations and arc transitions
+        analyzer = AudioAnalyzer()
+        arc_start_times = []
+        current_time = 0.0
+        current_arc = None
+        cycle_num = 1  # Track which cycle we're in
+
+        for audio_file in audio_files:
+            # Parse arc number from filename (e.g., A_1_2_36a.mp3 -> arc 1)
+            filename = audio_file.name
+            parts = filename.replace('.mp3', '').replace('.wav', '').replace('.m4a', '').split('_')
+
+            if len(parts) >= 2:
+                try:
+                    # Remove A_ or B_ prefix if present
+                    arc_idx = 0 if parts[0].isdigit() else 1
+                    arc_num = int(parts[arc_idx])
+
+                    # Detect cycle transition (when arc goes back to 1 after reaching 4)
+                    if current_arc is not None and arc_num == 1 and current_arc > arc_num:
+                        cycle_num += 1
+
+                    # Track when we transition to a new arc
+                    if arc_num != current_arc:
+                        arc_start_times.append((arc_num, current_time, cycle_num))
+                        current_arc = arc_num
+                except ValueError:
+                    pass
+
+            # Add this song's duration
+            try:
+                analysis = analyzer.analyze(str(audio_file))
+                current_time += analysis.duration_seconds
+            except Exception as e:
+                logger.warning(f"Could not analyze {audio_file.name}: {e}")
+                # Default to 3 minutes if analysis fails
+                current_time += 180
+
+        console.print(f"[cyan]Total duration: {int(current_time / 60)} minutes[/cyan]\n")
+
+        # Format timestamps
+        def format_timestamp(seconds):
+            """Convert seconds to HH:MM:SS or MM:SS format."""
+            hours = int(seconds // 3600)
+            minutes = int((seconds % 3600) // 60)
+            secs = int(seconds % 60)
+
+            if hours > 0:
+                return f"{hours}:{minutes:02d}:{secs:02d}"
+            else:
+                return f"{minutes:02d}:{secs:02d}"
+
+        # Build arc name map from metadata
+        arc_name_map = {}
+        for arc in metadata.arcs:
+            arc_name_map[arc.arc_number] = arc.arc_name
+
+        # Generate chapters with proper formatting
+        chapters = []
+        for arc_num, start_time, cycle in arc_start_times:
+            timestamp = format_timestamp(start_time)
+            arc_name = arc_name_map.get(arc_num, f"Arc {arc_num}")
+            cycle_roman = "I" if cycle == 1 else "II"
+            chapter_title = f"{arc_name} - Cycle {cycle_roman}"
+            chapters.append(f"{timestamp} {chapter_title}")
+
+        # Build the description
+        description_lines = []
+
+        # Use the full description from Notion (already includes opening paragraphs,
+        # "Best for:", "Aesthetic:", etc.)
+        if metadata.vibe_description:
+            description_lines.append(metadata.vibe_description)
+            description_lines.append("")
+        else:
+            # Fallback if description not in Notion doc
+            description_lines.append("This 3-hour mix is designed for deep focus, coding, studying, and creative work.")
+            description_lines.append("")
+            description_lines.append("Best for:")
+            description_lines.append("Late-night coding and development")
+            description_lines.append("Studying and deep focus")
+            description_lines.append("Writing and creative work")
+            description_lines.append("Quiet productivity")
+            description_lines.append("")
+
+        # Add chapters
+        description_lines.append("Chapters")
+        description_lines.extend(chapters)
+        description_lines.append("")
+
+        # Add visible hashtags
+        hashtags = " ".join(metadata.visible_hashtags)
+        description_lines.append(hashtags)
+
+        # Write to file
+        if output is None:
+            output = track_dir / "youtube-description.txt"
+        else:
+            output = Path(output)
+
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text("\n".join(description_lines), encoding='utf-8')
+
+        console.print(f"[bold green]✅ Generated description![/bold green]")
+        console.print(f"Saved to: {output}\n")
+
+        # Display preview
+        console.print("[bold]Preview:[/bold]\n")
+        console.print("\n".join(description_lines[:20]))
+        if len(description_lines) > 20:
+            console.print(f"\n[dim]... and {len(description_lines) - 20} more lines[/dim]")
+        console.print()
+
+        db.close()
+
+    except Exception as e:
+        console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
+        logger.exception("Error generating description")
+        raise typer.Exit(1)
+
+
+@app.command()
 def batch_import(
     folder_id: str = typer.Option(..., "--folder-id", "-f", help="Notion folder/page ID containing track pages"),
     base_dir: str = typer.Option("./Tracks", "--base-dir", "-d", help="Base directory for track folders"),
@@ -1509,7 +2563,10 @@ def batch_import(
         db = Database(config.database_path)
 
         console.print("\n[bold blue]📦 Batch Import from Notion Folder[/bold blue]\n")
-        console.print(f"Folder ID: {folder_id}")
+
+        # Extract Notion ID from URL if needed
+        notion_id = extract_notion_id(folder_id)
+        console.print(f"Folder ID: {notion_id}")
         console.print(f"Base directory: {base_dir}\n")
 
         # Initialize Notion client
@@ -1517,7 +2574,7 @@ def batch_import(
 
         # Get child pages from folder
         console.print("[cyan]Fetching track pages from Notion...[/cyan]")
-        blocks = client.blocks.children.list(block_id=folder_id)
+        blocks = client.blocks.children.list(block_id=notion_id)
 
         # Find all track pages
         track_pages = []

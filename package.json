@@ -16,13 +16,24 @@
     "stats": "source venv/bin/activate && python3 -m src.cli.main stats songs",
     "stats:songs": "source venv/bin/activate && python3 -m src.cli.main stats songs",
     "stats:tracks": "source venv/bin/activate && python3 -m src.cli.main stats tracks",
+    "audit-usage": "source venv/bin/activate && python3 -m src.cli.main audit-usage",
     "scaffold-track": "source venv/bin/activate && python3 -m src.cli.main scaffold-track",
     "track-duration": "source venv/bin/activate && python3 -m src.cli.main track-duration",
     "prepare-render": "source venv/bin/activate && python3 -m src.cli.main prepare-render",
     "render": "source venv/bin/activate && python3 -m src.cli.main render",
     "post-render": "source venv/bin/activate && python3 -m src.cli.main post-render",
+    "generate-description": "source venv/bin/activate && python3 -m src.cli.main generate-description",
     "publish": "source venv/bin/activate && python3 -m src.cli.main mark-published",
     "version": "source venv/bin/activate && python3 -m src.cli.main version",
-    "help": "source venv/bin/activate && python3 -m src.cli.main --help"
+    "help": "source venv/bin/activate && python3 -m src.cli.main --help",
+    "prepend": "python3 scripts/prepend_text.py",
+    "remove-prefix": "python3 scripts/remove_prefix.py",
+    "consolidate": "source venv/bin/activate && python3 scripts/consolidate_with_prefix.py",
+    "import-all": "python3 scripts/import_all_tracks.py",
+    "batch-import-folder": "source venv/bin/activate && python3 scripts/batch_import_from_notion.py",
+    "stage-rename": "source venv/bin/activate && python3 scripts/stage_and_rename.py",
+    "disperse": "source venv/bin/activate && python3 scripts/disperse_staging.py",
+    "process": "source venv/bin/activate && python3 scripts/disperse_and_consolidate.py",
+    "reset-test": "source venv/bin/activate && python3 scripts/reset_track.py"
   }
 }

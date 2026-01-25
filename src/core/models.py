@@ -127,6 +127,8 @@ class NotionTrackMetadata(BaseModel):
 
     arcs: List[NotionArc] = Field(..., min_length=1, max_length=4)
 
+    chapter_titles: List[str] = Field(default_factory=list, description="Chapter titles for YouTube description")
+
     raw_notion_content: Optional[Dict[str, Any]] = None
 
 
@@ -171,25 +173,32 @@ class Song(BaseModel):
     updated_at: datetime = Field(default_factory=datetime.now)
     times_used: int = Field(default=0)
 
+    # Usage tracking
+    last_used_track_id: Optional[str] = Field(None, description="Track ID where song was last used")
+    last_used_at: Optional[datetime] = Field(None, description="Timestamp of last usage")
+
     model_config = {"json_encoders": {datetime: lambda v: v.isoformat()}}
 
     @property
     def embedding_text(self) -> str:
-        """Generate text for embedding if combined_text not set."""
+        """Generate text for embedding if combined_text not set.
+
+        Format matches query embedding format for better similarity matching.
+        """
         if self.combined_text:
             return self.combined_text
 
         parts = []
         if self.prompt_text:
-            parts.append(self.prompt_text)
+            # Strip surrounding quotes for consistent embeddings
+            clean_prompt = self.prompt_text.strip().strip('"').strip("'")
+            parts.append(clean_prompt)
         if self.arc_name:
             parts.append(f"Arc: {self.arc_name}")
-        if self.track_title:
-            parts.append(f"Track: {self.track_title}")
+        # Use minimal metadata - prompt_text and arc are most important
+        # Removed track_title, mood_keywords to better match query format
         if self.vibe_tags:
             parts.append(f"Vibes: {', '.join(self.vibe_tags)}")
-        if self.mood_keywords:
-            parts.append(f"Mood: {', '.join(self.mood_keywords)}")
 
         return " | ".join(parts)
 

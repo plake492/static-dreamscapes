@@ -19,8 +19,8 @@ The LoFi Track Manager automates the discovery and reuse of songs from your exis
 ./setup.sh  # Or manual setup (see docs)
 
 # 2. Import existing tracks
-yarn import-songs --notion-url "TRACK_9_URL" --songs-dir "./Tracks/9/Songs"
-yarn import-songs --notion-url "TRACK_13_URL" --songs-dir "./Tracks/13/Songs"
+yarn import-songs --track 25 --notion-url "https://notion.so/..."
+yarn import-songs --track 25 --notion-url "https://notion.so/..."
 yarn generate-embeddings
 
 # 3. Query for new track
@@ -31,9 +31,10 @@ yarn gaps "./output/playlists/track-20.json"
 yarn scaffold-track --track-number 20 --notion-url "TRACK_20_URL"
 yarn prepare-render --track 20 --playlist "./output/playlists/track-20.json"
 
-# ... generate missing songs, render in DAW ...
+# 5. Generate missing songs (if needed), then render
+yarn render --track 20 --duration 3  # Automated FFmpeg rendering
 
-# 5. Import & publish
+# 6. Import & publish
 yarn post-render --track 20
 yarn generate-embeddings
 yarn publish --track 20 --youtube-url "https://youtube.com/watch?v=..."
@@ -48,9 +49,17 @@ yarn publish --track 20 --youtube-url "https://youtube.com/watch?v=..."
 - **[Complete Workflow](./docs/04-WORKFLOW.md)** - End-to-end track creation
 - **[Command Reference](./docs/05-COMMANDS.md)** - All commands with examples
 
+### Prompt Crafting & Templates
+- **[Prompt Crafting Guide](./docs/PROMPT_CRAFTING_GUIDE.md)** - How to write prompts for maximum semantic matching
+- **[Prompt Templates](./docs/PROMPT_TEMPLATES.md)** - Ready-to-use prompt sets for common themes
+  - Template 1: Neon Night / Rain / Coding Focus
+  - Template 2: Pre-Dawn / Sunrise / Calm Focus
+  - Template 3: Retro Tech / Analog Neutral
+
 ### Understanding the System
 - **[System Overview](./docs/07-SYSTEM-OVERVIEW.md)** - Architecture and technical details
 - **[Duplicate Prevention](./docs/06-DUPLICATES.md)** - How duplicates are handled
+- **[Database Reset & Rebuild](./docs/RESET_AND_REBUILD.md)** - Complete reset guide for template updates
 
 ### All Documentation
 See **[docs/README.md](./docs/README.md)** for complete documentation index.
@@ -61,10 +70,13 @@ See **[docs/README.md](./docs/README.md)** for complete documentation index.
 
 - **60-70% Song Reuse** - Dramatically reduce generation time
 - **Semantic Search** - AI-powered song matching with 384-dimensional embeddings
+- **Usage Tracking & Filtering** - Track song reuse, filter overused songs, prevent recent repetition
+- **Intelligent Filters** - Skip songs used in recent tracks or exceeding usage limits
+- **Prompt Templates** - Pre-validated prompt sets for consistent semantic matching (75-80% similarity)
+- **Semantic Consistency** - Standardized vocabulary ensures songs match across different tracks
 - **Multi-format Support** - Handles 3 different Notion document formats
 - **Audio Analysis** - Automatic BPM, key, duration detection with librosa
 - **Complete Workflow** - Query → Gaps → Prepare → Render → Publish
-- **Usage Tracking** - Know which songs are most valuable
 - **Duplicate Prevention** - Safe re-imports, no duplicates
 - **Beautiful CLI** - Rich terminal formatting
 
@@ -190,6 +202,12 @@ yarn prepare-render --track N --playlist "FILE"
 yarn post-render --track N
 yarn publish --track N --youtube-url "URL"
 
+# Usage Tracking & Filtering
+python3 scripts/backfill_usage_tracking.py  # Backfill existing usage data
+yarn prepare-render --track N --playlist "FILE" --skip-recent-tracks 2  # Skip songs used in last 2 tracks
+yarn prepare-render --track N --playlist "FILE" --max-usage 5  # Skip songs used more than 5 times
+yarn prepare-render --track N --playlist "FILE" --skip-recent-tracks 2 --max-usage 5  # Combine filters
+
 # Stats
 yarn stats
 yarn stats:tracks
@@ -216,13 +234,16 @@ yarn gaps "./output/playlists/track-20-matches.json"
 # Step 3: Scaffold track
 yarn scaffold-track --track-number 20 --notion-url "https://notion.so/Track-20"
 
-# Step 4: Prepare for rendering
+# Step 4: Prepare for rendering (with optional usage filters)
 yarn prepare-render --track 20 --playlist "./output/playlists/track-20-matches.json"
+# OR with filters to prevent overuse:
+# yarn prepare-render --track 20 --playlist "./output/playlists/track-20-matches.json" --skip-recent-tracks 2 --max-usage 5
 
-# Step 5: Generate missing songs (manual)
+# Step 5: Generate missing songs (if needed)
 # Use AI generator for gaps identified in Step 2
 
-# Step 6: Render in DAW (manual)
+# Step 6: Render video with automated FFmpeg
+yarn render --track 20 --duration 3  # 3-hour render
 
 # Step 7: Import rendered songs
 yarn post-render --track 20
@@ -305,9 +326,9 @@ yarn stats
 - Analytics dashboard with visual statistics
 - Export tools for Ableton, Logic, FL Studio
 - Web UI for browsing library
-- FFMPEG video rendering automation
 - YouTube API integration
 - Advanced mood/energy scoring
+- Auto-upload to YouTube with metadata
 
 ---
 

@@ -110,16 +110,15 @@ class EmbeddingGenerator:
         Returns:
             Embedding vector
         """
-        # Build combined text
+        # Build combined text - format matches Song.embedding_text property
+        # for better similarity matching
         text_parts = [
             prompt.prompt_text,
-            f"Arc: {arc_name}",
-            f"Theme: {track_theme}"
+            f"Arc: {arc_name}"
         ]
 
-        if prompt.tempo_hints:
-            text_parts.append(f"Tempo: {', '.join(prompt.tempo_hints)}")
-
+        # Removed theme and tempo to better match stored song format
+        # Only include vibes for consistency
         if prompt.vibe_hints:
             text_parts.append(f"Vibes: {', '.join(prompt.vibe_hints)}")
 

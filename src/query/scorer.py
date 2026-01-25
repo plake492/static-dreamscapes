@@ -82,6 +82,9 @@ class SongScorer:
         usage_penalty = self._compute_usage_penalty(song)
         usage_score = 1.0 - usage_penalty
 
+        # Clamp semantic_score to [0, 1] to avoid floating point precision errors
+        semantic_score = min(1.0, max(0.0, semantic_score))
+
         # Compute weighted final score
         final_score = (
             self.similarity_weight * semantic_score +

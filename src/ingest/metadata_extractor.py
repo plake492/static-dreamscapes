@@ -181,16 +181,13 @@ class MetadataExtractor:
             audio_path: Path to audio file
             track: Track this song belongs to
             notion_metadata: Notion metadata for matching prompts
-            force_reanalyze: Force re-analysis
+            force_reanalyze: Force re-analysis of audio (always updates Notion metadata)
 
         Returns:
             Song model or None if processing failed
         """
         # Check if song already exists
         existing_song = self.db.get_song_by_filename(audio_path.name)
-        if existing_song and not force_reanalyze:
-            logger.debug(f"Song already in database: {audio_path.name}")
-            return existing_song
 
         # Parse filename
         components = self.filename_parser.parse(audio_path.name)
@@ -198,14 +195,23 @@ class MetadataExtractor:
             logger.warning(f"Could not parse filename: {audio_path.name}")
             return None
 
-        # Find matching prompt from Notion
+        # Find matching prompt from Notion (always get fresh Notion data)
         prompt_info = self._find_matching_prompt(components, notion_metadata)
 
-        # Analyze audio
-        audio_analysis = self.audio_analyzer.analyze(audio_path)
-
-        # Build combined text for embedding
-        combined_text = self._build_combined_text(components, prompt_info, track, audio_analysis)
+        # Analyze audio (skip if exists and not force_reanalyze)
+        if existing_song and not force_reanalyze:
+            logger.debug(f"Using cached audio analysis for: {audio_path.name}")
+            # Reuse existing audio analysis
+            audio_analysis = type('AudioAnalysis', (), {
+                'duration_seconds': existing_song.duration_seconds,
+                'bpm': existing_song.bpm,
+                'key': existing_song.key,
+                'energy_level': existing_song.energy_level,
+                'tempo_category': existing_song.tempo_category
+            })()
+        else:
+            # Perform fresh audio analysis
+            audio_analysis = self.audio_analyzer.analyze(audio_path)
 
         # Extract vibe tags and mood keywords
         vibe_tags, mood_keywords = self._extract_tags_and_moods(prompt_info)
@@ -231,15 +237,18 @@ class MetadataExtractor:
             tempo_category=audio_analysis.tempo_category,
             vibe_tags=vibe_tags,
             mood_keywords=mood_keywords,
-            combined_text=combined_text
+            combined_text=None  # Clear cache to force embedding regeneration
         )
 
-        # Insert into database
+        # Insert or update in database
         if existing_song:
-            # Update existing
-            logger.info(f"Updating existing song: {song.filename}")
-            # Note: We should implement an update method, but for now just log
+            # Update existing song with fresh data from Notion
+            logger.info(f"Updating existing song with fresh Notion data: {song.filename}")
+            song.id = existing_song.id  # Keep the same ID
+            song.times_used = existing_song.times_used  # Preserve usage count
+            self.db.update_song(song)
         else:
+            # Insert new song
             self.db.insert_song(song)
             logger.debug(f"Inserted song: {song.filename}")
 

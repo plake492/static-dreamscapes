@@ -75,6 +75,8 @@ class Database:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 times_used INTEGER DEFAULT 0,
+                last_used_track_id TEXT,
+                last_used_at TIMESTAMP,
 
                 FOREIGN KEY (track_id) REFERENCES tracks(id)
             )
@@ -240,6 +242,39 @@ class Database:
         cursor.execute(query, params)
         return [self._row_to_song(row) for row in cursor.fetchall()]
 
+    def update_song(self, song: Song) -> bool:
+        """Update an existing song in the database."""
+        try:
+            import json
+            cursor = self.conn.cursor()
+
+            cursor.execute("""
+                UPDATE songs SET
+                    file_path = ?, arc_number = ?, prompt_number = ?,
+                    song_number = ?, order_marker = ?, track_id = ?,
+                    track_title = ?, arc_name = ?, arc_phase = ?,
+                    prompt_text = ?, anchor_phrase = ?,
+                    duration_seconds = ?, bpm = ?, key = ?,
+                    energy_level = ?, tempo_category = ?,
+                    vibe_tags = ?, mood_keywords = ?, combined_text = ?,
+                    updated_at = ?
+                WHERE id = ?
+            """, (
+                song.file_path, song.arc_number, song.prompt_number,
+                song.song_number, song.order_marker, song.track_id,
+                song.track_title, song.arc_name, song.arc_phase,
+                song.prompt_text, song.anchor_phrase,
+                song.duration_seconds, song.bpm, song.key,
+                song.energy_level, song.tempo_category.value if song.tempo_category else None,
+                json.dumps(song.vibe_tags), json.dumps(song.mood_keywords), song.combined_text,
+                datetime.now(), song.id
+            ))
+            self.conn.commit()
+            return True
+        except Exception as e:
+            logger.error(f"Failed to update song {song.filename}: {e}")
+            return False
+
     def update_song_usage(self, song_id: str):
         """Increment the times_used counter for a song."""
         cursor = self.conn.cursor()
@@ -249,8 +284,67 @@ class Database:
         """, (datetime.now(), song_id))
         self.conn.commit()
 
+    def update_song_usage_on_prepare(self, song_id: str, track_id: str, timestamp: datetime = None):
+        """Update song usage when used in prepare-render.
+
+        Args:
+            song_id: Song ID to update
+            track_id: Track ID where song is being used
+            timestamp: When the song was used (defaults to now)
+        """
+        if timestamp is None:
+            timestamp = datetime.now()
+
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            UPDATE songs
+            SET times_used = times_used + 1,
+                last_used_track_id = ?,
+                last_used_at = ?,
+                updated_at = ?
+            WHERE id = ?
+        """, (track_id, timestamp, timestamp, song_id))
+        self.conn.commit()
+
+    def get_song_by_filename(self, filename: str) -> Optional[Song]:
+        """Get a song by its filename.
+
+        Args:
+            filename: Song filename (e.g., 'A_1_1_24a.mp3')
+
+        Returns:
+            Song object if found, None otherwise
+        """
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM songs WHERE filename = ?", (filename,))
+        row = cursor.fetchone()
+        return self._row_to_song(row) if row else None
+
+    def get_recent_track_ids(self, current_track: int, num_tracks: int) -> List[str]:
+        """Get list of N most recent track IDs before current_track.
+
+        Args:
+            current_track: Current track number
+            num_tracks: Number of recent tracks to retrieve
+
+        Returns:
+            List of track IDs (e.g., ['25', '24', '23'])
+        """
+        # Calculate the range of recent track numbers
+        # For track 27 with num_tracks=2, returns [26, 25]
+        start = max(0, current_track - num_tracks)
+        end = current_track
+
+        track_ids = [str(i) for i in range(end - 1, start - 1, -1)]
+        return track_ids[:num_tracks]
+
     def _row_to_song(self, row: sqlite3.Row) -> Song:
         """Convert database row to Song model."""
+        # Handle new fields that might not exist in database yet
+        last_used_track_id = row['last_used_track_id'] if 'last_used_track_id' in row.keys() else None
+        last_used_at_str = row['last_used_at'] if 'last_used_at' in row.keys() else None
+        last_used_at = datetime.fromisoformat(last_used_at_str) if last_used_at_str else None
+
         return Song(
             id=row['id'],
             filename=row['filename'],
@@ -275,7 +369,9 @@ class Database:
             combined_text=row['combined_text'],
             created_at=datetime.fromisoformat(row['created_at']) if row['created_at'] else datetime.now(),
             updated_at=datetime.fromisoformat(row['updated_at']) if row['updated_at'] else datetime.now(),
-            times_used=row['times_used'] or 0
+            times_used=row['times_used'] or 0,
+            last_used_track_id=last_used_track_id,
+            last_used_at=last_used_at
         )
 
     # ========================================================================
