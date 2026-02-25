@@ -100,6 +100,13 @@ node_modules/
 .env.*.local
 *.env
 
+# YouTube OAuth credentials (NEVER commit!)
+config/client_secrets.json
+config/youtube_credentials.json
+**/client_secrets.json
+**/youtube_credentials.json
+*.credentials.json
+
 # Config (if contains secrets)
 # Uncomment if you have API keys in config
 # config/settings.yaml

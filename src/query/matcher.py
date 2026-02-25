@@ -44,7 +44,8 @@ class SongMatcher:
         arc: NotionArc,
         track_metadata: NotionTrackMetadata,
         count: int = 5,
-        min_similarity: Optional[float] = None
+        min_similarity: Optional[float] = None,
+        randomize: bool = False
     ) -> List[SongMatch]:
         """
         Find best matching songs for a single prompt.
@@ -109,8 +110,12 @@ class SongMatcher:
             )
             scored_matches.append(match)
 
-        # 6. Sort by final score (highest first)
-        scored_matches.sort(key=lambda m: m.final_score, reverse=True)
+        # 6. Sort by final score (highest first), or shuffle for variety
+        if randomize:
+            import random
+            random.shuffle(scored_matches)
+        else:
+            scored_matches.sort(key=lambda m: m.final_score, reverse=True)
 
         # 7. Return top N
         top_matches = scored_matches[:count]

@@ -159,8 +159,10 @@ class NextArcPromptFinder:
         # Extract Notion page ID from URL and load cached markdown
         notion_url = metadata.get('notion_url', '')
         if notion_url:
+            # Clean escaped characters from URL
+            clean_url = notion_url.replace('\\?', '?').replace('\\=', '=').replace('\\', '')
             # Extract page ID from URL (last segment before query params)
-            page_id = notion_url.split('/')[-1].split('?')[0].split('-')[-1]
+            page_id = clean_url.split('/')[-1].split('?')[0].split('-')[-1]
             notion_cache_path = Path(f"./data/cache/notion_docs/{page_id}.md")
 
             if notion_cache_path.exists():
@@ -218,30 +220,50 @@ class NextArcPromptFinder:
         if current_arc:
             arcs.append(current_arc)
 
-        # Convert to the format expected by the rest of the code
-        # Add 'prompts' field as max_prompt for compatibility
-        for arc in arcs:
-            if arc['max_prompt'] is not None:
-                arc['prompts'] = arc['max_prompt']
-
         return arcs if arcs else None
+
+    def _resolve_arc_ranges(self, metadata: dict) -> list:
+        """
+        Resolve actual (min_prompt, max_prompt) for each arc.
+
+        If arcs have min_prompt/max_prompt from Notion parsing, use those.
+        Otherwise, calculate from 'prompts' count field (sequential numbering).
+        """
+        arcs = metadata.get('arcs', [])
+        if not arcs:
+            return []
+
+        # If first arc already has min_prompt, Notion parsing succeeded
+        if arcs[0].get('min_prompt') is not None:
+            return arcs
+
+        # Fallback: calculate ranges from prompt counts
+        # Prompts are sequential across arcs: arc1 gets 1..N, arc2 gets N+1..M, etc.
+        current_prompt = 1
+        for arc in arcs:
+            count = arc.get('prompts', 0)
+            arc['min_prompt'] = current_prompt
+            arc['max_prompt'] = current_prompt + count - 1
+            current_prompt += count
+
+        return arcs
 
     def _calculate_next(self, max_arc: int, max_prompt: int,
                         metadata: dict) -> Tuple[int, int]:
         """Calculate next (arc, prompt) from current maximum."""
 
+        # Resolve arc ranges (handles both Notion-parsed and JSON fallback)
+        arcs = self._resolve_arc_ranges(metadata)
+
         # If no files exist, start at first arc, first prompt
         if max_arc == 0:
-            if metadata['arcs']:
-                first_arc = metadata['arcs'][0]
-                # Use min_prompt if available, otherwise 1
-                start_prompt = first_arc.get('min_prompt', 1)
-                return first_arc['arc_number'], start_prompt
+            if arcs:
+                return arcs[0]['arc_number'], arcs[0]['min_prompt']
             return 1, 1
 
         # Find current arc info
         current_arc = None
-        for arc in metadata['arcs']:
+        for arc in arcs:
             if arc['arc_number'] == max_arc:
                 current_arc = arc
                 break
@@ -250,8 +272,7 @@ class NextArcPromptFinder:
             raise ValueError(f"Arc {max_arc} not found in metadata")
 
         # Check if we can increment prompt in current arc
-        # Use max_prompt from arc if available, otherwise fall back to prompts count
-        arc_max_prompt = current_arc.get('max_prompt', current_arc.get('prompts'))
+        arc_max_prompt = current_arc.get('max_prompt')
 
         if arc_max_prompt and max_prompt < arc_max_prompt:
             return max_arc, max_prompt + 1
@@ -259,7 +280,7 @@ class NextArcPromptFinder:
         # Move to next arc
         next_arc_num = max_arc + 1
         next_arc = None
-        for arc in metadata['arcs']:
+        for arc in arcs:
             if arc['arc_number'] == next_arc_num:
                 next_arc = arc
                 break
@@ -271,31 +292,90 @@ class NextArcPromptFinder:
             )
 
         # Start at the first prompt of the next arc
-        next_prompt = next_arc.get('min_prompt', 1)
-        return next_arc_num, next_prompt
+        return next_arc_num, next_arc['min_prompt']
+
+    def get_all_prompts_in_order(self, metadata: dict) -> List[Tuple[int, int]]:
+        """
+        Get all (arc, prompt) pairs in Notion doc order.
+
+        Returns:
+            List of (arc_number, prompt_number) tuples in sequential order
+        """
+        all_prompts = []
+        for arc in metadata['arcs']:
+            arc_num = arc['arc_number']
+            min_p = arc.get('min_prompt', 1)
+            max_p = arc.get('max_prompt', arc.get('prompts', min_p))
+            if min_p is not None and max_p is not None:
+                for p in range(min_p, max_p + 1):
+                    all_prompts.append((arc_num, p))
+        return all_prompts
+
+    def get_remaining_prompts(self, count: int) -> List[Tuple[int, int]]:
+        """
+        Get the next N (arc, prompt) pairs starting from the current position.
+
+        Args:
+            count: Number of prompts needed
+
+        Returns:
+            List of (arc_number, prompt_number) tuples
+        """
+        max_arc, max_prompt = self._scan_existing_songs(staging_dir=self.staging_dir)
+        metadata = self._load_notion_metadata()
+
+        all_prompts = self.get_all_prompts_in_order(metadata)
+
+        if max_arc == 0:
+            # No existing files, start from the beginning
+            return all_prompts[:count]
+
+        # Find where we are in the sequence and return the next N
+        try:
+            current_idx = next(
+                i for i, (a, p) in enumerate(all_prompts)
+                if a == max_arc and p == max_prompt
+            )
+            start_idx = current_idx + 1
+        except StopIteration:
+            # Current position not found, calculate next
+            next_arc, next_prompt = self._calculate_next(max_arc, max_prompt, metadata)
+            try:
+                start_idx = next(
+                    i for i, (a, p) in enumerate(all_prompts)
+                    if a == next_arc and p == next_prompt
+                )
+            except StopIteration:
+                raise ValueError(
+                    f"Cannot find prompt ({next_arc}, {next_prompt}) in Notion doc"
+                )
+
+        remaining = all_prompts[start_idx:]
+        if len(remaining) < count:
+            raise ValueError(
+                f"Only {len(remaining)} prompts remaining but need {count}. "
+                f"Last available: Arc {remaining[-1][0]}, Prompt {remaining[-1][1]}"
+                if remaining else "No prompts remaining."
+            )
+
+        return remaining[:count]
 
     def _validate_prompt_exists(self, arc: int, prompt: int, metadata: dict):
         """Validate that the arc/prompt exists in Notion doc."""
-        for arc_data in metadata['arcs']:
-            if arc_data['arc_number'] == arc:
-                # Use max_prompt if available, otherwise fall back to prompts
-                arc_max_prompt = arc_data.get('max_prompt', arc_data.get('prompts'))
-                arc_min_prompt = arc_data.get('min_prompt', 1)
+        arcs = self._resolve_arc_ranges(metadata)
 
-                if arc_max_prompt and arc_min_prompt:
-                    if arc_min_prompt <= prompt <= arc_max_prompt:
-                        return True
-                    raise ValueError(
-                        f"Prompt {prompt} does not exist in Arc {arc} "
-                        f"(valid range: {arc_min_prompt}-{arc_max_prompt})"
-                    )
-                elif arc_max_prompt:
-                    if prompt <= arc_max_prompt:
-                        return True
-                    raise ValueError(
-                        f"Prompt {prompt} does not exist in Arc {arc} "
-                        f"(max: {arc_max_prompt})"
-                    )
+        for arc_data in arcs:
+            if arc_data['arc_number'] == arc:
+                arc_min = arc_data.get('min_prompt', 1)
+                arc_max = arc_data.get('max_prompt')
+
+                if arc_max and arc_min <= prompt <= arc_max:
+                    return True
+
+                raise ValueError(
+                    f"Prompt {prompt} does not exist in Arc {arc} "
+                    f"(valid range: {arc_min}-{arc_max})"
+                )
 
         raise ValueError(f"Arc {arc} not found in metadata")
 

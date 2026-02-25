@@ -143,7 +143,7 @@ yarn generate-embeddings --force
 
 ## query
 
-Find matching songs from library for a new track.
+Find matching songs from library for a new track. Applies all filtering and song-pool restrictions at query time, so you know exactly how many songs you're working with before running `prepare-render`.
 
 ### Usage
 ```bash
@@ -164,6 +164,11 @@ yarn query --track <N> --notion-url <URL>
 | `--songs-per-arc` | number | No | 11 | Songs per arc |
 | `--min-similarity` | number | No | 0.6 | Minimum similarity score (0.0-1.0) |
 | `--top-k`, `-k` | number | No | 5 | Number of matches per prompt |
+| `--skip-recent-tracks` | number | No | - | Exclude songs last used within the N most recent tracks (requires `--track`) |
+| `--max-usage` | number | No | - | Exclude songs used more than N times total |
+| `--skip-themes` | string | No | - | Exclude songs whose source track theme contains any of these terms, comma-separated (e.g. `midnight,analog,sunrise`) |
+| `--from-tracks` | string | No | - | Restrict pool to songs from these source track numbers only, comma-separated (e.g. `1002,1003`) |
+| `--random/--no-random` | boolean | No | `--random` | Randomly sample from qualifying matches instead of always taking the top-scored ones |
 | `--config` | string | No | `./config/settings.yaml` | Path to config file |
 
 **\*Either `--track` or `--notion-url` must be provided.** If track exists in database, `--notion-url` is auto-loaded.
@@ -187,15 +192,38 @@ yarn query --track 25 --min-similarity 0.7
 
 # Custom output location
 yarn query --track 25 --output ./custom/results.json
+
+# Skip songs used in the last 3 tracks (prevents recent repetition)
+yarn query --track 37 --skip-recent-tracks 3
+
+# Skip songs used more than 5 times (prevents overuse)
+yarn query --track 37 --max-usage 5
+
+# Only pull from specific source tracks
+yarn query --track 37 --from-tracks "1002,1003"
+
+# Skip songs from tracks with "sunrise" theme
+yarn query --track 37 --skip-themes "sunrise"
+
+# Combine filters — restrict source tracks + skip overused songs
+yarn query --track 37 --from-tracks "38,39,40" --max-usage 3
+
+# Deterministic top-scored results (no randomization)
+yarn query --track 37 --no-random
+
+# Full example with all filters
+yarn query --track 37 --skip-recent-tracks 2 --max-usage 5 --skip-themes "sunrise" --from-tracks "1002,1003"
 ```
 
 ### What It Does
 1. Parses Notion document to extract prompts
-2. Generates embeddings for each prompt
-3. Searches library using semantic similarity
-4. Ranks matches by similarity and other factors
-5. Saves results to JSON file
-6. Shows contributing tracks table
+2. Loads all songs from the database
+3. **Pre-filters the song pool** based on any filter flags (`--skip-recent-tracks`, `--max-usage`, `--skip-themes`, `--from-tracks`) and prints the post-filter pool size
+4. Generates embeddings for each prompt
+5. Searches the filtered pool using semantic similarity
+6. Returns matches per prompt — randomly sampled (default) or top-scored (`--no-random`)
+7. Saves results to JSON file
+8. Shows contributing tracks table
 
 ### Output File Format
 ```json
@@ -770,9 +798,9 @@ yarn prepare-render --track <N>
 | `--playlist` | string | No | - | Alias for `--results` (backward compatible) |
 | `--copy/--move` | boolean | No | true | Copy files (default) or move them |
 | `--duration`, `-d` | number | No | - | Target duration in minutes (auto-selects songs) |
-| `--skip-recent-tracks` | number | No | - | Skip songs used in last N tracks |
-| `--max-usage` | number | No | - | Skip songs used more than X times |
 | `--config` | string | No | `./config/settings.yaml` | Path to config file |
+
+> **Note:** Usage filters (`--skip-recent-tracks`, `--max-usage`, `--skip-themes`, `--from-tracks`) are applied at the `query` step, not here. Run `query` with those flags first so you can see the filtered pool size before preparing.
 
 ### Examples
 ```bash
@@ -788,15 +816,6 @@ yarn prepare-render --track 25 --move
 # Auto-select songs for 3-hour duration
 yarn prepare-render --track 25 --duration 180
 
-# Skip songs used in last 2 tracks (prevents recent repetition)
-yarn prepare-render --track 25 --skip-recent-tracks 2
-
-# Skip songs used more than 5 times (prevents overuse)
-yarn prepare-render --track 25 --max-usage 5
-
-# Combine filters for maximum variety
-yarn prepare-render --track 25 --skip-recent-tracks 2 --max-usage 5
-
 # Backward-compatible --playlist parameter
 yarn prepare-render --track 25 --playlist ./output/track-25-matches.json
 ```
@@ -804,13 +823,10 @@ yarn prepare-render --track 25 --playlist ./output/track-25-matches.json
 ### What It Does
 1. Loads query results JSON
 2. Finds source files in database
-3. Applies usage filters (if specified):
-   - Skips songs used in recent tracks
-   - Skips songs exceeding usage limit
-4. Copies/moves matched songs to `Tracks/{N}/Songs/`
-5. Updates usage tracking for each song (times_used, last_used_track_id, last_used_at)
-6. Generates `remaining-prompts.md` with unfilled prompts
-7. Shows summary by arc
+3. Copies/moves matched songs to `Tracks/{N}/Songs/`
+4. Updates usage tracking for each song (times_used, last_used_track_id, last_used_at)
+5. Generates `remaining-prompts.md` with unfilled prompts
+6. Shows summary by arc
 
 ### With --duration Option
 Intelligently selects songs to fill target duration:
@@ -1173,7 +1189,7 @@ yarn audit-usage --base-dir ./my-tracks
 ### When to Use
 - After manually copying songs between tracks
 - When usage tracking seems incorrect
-- Before running `prepare-render` with usage filters
+- Before running `query` with usage filters (`--skip-recent-tracks`, `--max-usage`)
 - To verify database integrity
 - After importing old tracks
 
@@ -1317,8 +1333,8 @@ Some parameters have aliases for backward compatibility:
 # 1. Create track structure
 yarn scaffold-track --track 25 --notion-url "URL"
 
-# 2. Query song bank for matches
-yarn query --track 25 --notion-url "URL"
+# 2. Query song bank for matches (apply filters here to see pool size up front)
+yarn query --track 25 --skip-recent-tracks 2 --max-usage 5
 
 # 3. Prepare matched songs for rendering
 yarn prepare-render --track 25

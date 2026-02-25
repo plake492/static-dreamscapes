@@ -19,7 +19,7 @@ paths:
 # Notion API Configuration
 notion:
   # Get your API token from: https://www.notion.so/my-integrations
-  api_token: "${NOTION_API_TOKEN}"  # Set via environment variable
+  api_token: "${NOTION_API_TOKEN}" # Set via environment variable
 
   # Cache settings
   cache_enabled: true
@@ -63,15 +63,15 @@ matching:
   search_top_k: 50
 
   # BPM tolerance (±)
-  bpm_tolerance: 100.0  # Increased - Suno doesn't respect BPM in prompts
+  bpm_tolerance: 100.0 # Increased - Suno doesn't respect BPM in prompts
 
   # Scoring weights (must sum to 1.0)
   weights:
-    similarity: 0.50      # Embedding similarity
-    arc_bonus: 0.20       # Matching arc number
-    bpm_proximity: 0.15   # BPM closeness
-    key_compatibility: 0.10  # Key matching
-    usage_penalty: 0.05   # Prefer less-used songs
+    similarity: 0.50 # Embedding similarity
+    arc_bonus: 0.20 # Matching arc number
+    bpm_proximity: 0.15 # BPM closeness
+    key_compatibility: 0.10 # Key matching
+    usage_penalty: 0.05 # Prefer less-used songs
 
   # Usage limits
   max_times_used: 10
@@ -109,12 +109,28 @@ ffmpeg:
 
 # Logging Configuration
 logging:
-  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  level: "INFO" # DEBUG, INFO, WARNING, ERROR
   format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
   # Save logs to file
   file_enabled: true
   file_path: "./output/logs/lofi-manager.log"
+
+# YouTube API Configuration
+youtube:
+  # OAuth credentials (Desktop App client)
+  client_secrets_file: "./config/client_secrets.json"
+  credentials_file: "./config/youtube_credentials.json"
+
+  # Channel settings
+  channel_id: "${YOUTUBE_CHANNEL_ID}" # Set via environment variable
+
+  # Upload defaults
+  default_category: "10" # Music
+  default_privacy: "private" # private/public/unlisted
+
+  # Playlist configuration file
+  playlists_file: "./config/youtube_playlists.yaml"
 
 # Development Settings
 development:
@@ -122,4 +138,4 @@ development:
   debug: false
 
   # Dry run (don't write to database)
-  dry_run: false
+  dry_run: falseyarn

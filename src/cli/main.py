@@ -281,6 +281,11 @@ def query(
     songs_per_arc: int = typer.Option(11, "--songs-per-arc", help="Songs per arc"),
     min_similarity: float = typer.Option(0.6, "--min-similarity", help="Minimum similarity score"),
     top_k: int = typer.Option(5, "--top-k", "-k", help="Number of matches per prompt"),
+    skip_recent_tracks: Optional[int] = typer.Option(None, "--skip-recent-tracks", help="Skip songs used in last N tracks"),
+    max_usage: Optional[int] = typer.Option(None, "--max-usage", help="Skip songs used more than X times"),
+    skip_themes: Optional[str] = typer.Option(None, "--skip-themes", help="Skip songs from tracks with these themes, comma-separated (e.g. 'midnight,analog,sunrise')"),
+    from_tracks: Optional[str] = typer.Option(None, "--from-tracks", help="Only use songs from these track numbers, comma-separated (e.g. '1002,1003')"),
+    randomize: bool = typer.Option(True, "--random/--no-random", help="Randomly sample from qualifying matches instead of top-scoring (default: on)"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
     """Query for matching songs for a new track."""
@@ -351,13 +356,83 @@ def query(
 
         # Load all songs and build embedding store
         all_songs = db.get_all_songs()
+
+        # Pre-filter song pool based on flags
+        if skip_recent_tracks or max_usage is not None or skip_themes or from_tracks:
+            original_count = len(all_songs)
+            skip_counts = {}
+
+            # --from-tracks: restrict pool to songs from specific source tracks only
+            allowed_track_ids: Optional[set] = None
+            if from_tracks:
+                track_number_list = [int(t.strip()) for t in from_tracks.split(',') if t.strip().isdigit()]
+                track_id_map = db.get_track_ids_by_numbers(track_number_list)
+                not_found = [n for n in track_number_list if n not in track_id_map]
+                if not_found:
+                    console.print(f"[yellow]⚠️  Track numbers not found in DB: {', '.join(str(n) for n in not_found)}[/yellow]")
+                allowed_track_ids = set(track_id_map.values())
+                console.print(f"[cyan]Filter from-tracks: {', '.join(str(n) for n in track_number_list)} ({len(allowed_track_ids)} track(s) found)[/cyan]")
+
+            # Resolve recent track IDs for skip-recent-tracks filter
+            recent_track_ids = []
+            if skip_recent_tracks:
+                if not track:
+                    console.print("[yellow]⚠️  --skip-recent-tracks requires --track to determine the range[/yellow]")
+                else:
+                    recent_track_ids = db.get_recent_track_ids(track, skip_recent_tracks)
+                    console.print(f"[cyan]Filter skip-recent-tracks={skip_recent_tracks}: tracks {', '.join(recent_track_ids)}[/cyan]")
+
+            if max_usage is not None:
+                console.print(f"[cyan]Filter max-usage={max_usage}[/cyan]")
+
+            # Resolve theme map for skip-themes filter
+            skip_theme_list = []
+            theme_map = {}
+            if skip_themes:
+                skip_theme_list = [t.strip().lower() for t in skip_themes.split(',') if t.strip()]
+                theme_map = db.get_track_themes()
+                console.print(f"[cyan]Filter skip-themes: {', '.join(skip_theme_list)}[/cyan]")
+
+            filtered_songs = []
+            for song in all_songs:
+                # From-tracks filter: only allow songs from specified tracks
+                if allowed_track_ids is not None and song.track_id not in allowed_track_ids:
+                    skip_counts['from_tracks'] = skip_counts.get('from_tracks', 0) + 1
+                    continue
+
+                # Max usage filter
+                if max_usage is not None and song.times_used > max_usage:
+                    skip_counts['max_usage'] = skip_counts.get('max_usage', 0) + 1
+                    continue
+
+                # Recent tracks filter
+                if recent_track_ids and song.last_used_track_id in recent_track_ids:
+                    skip_counts['recent_track'] = skip_counts.get('recent_track', 0) + 1
+                    continue
+
+                # Theme filter: skip if source track's theme matches any skip term
+                if skip_theme_list and song.track_id and song.track_id in theme_map:
+                    track_theme = theme_map[song.track_id].lower()
+                    if any(t in track_theme for t in skip_theme_list):
+                        skip_counts['theme'] = skip_counts.get('theme', 0) + 1
+                        continue
+
+                filtered_songs.append(song)
+
+            all_songs = filtered_songs
+            removed = original_count - len(all_songs)
+            if removed:
+                reason_str = ', '.join(f"{k}: {v}" for k, v in skip_counts.items())
+                console.print(f"[dim]Filtered out {removed} songs ({reason_str})[/dim]")
+            console.print(f"[bold]Song pool after filters: {len(all_songs)} songs[/bold]\n")
+
         generator = EmbeddingGenerator(config.embedding_model_name)
         store = EmbeddingStore(config.embeddings_cache)
 
         import numpy as np
         data = np.load(cache_file)
 
-        # Map song IDs to songs
+        # Map song IDs to songs (only filtered songs)
         song_map = {song.id: song for song in all_songs}
 
         for song_id, embedding in zip(data['song_ids'], data['embeddings']):
@@ -386,7 +461,8 @@ def query(
                     prompt=prompt,
                     arc=arc,
                     track_metadata=track_metadata,
-                    count=top_k
+                    count=top_k,
+                    randomize=randomize
                 )
 
                 arc_results.append({
@@ -928,8 +1004,6 @@ def prepare_render(
     results: Optional[str] = typer.Option(None, "--results", "--playlist", "-p", help="Path to query results JSON file (optional if --track provided)"),
     copy: bool = typer.Option(True, "--copy/--move", help="Copy files (default) or move them"),
     target_duration: int = typer.Option(None, "--duration", "-d", help="Target duration in minutes (auto-selects songs)"),
-    skip_recent_tracks: Optional[int] = typer.Option(None, "--skip-recent-tracks", help="Skip songs used in last N tracks"),
-    max_usage: Optional[int] = typer.Option(None, "--max-usage", help="Skip songs used more than X times"),
     config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
 ):
     """Prepare track for rendering by organizing matched songs into track folder."""
@@ -970,31 +1044,11 @@ def prepare_render(
 
         console.print(f"Destination: {songs_dir}\n")
 
-        # Pre-compute filter prerequisites
-        recent_track_ids = []
-        if skip_recent_tracks:
-            recent_track_ids = db.get_recent_track_ids(track, skip_recent_tracks)
-            console.print(f"[cyan]Filter: Skip songs used in last {skip_recent_tracks} tracks: {', '.join(recent_track_ids)}[/cyan]")
-
-        if max_usage is not None:
-            console.print(f"[cyan]Filter: Skip songs used more than {max_usage} times[/cyan]")
-
-        console.print()
-
         # Helper function to check if a song should be skipped
         def should_skip_song(song):
             """Returns (should_skip: bool, reason: str)"""
             if not song:
                 return True, "not found in database"
-
-            # Check recent tracks filter
-            if skip_recent_tracks and song.last_used_track_id in recent_track_ids:
-                return True, f"used in Track {song.last_used_track_id} (within last {skip_recent_tracks} tracks)"
-
-            # Check max usage filter
-            if max_usage is not None and song.times_used > max_usage:
-                return True, f"used {song.times_used} times (> {max_usage})"
-
             return False, None
 
         # Collect all matched songs with filtering applied during selection
@@ -2705,6 +2759,275 @@ def batch_import(
         console.print(f"\n[bold red]❌ Error: {e}[/bold red]\n")
         logger.exception("Error in batch import")
         raise typer.Exit(1)
+
+
+# ============================================================================
+# YouTube Commands (Phase 1: MVP)
+# ============================================================================
+
+@app.command("youtube-auth")
+def youtube_auth(
+    test: bool = typer.Option(False, "--test", "-t", help="Test authentication by fetching channel info"),
+    reset: bool = typer.Option(False, "--reset", "-r", help="Revoke credentials and re-authenticate"),
+    config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
+):
+    """Authenticate with YouTube API.
+
+    First-time setup:
+        yarn youtube-auth
+
+    Test authentication:
+        yarn youtube-auth --test
+
+    Re-authenticate:
+        yarn youtube-auth --reset
+    """
+    try:
+        from ..youtube.auth import YouTubeAuthenticator
+
+        config = get_config(config_path)
+
+        # Get paths from config
+        client_secrets = config.get('youtube.client_secrets_file', './config/client_secrets.json')
+        credentials_file = config.get('youtube.credentials_file', './config/youtube_credentials.json')
+
+        console.print("\n[bold blue]YouTube Authentication[/bold blue]\n")
+
+        auth = YouTubeAuthenticator(
+            client_secrets_file=client_secrets,
+            credentials_file=credentials_file
+        )
+
+        if reset:
+            console.print("[yellow]Revoking existing credentials...[/yellow]")
+            auth.revoke_credentials()
+            console.print("[green]Credentials revoked.[/green]\n")
+
+        if test:
+            console.print("Testing authentication...")
+            if auth.test_authentication():
+                console.print("\n[bold green]Authentication successful![/bold green]\n")
+            else:
+                console.print("\n[bold red]Authentication failed.[/bold red]\n")
+                raise typer.Exit(1)
+        else:
+            console.print("Starting OAuth flow...")
+            console.print("[dim]A browser window will open for authentication.[/dim]\n")
+            auth.authenticate(force_reauth=reset)
+            console.print("[bold green]Authentication successful![/bold green]")
+            console.print(f"Credentials saved to: {credentials_file}\n")
+
+            # Show channel info
+            console.print("[dim]Testing connection...[/dim]")
+            auth.test_authentication()
+            console.print()
+
+    except FileNotFoundError as e:
+        console.print(f"\n[bold red]Error: {e}[/bold red]")
+        console.print("\n[yellow]Setup required:[/yellow]")
+        console.print("1. Go to Google Cloud Console")
+        console.print("2. Create a Desktop App OAuth client")
+        console.print("3. Download client_secrets.json to ./config/")
+        console.print("4. See docs/YOUTUBE_UPLOAD_PLAN.md for details\n")
+        raise typer.Exit(1)
+    except Exception as e:
+        console.print(f"\n[bold red]Error: {e}[/bold red]\n")
+        raise typer.Exit(1)
+
+
+@app.command("youtube-upload")
+def youtube_upload(
+    track: int = typer.Option(..., "--track", "-t", help="Track number to upload"),
+    render_dir: Optional[str] = typer.Option(None, "--render-dir", "-r", help="Render directory (auto-detects latest if not provided)"),
+    dry_run: bool = typer.Option(False, "--dry-run", "-d", help="Validate only, don't upload"),
+    privacy: str = typer.Option("private", "--privacy", "-p", help="Privacy status: private/public/unlisted"),
+    config_path: str = typer.Option("./config/settings.yaml", help="Path to config file")
+):
+    """Upload a rendered video to YouTube.
+
+    Basic upload:
+        yarn youtube-upload --track 37
+
+    Dry run (validate only):
+        yarn youtube-upload --track 37 --dry-run
+
+    Upload as public:
+        yarn youtube-upload --track 37 --privacy public
+    """
+    try:
+        from ..youtube.auth import YouTubeAuthenticator
+        from ..youtube.uploader import YouTubeUploader
+        from ..youtube.metadata import MetadataParser
+        from ..youtube.thumbnail import ThumbnailHandler
+        from ..ingest.notion_parser import NotionParser
+        from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn
+
+        config = get_config(config_path)
+        db = Database(config.database_path)
+
+        console.print(f"\n[bold blue]YouTube Upload - Track {track}[/bold blue]\n")
+
+        # Get track from database
+        track_record = db.get_track(track)
+        if not track_record:
+            console.print(f"[bold red]Error: Track {track} not found in database[/bold red]\n")
+            raise typer.Exit(1)
+
+        # Find render directory
+        if render_dir:
+            render_path = Path(render_dir)
+        else:
+            render_path = _find_latest_render(track)
+
+        if not render_path or not render_path.exists():
+            console.print(f"[bold red]Error: Render directory not found for track {track}[/bold red]")
+            console.print("[dim]Use --render-dir to specify manually[/dim]\n")
+            raise typer.Exit(1)
+
+        console.print(f"[dim]Render directory: {render_path}[/dim]\n")
+
+        # Find video file
+        video_files = list(render_path.glob("*.mp4"))
+        if not video_files:
+            console.print(f"[bold red]Error: No MP4 file found in {render_path}[/bold red]\n")
+            raise typer.Exit(1)
+
+        video_path = video_files[0]
+        console.print(f"Video file: [cyan]{video_path.name}[/cyan]")
+        console.print(f"Size: [cyan]{video_path.stat().st_size / (1024**3):.2f} GB[/cyan]\n")
+
+        # Initialize parsers
+        notion_parser = NotionParser()
+        metadata_parser = MetadataParser(track_record, notion_parser)
+        thumbnail_handler = ThumbnailHandler(render_path, track)
+
+        # Validate metadata
+        console.print("[bold]Validating metadata...[/bold]")
+        is_valid, errors = metadata_parser.validate_metadata(render_path)
+
+        if not is_valid:
+            console.print("[bold red]Validation failed:[/bold red]")
+            for error in errors:
+                console.print(f"  [red]- {error}[/red]")
+            console.print()
+            raise typer.Exit(1)
+
+        # Display metadata
+        title = metadata_parser.get_title()
+        description = metadata_parser.get_description(render_path)
+        tags = metadata_parser.get_tags()
+
+        console.print(f"Title: [green]{title}[/green]")
+        console.print(f"Description: [green]{len(description)} chars[/green]")
+        console.print(f"Tags: [green]{len(tags)} tags[/green]")
+        console.print(f"Privacy: [green]{privacy}[/green]")
+
+        # Check thumbnail
+        thumbnail_path = thumbnail_handler.find_thumbnail()
+        if thumbnail_path:
+            thumb_valid, thumb_error = thumbnail_handler.validate_thumbnail(thumbnail_path)
+            if thumb_valid:
+                console.print(f"Thumbnail: [green]{thumbnail_path.name}[/green]")
+            else:
+                console.print(f"Thumbnail: [yellow]{thumb_error}[/yellow]")
+        else:
+            console.print("Thumbnail: [yellow]Not found[/yellow]")
+
+        console.print()
+
+        if dry_run:
+            console.print("[bold yellow]Dry run complete - no upload performed[/bold yellow]\n")
+            db.close()
+            return
+
+        # Confirm upload
+        if not typer.confirm("Proceed with upload?"):
+            console.print("[yellow]Upload cancelled[/yellow]\n")
+            db.close()
+            return
+
+        # Initialize uploader
+        client_secrets = config.get('youtube.client_secrets_file', './config/client_secrets.json')
+        credentials_file = config.get('youtube.credentials_file', './config/youtube_credentials.json')
+
+        auth = YouTubeAuthenticator(
+            client_secrets_file=client_secrets,
+            credentials_file=credentials_file
+        )
+
+        uploader = YouTubeUploader(
+            authenticator=auth,
+            default_category=config.get('youtube.default_category', '10'),
+            default_privacy=privacy
+        )
+
+        # Upload with progress
+        console.print("\n[bold]Starting upload...[/bold]\n")
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TaskProgressColumn(),
+            console=console
+        ) as progress:
+            upload_task = progress.add_task("Uploading...", total=100)
+
+            def progress_callback(percent, status):
+                if percent >= 0:
+                    progress.update(upload_task, completed=percent, description=status)
+                else:
+                    progress.update(upload_task, description=status)
+
+            result = uploader.upload_with_metadata(
+                video_path=video_path,
+                metadata_parser=metadata_parser,
+                thumbnail_handler=thumbnail_handler,
+                render_dir=render_path,
+                privacy_status=privacy,
+                progress_callback=progress_callback
+            )
+
+        # Display result
+        console.print("\n[bold green]Upload successful![/bold green]\n")
+        console.print(f"Video ID: [cyan]{result['video_id']}[/cyan]")
+        console.print(f"URL: [cyan]{result['url']}[/cyan]")
+        console.print(f"Status: [cyan]{result['status']}[/cyan]")
+        if result.get('thumbnail_set'):
+            console.print("Thumbnail: [green]Set successfully[/green]")
+
+        # Update database with video ID
+        db.update_track_youtube_id(track, result['video_id'])
+        console.print(f"\n[dim]Video ID saved to database[/dim]\n")
+
+        db.close()
+
+    except Exception as e:
+        console.print(f"\n[bold red]Error: {e}[/bold red]\n")
+        import traceback
+        traceback.print_exc()
+        raise typer.Exit(1)
+
+
+def _find_latest_render(track_number: int) -> Optional[Path]:
+    """Find the latest render directory for a track."""
+    render_base = Path(f"./Rendered/{track_number}")
+
+    if not render_base.exists():
+        return None
+
+    # Find output directories sorted by timestamp
+    output_dirs = []
+    for d in render_base.iterdir():
+        if d.is_dir() and d.name.startswith("output_"):
+            output_dirs.append(d)
+
+    if not output_dirs:
+        return None
+
+    # Sort by modification time (newest first)
+    output_dirs.sort(key=lambda x: x.stat().st_mtime, reverse=True)
+    return output_dirs[0]
 
 
 @app.command()

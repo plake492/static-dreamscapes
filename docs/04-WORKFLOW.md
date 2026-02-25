@@ -32,19 +32,34 @@ Best for generating new songs for a track. Auto-renames files, splits them for r
 
 ### Step 1: Query for Matching Songs
 
-Find reusable songs from your library for a new track:
+Find reusable songs from your library for a new track. All filtering happens here so you can see the filtered pool size before running `prepare-render`:
 
 ```bash
 yarn query \
-  --notion-url "https://notion.so/Track-20" \
-  --output "./output/playlists/track-20-matches.json" \
+  --track 20 \
   --top-k 5
+```
+
+With filters:
+```bash
+# Skip songs used in the last 2 tracks and used more than 5 times total
+yarn query --track 20 --skip-recent-tracks 2 --max-usage 5
+
+# Only pull from specific source tracks
+yarn query --track 20 --from-tracks "1002,1003"
+
+# Skip songs from a retired theme
+yarn query --track 20 --skip-themes "sunrise"
+
+# Use top-scored matches instead of random sampling
+yarn query --track 20 --no-random
 ```
 
 **What it does:**
 - Parses your Notion track document
-- Searches library using semantic embeddings
-- Finds top 5 matches per prompt
+- Pre-filters the song pool based on any filter flags and prints the post-filter count
+- Searches the filtered pool using semantic embeddings
+- Returns matches per prompt (randomly sampled by default, or top-scored with `--no-random`)
 - Outputs JSON with similarity scores
 
 **Example output:**
@@ -123,28 +138,22 @@ Tracks/20/
 Copy matched songs to your track folder:
 
 ```bash
-yarn prepare-render \
-  --track 20 \
-  --playlist "./output/playlists/track-20-matches.json"
+yarn prepare-render --track 20
 ```
 
 **Options:**
 ```bash
 # Copy files (default - keeps originals)
-yarn prepare-render --track 20 --playlist "FILE"
+yarn prepare-render --track 20
 
 # Move files (removes originals)
-yarn prepare-render --track 20 --playlist "FILE" --move
+yarn prepare-render --track 20 --move
 
-# Skip songs used in recent tracks (prevents repetition)
-yarn prepare-render --track 20 --playlist "FILE" --skip-recent-tracks 2
-
-# Skip songs exceeding usage limit (prevents overuse)
-yarn prepare-render --track 20 --playlist "FILE" --max-usage 5
-
-# Combine filters for strict control
-yarn prepare-render --track 20 --playlist "FILE" --skip-recent-tracks 2 --max-usage 5
+# Auto-select songs for a target duration
+yarn prepare-render --track 20 --duration 180
 ```
+
+> **Note:** Usage filters (`--skip-recent-tracks`, `--max-usage`, `--skip-themes`, `--from-tracks`) are applied at the `query` step, not here. Run `query` with those flags so you can confirm the filtered pool size before preparing.
 
 **Example output:**
 ```
@@ -659,17 +668,23 @@ yarn stats
 
 **Prevent song overuse and repetition:**
 
-The system automatically tracks every time a song is used and when it was last used. Use filtering flags to maintain variety:
+The system automatically tracks every time a song is used and when it was last used. Apply filtering flags on `query` — this lets you see the filtered pool size before committing to `prepare-render`:
 
 ```bash
 # Skip songs used in last 2 tracks (prevents recent repetition)
-yarn prepare-render --track 27 --playlist "file.json" --skip-recent-tracks 2
+yarn query --track 27 --skip-recent-tracks 2
 
 # Skip songs used more than 5 times (prevents overuse)
-yarn prepare-render --track 27 --playlist "file.json" --max-usage 5
+yarn query --track 27 --max-usage 5
 
 # Combine both filters for maximum variety
-yarn prepare-render --track 27 --playlist "file.json" --skip-recent-tracks 2 --max-usage 5
+yarn query --track 27 --skip-recent-tracks 2 --max-usage 5
+
+# Restrict to specific source tracks
+yarn query --track 27 --from-tracks "1002,1003"
+
+# Skip songs from a retired theme
+yarn query --track 27 --skip-themes "sunrise"
 ```
 
 **Backfill existing usage data:**

@@ -338,6 +338,35 @@ class Database:
         track_ids = [str(i) for i in range(end - 1, start - 1, -1)]
         return track_ids[:num_tracks]
 
+    def get_track_themes(self) -> Dict[str, str]:
+        """Get mapping of track_id to overall_theme for all tracks.
+
+        Returns:
+            Dict mapping track_id -> overall_theme (only for tracks with a theme set)
+        """
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT id, overall_theme FROM tracks WHERE overall_theme IS NOT NULL")
+        return {row['id']: row['overall_theme'] for row in cursor.fetchall()}
+
+    def get_track_ids_by_numbers(self, track_numbers: List[int]) -> Dict[int, str]:
+        """Get mapping of track_number -> track_id for a list of track numbers.
+
+        Args:
+            track_numbers: List of integer track numbers to look up
+
+        Returns:
+            Dict mapping track_number -> track_id (only for tracks found in DB)
+        """
+        if not track_numbers:
+            return {}
+        placeholders = ','.join('?' * len(track_numbers))
+        cursor = self.conn.cursor()
+        cursor.execute(
+            f"SELECT track_number, id FROM tracks WHERE track_number IN ({placeholders})",
+            track_numbers
+        )
+        return {row['track_number']: row['id'] for row in cursor.fetchall()}
+
     def _row_to_song(self, row: sqlite3.Row) -> Song:
         """Convert database row to Song model."""
         # Handle new fields that might not exist in database yet
@@ -452,6 +481,22 @@ class Database:
             WHERE id = ?
         """, (status.value, datetime.now(), track_id))
         self.conn.commit()
+
+    def update_track_youtube_id(self, track_number: int, video_id: str):
+        """Update track with YouTube video ID and URL.
+
+        Args:
+            track_number: Track number
+            video_id: YouTube video ID
+        """
+        youtube_url = f"https://www.youtube.com/watch?v={video_id}"
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            UPDATE tracks SET youtube_url = ?, updated_at = ?
+            WHERE track_number = ?
+        """, (youtube_url, datetime.now(), track_number))
+        self.conn.commit()
+        logger.info(f"Updated track {track_number} with YouTube URL: {youtube_url}")
 
     def _row_to_track(self, row: sqlite3.Row) -> Track:
         """Convert database row to Track model."""

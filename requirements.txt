@@ -26,6 +26,16 @@ ffmpeg-python>=0.2.0
 tqdm>=4.66.1
 requests>=2.31.0
 
+# YouTube API
+google-auth>=2.16.0
+google-auth-oauthlib>=1.0.0
+google-auth-httplib2>=0.1.0
+google-api-python-client>=2.80.0
+python-dateutil>=2.8.2
+
+# Image processing (for thumbnails)
+Pillow>=10.0.0
+
 # Database
 # sqlite3 is built into Python
 
